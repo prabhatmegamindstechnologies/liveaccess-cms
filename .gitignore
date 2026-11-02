@@ -430,3 +430,12 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# CMS (feature/cms): local secrets and build output
+.env
+.env.*
+!.env.example
+cms/dist/
+cms/.vercel/
+# The pnpm workspace folder packages/ is ours (the NuGet rule above would hide it)
+!/packages/*/

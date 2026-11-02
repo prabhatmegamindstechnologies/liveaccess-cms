@@ -1,0 +1,32 @@
+{
+  "name": "@liveaccess/cms",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch api/server.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx db/migrate.ts",
+    "seed:admin": "tsx scripts/seed-admin.ts",
+    "import:site": "tsx scripts/import-site.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "dependencies": {
+    "@hono/node-server": "2.1.5",
+    "@liveaccess/shared": "workspace:*",
+    "@node-rs/argon2": "2.2.2",
+    "dotenv": "18.0.9",
+    "drizzle-orm": "0.45.4",
+    "hono": "4.13.14",
+    "linkedom": "0.18.14",
+    "postgres": "3.4.9"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.5",
+    "drizzle-kit": "0.31.11",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5"
+  }
+}

@@ -1,0 +1,10 @@
+packages:
+  - cms
+  - packages/*
+
+# Supply-chain safety: exact versions, and only versions that have been public for at least 7 days.
+saveExact: true
+minimumReleaseAge: 10080
+# Install scripts stay blocked. esbuild (used by tsx and drizzle-kit) ships its binary as an optional package.
+allowBuilds:
+  esbuild: false

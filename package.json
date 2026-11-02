@@ -1,0 +1,17 @@
+{
+  "name": "liveaccess-monorepo",
+  "private": true,
+  "packageManager": "pnpm@11.6.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "db:generate": "pnpm --filter @liveaccess/cms db:generate",
+    "db:migrate": "pnpm --filter @liveaccess/cms db:migrate",
+    "db:seed-admin": "pnpm --filter @liveaccess/cms seed:admin",
+    "import:site": "pnpm --filter @liveaccess/cms import:site",
+    "dev:api": "pnpm --filter @liveaccess/cms dev",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck"
+  }
+}
