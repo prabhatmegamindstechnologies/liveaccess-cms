@@ -5,7 +5,9 @@ import { createDb } from "../db/client.ts";
 import { createApp } from "./app.ts";
 
 const { db } = createDb(env.databaseUrl());
-const app = createApp({ db, adminPath: env.adminPath, secureCookies: env.secureCookies, trustProxy: env.trustProxy });
+// siteRoot enables the preview-asset route: local development only, never in production.
+const dev = process.env.NODE_ENV !== "production";
+const app = createApp({ db, adminPath: env.adminPath, secureCookies: env.secureCookies, trustProxy: env.trustProxy, siteRoot: dev ? env.siteRoot : undefined });
 
 serve({ fetch: app.fetch, port: env.port }, (info) => {
   console.log(`CMS API on http://localhost:${info.port}/${env.adminPath}/api`);

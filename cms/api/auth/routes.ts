@@ -1,5 +1,5 @@
 // Sign-in, current user and sign-out, mounted at /<ADMIN_PATH>/api/auth.
-import { createHash, timingSafeEqual } from "node:crypto";
+import { createHash } from "node:crypto";
 import { Hono } from "hono";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import { and, eq, gte, sql } from "drizzle-orm";
@@ -7,6 +7,7 @@ import type { Db } from "../../db/client.ts";
 import { users } from "../../db/schema.ts";
 import { audit } from "../audit.ts";
 import { clientIp } from "../client-ip.ts";
+import { sameToken } from "./require-user.ts";
 import { dummyPasswordHash, verifyPassword } from "./password.ts";
 import { createSession, deleteSession, readSession, SESSION_COOKIE, SESSION_IDLE_MS } from "./session.ts";
 
@@ -20,12 +21,6 @@ export const publicUser = (u: typeof users.$inferSelect) => ({ id: u.id, name: u
 
 // Audit entries for unknown emails keep only a short hash: people sometimes type their password into the email box.
 const emailFingerprint = (email: string) => createHash("sha256").update(email).digest("hex").slice(0, 16);
-
-const sameToken = (a: string | undefined, b: string) => {
-  if (!a) return false;
-  const x = Buffer.from(a), y = Buffer.from(b);
-  return x.length === y.length && timingSafeEqual(x, y);
-};
 
 export function authRoutes({ db, adminPath, secureCookies, trustProxy = false }: AuthConfig) {
   const app = new Hono();

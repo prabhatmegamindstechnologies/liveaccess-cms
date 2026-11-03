@@ -2,20 +2,28 @@
 import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { authRoutes, type AuthConfig } from "./auth/routes.ts";
+import { pageRoutes, type SaveLimit } from "./pages/routes.ts";
+import { previewAssets } from "./preview-assets.ts";
 
 const CHANGES = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+const tooLarge = bodyLimit({ maxSize: 64 * 1024, onError: (c) => c.json({ error: "Request too large." }, 413) });
+const pageSize = bodyLimit({ maxSize: 1_500_000, onError: (c) => c.json({ error: "The page is too large to save." }, 413) });
 
-export function createApp(cfg: AuthConfig) {
+/** siteRoot mounts the dev-only preview-asset route; leave it out in production. */
+export type AppConfig = AuthConfig & { siteRoot?: string; pageSaveLimit?: SaveLimit };
+
+export function createApp(cfg: AppConfig) {
   const app = new Hono();
+  const base = `/${cfg.adminPath}/api`;
 
   app.use("*", async (c, next) => {
     await next();
     c.header("X-Robots-Tag", "noindex, nofollow");
-    c.header("Cache-Control", "no-store");
+    c.header("Cache-Control", c.res.headers.get("cache-control") ?? "no-store");
   });
 
-  // Media uploads (Day 3) will raise this on their own route.
-  app.use("*", bodyLimit({ maxSize: 64 * 1024, onError: (c) => c.json({ error: "Request too large." }, 413) }));
+  // Page saves carry a whole page (up to ~1 MB); every other request stays small.
+  app.use("*", (c, next) => (c.req.method === "PUT" && c.req.path.startsWith(`${base}/pages/`) ? pageSize(c, next) : tooLarge(c, next)));
 
   // Refuse changes started by another site (backs up the SameSite cookie and the CSRF token).
   app.use("*", async (c, next) => {
@@ -33,8 +41,10 @@ export function createApp(cfg: AuthConfig) {
     await next();
   });
 
-  app.route(`/${cfg.adminPath}/api/auth`, authRoutes(cfg));
-  app.get(`/${cfg.adminPath}/api/health`, (c) => c.json({ ok: true }));
+  app.route(`${base}/auth`, authRoutes(cfg));
+  app.route(`${base}/pages`, pageRoutes(cfg.db, cfg.pageSaveLimit));
+  if (cfg.siteRoot) app.route(`${base}/preview-assets`, previewAssets(cfg.db, cfg.siteRoot));
+  app.get(`${base}/health`, (c) => c.json({ ok: true }));
 
   app.notFound((c) => c.json({ error: "Not found." }, 404));
   app.onError((err, c) => {

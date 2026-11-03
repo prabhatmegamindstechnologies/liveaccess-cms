@@ -54,6 +54,8 @@ export const pages = pgTable("pages", {
   status: contentStatusEnum("status").notNull().default("draft"),
   ...seoColumns(),
   publishedAt: timestamp("published_at", { withTimezone: true }),
+  // Bumped on every save; a save based on an older version is refused (no silent overwrites).
+  version: integer("version").notNull().default(1),
   updatedBy: integer("updated_by").references(() => users.id, { onDelete: "set null" }),
   updatedAt: updatedAt()
 }, (t) => [uniqueIndex("pages_key_unique").on(t.key)]);
@@ -71,6 +73,7 @@ export const articles = pgTable("articles", {
   status: contentStatusEnum("status").notNull().default("draft"),
   ...seoColumns(),
   authorId: integer("author_id").references(() => users.id, { onDelete: "set null" }),
+  version: integer("version").notNull().default(1),
   createdAt: createdAt(),
   updatedAt: updatedAt()
 }, (t) => [uniqueIndex("articles_type_slug_unique").on(t.type, t.slug), index("articles_type_status_idx").on(t.type, t.status)]);

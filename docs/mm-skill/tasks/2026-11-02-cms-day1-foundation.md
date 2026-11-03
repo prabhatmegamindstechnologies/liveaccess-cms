@@ -17,7 +17,7 @@ byte-for-byte as today, GA4 tag included); all tests pass; and the live site's f
 | Question | Answer |
 |---|---|
 | Wrap existing work | `index.html` "What's covered" section committed on `PT_ClientUpdate` as `51a0d7c` (not pushed) |
-| Move pages into `site/` now? | **No.** Pages stay in the repo root until go-live (Day 8). `site/build.js` will read them from the root. FTP deploy keeps working. |
+| Move pages into `site/` now? | **No.** Pages stay in the repo root until go-live (Day 8). `site/build.ts` will read them from the root. FTP deploy keeps working. |
 | Accounts | No Vercel / Neon access yet. **Day 1 runs locally**: PostgreSQL 16 in Docker (Docker is installed). Vercel projects + Neon are set up when access arrives (~30 min). |
 | Package manager | **pnpm workspaces** (pnpm 11.6, Node 24) |
 | Admin path | `ADMIN_PATH=la-studio` (env setting; change later in one place) |

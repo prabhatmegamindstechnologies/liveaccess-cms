@@ -8,6 +8,13 @@
       "when": 1793615892112,
       "tag": "0000_handy_madrox",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793626217489,
+      "tag": "0001_smart_vindicator",
+      "breakpoints": true
     }
   ]
 }

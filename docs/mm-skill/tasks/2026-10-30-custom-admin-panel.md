@@ -67,7 +67,7 @@ Plan page: https://claude.ai/artifact/UZJy25p3EXk3SEdQDXvF6U (v3)
 ### Repository (one monorepo, two Vercel projects)
 ```
 LiveAccess-Website/
-├── site/              → Vercel Project 1 (Root Directory site/)  templates/ (current pages), build.js, vercel.json
+├── site/              → Vercel Project 1 (Root Directory site/)  templates/ (current pages), build.ts, vercel.json
 ├── cms/               → Vercel Project 2 (Root Directory cms/)   admin/ (React), api/ (Hono), db/ (Drizzle), Dockerfile
 ├── packages/shared/   sanitize.ts, fields.ts, blocks.ts, storage.ts — used by admin preview AND site build
 └── docs/mm-skill/
