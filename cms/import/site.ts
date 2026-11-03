@@ -74,8 +74,13 @@ export async function importSite(db: Db, siteRoot: string) {
           status: "published" as const,
           ...readSeo(document)
         };
-        const [saved] = await tx.insert(articles).values(row)
-          .onConflictDoUpdate({ target: [articles.type, articles.slug], set: { ...row, updatedAt: sql`now()` } })
+        // The file is what's live: keep it as the published copy (see articles.published).
+        const published = {
+          slug, title: row.title, summary: row.summary, areaSlug: row.areaSlug ?? "", publishedDate: row.publishedDate ?? "",
+          blocks: row.blocks, seo: { title: row.seoTitle, description: row.seoDescription, noindex: row.noindex }
+        };
+        const [saved] = await tx.insert(articles).values({ ...row, published })
+          .onConflictDoUpdate({ target: [articles.type, articles.slug], set: { ...row, published, updatedAt: sql`now()` } })
           .returning({ id: articles.id });
         await tx.insert(revisions).values({ entityType: "article", entityId: saved!.id, snapshot: row, note: "Imported from the site files" });
       }

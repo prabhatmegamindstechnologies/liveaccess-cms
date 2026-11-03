@@ -15,7 +15,8 @@ const VOID = new Set(["br", "img", "hr", "input", "meta", "link", "wbr", "source
 /** Rough nesting depth from the raw string, checked before parsing (some DOM parsers overflow on hostile nesting). */
 function tagDepth(html: string): number {
   let depth = 0, max = 0;
-  for (const m of html.matchAll(/<(\/?)([a-zA-Z][a-zA-Z0-9-]*)[^>]*?(\/?)>/g)) {
+  // [^<>] (not [^>]) so an unclosed tag stops at the next "<": linear time on hostile input.
+  for (const m of html.matchAll(/<(\/?)([a-zA-Z][a-zA-Z0-9-]*)[^<>]*?(\/?)>/g)) {
     if (m[1]) depth = Math.max(0, depth - 1);
     else if (!m[3] && !VOID.has(m[2]!.toLowerCase())) max = Math.max(max, ++depth);
   }
@@ -23,7 +24,7 @@ function tagDepth(html: string): number {
 }
 
 export function sanitizeInline(html: string, doc: Document): string {
-  if (tagDepth(html) > 200) return escText(html.replace(/<[^>]*>/g, ""));
+  if (tagDepth(html) > 200) return escText(html.replace(/<[^<>]*>/g, ""));
   const box = doc.createElement("div");
   box.innerHTML = html;
   return walk(box, 0);

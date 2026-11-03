@@ -33,6 +33,11 @@ https://claude.ai/artifact/UZJy25p3EXk3SEdQDXvF6U · Prototype: https://claude.a
 - `settings` (2026-11-03) — `GET /settings` (anyone signed in) → site name, footer tagline, App Store / Google Play
   links, public + alert email, GA4 / GTM IDs, version, `canEdit`; `PUT /settings` `{ baseVersion, value }` is **Super Admin
   only** (403 for Editors) → draft row `settings.key = 'site.settings'`. First open reads the live site.
+- `guides` (2026-11-03) — `GET /guides` list; `POST /guides` `{ title }` → new Draft (slug from title, `-2`… if taken,
+  starter blocks); `GET /guides/:id` → guide + a guide page as preview template + areas + `problems` (what Publish
+  will need); `PUT /guides/:id` `{ baseVersion, slug, title, summary, areaSlug, publishedDate, blocks, seo }` → auto-save
+  (partial validation; slug locked once live; 409 / 422); `DELETE /guides/:id` → never-published drafts only. Guide saves
+  may be up to 512 KB. `articles.published` = what is live (hasChanges compares it).
 - Settings-row drafts share `api/versioned-setting.ts` (`saveVersioned`: lock, version check, first-save race → 409).
 - Saves are rate limited per user (`api/save-limit.ts`, in memory: pages 120/min, menus, SEO and settings 30/min).
 
@@ -54,6 +59,15 @@ https://claude.ai/artifact/UZJy25p3EXk3SEdQDXvF6U · Prototype: https://claude.a
   `%<digit>` (Apache would expand them); no chains/loops (trailing-dot hosts and %-encoding seen through); max 500.
 - Publish must write redirects as `Redirect 301` (mod_alias) or escaped, anchored rules, and HTML-escape the defaults.
 - The site name lives in Site settings (not SEO Defaults).
+
+## Guides (`packages/shared/src/guides.ts`)
+- `renderGuidePage(template, guide, areaName, doc)` writes a guide into any guide page's markup (title, meta, og,
+  canonical, JSON-LD, crumbs, h1, lede, byline, article); all 6 real guides rebuild byte-for-byte. Throws on an
+  unexpected template. Layout rule: a heading sits right above its block, other blocks are separated by a blank line.
+- `validateGuide(..., { partial })`: partial for auto-save (unfinished drafts OK; types, limits, slug format, sanitising,
+  hidden characters still checked); full for Publish. Blocks: heading H2/H3, paragraph, bullet/numbered list, safety
+  note, disclaimer (images with the Media library; tables/quotes need new site CSS). Max 200 blocks, 100,000 characters.
+- In the browser, sanitise in `document.implementation.createHTMLDocument("")`, never the admin page's `document`.
 
 ## Site settings (`packages/shared/src/site-settings.ts`)
 - GA4 ID is required (`G-…`) and can never be emptied (standing rule: the GA4 tag stays on every page); GTM optional,

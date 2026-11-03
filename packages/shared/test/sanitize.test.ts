@@ -57,3 +57,14 @@ describe("sanitizeInline", () => {
     expect(clean("Can't &lt;b&gt;")).toBe("Can't &lt;b&gt;");
   });
 });
+
+describe("sanitizeInline on hostile input", () => {
+  it("stays fast on many unclosed tags (no quadratic regex)", async () => {
+    const { parseHTML } = await import("linkedom");
+    const { document } = parseHTML("<!doctype html><html><body></body></html>");
+    const evil = "<a ".repeat(20_000);
+    const t = performance.now();
+    sanitizeInline(evil, document as unknown as Document);
+    expect(performance.now() - t).toBeLessThan(500);
+  });
+});

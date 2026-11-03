@@ -57,7 +57,7 @@ export function Shell() {
     });
   }
   // FAQ is a page too; highlight only FAQ (not Pages) while it is open.
-  const isActive = (to: string) => (to === "/pages" ? pathname.startsWith("/pages") && pathname !== "/pages/faq" : pathname === to);
+  const isActive = (to: string) => (to === "/pages" ? pathname.startsWith("/pages") && pathname !== "/pages/faq" : pathname === to || pathname.startsWith(`${to}/`));
 
   return (
     <div className="flex min-h-screen">

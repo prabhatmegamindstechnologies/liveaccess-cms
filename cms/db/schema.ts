@@ -74,6 +74,9 @@ export const articles = pgTable("articles", {
   ...seoColumns(),
   authorId: integer("author_id").references(() => users.id, { onDelete: "set null" }),
   version: integer("version").notNull().default(1),
+  // What is live: { slug, title, summary, areaSlug, publishedDate, blocks, seo } at the last publish (null = never).
+  published: jsonb("published"),
+  updatedBy: integer("updated_by").references(() => users.id, { onDelete: "set null" }),
   createdAt: createdAt(),
   updatedAt: updatedAt()
 }, (t) => [uniqueIndex("articles_type_slug_unique").on(t.type, t.slug), index("articles_type_status_idx").on(t.type, t.status)]);
