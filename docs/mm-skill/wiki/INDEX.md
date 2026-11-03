@@ -4,4 +4,4 @@ Plain static HTML site for liveaccess.ai (TPS). No build step.
 
 - [Site structure and deploy](site-structure.md): pages, shared header/footer/CSS, fonts, SEO/AEO/GEO files and deploy
 - [Mobile app links](mobile-app-links.md): where the App Store / Google Play links live and how to update them
-- [CMS (custom admin panel)](cms.md): decisions, monorepo layout, API (pages, menus), menu rewriting rules, gotchas (FTP guard rail, .gitignore packages rule, trailing slash) and how to run it locally
+- [CMS (custom admin panel)](cms.md): decisions, monorepo layout, API (pages, menus, SEO, site settings), menu, SEO and site settings rules, gotchas (FTP guard rail, .gitignore packages rule, trailing slash) and how to run it locally

@@ -1,6 +1,7 @@
 // Header and footer menus of the site. Every page carries the same header and footer markup, so menus are read
 // from and written into those exact blocks as text: the rest of the page is left byte-for-byte as it was.
 // Works the same in the browser, on the server and in tests (no DOM needed).
+import { safeHttpsUrl } from "./links.ts";
 
 export type MenuLink = { label: string; href: string };
 export type Menus = {
@@ -99,14 +100,10 @@ export function validateMenus(input: unknown, known: Set<string>, columns = 3): 
   const href = (v: unknown, path: string) => {
     const s = typeof v === "string" ? v.trim() : "";
     if (known.has(s)) return s;
-    let url: URL | null = null;
-    try { url = new URL(s); } catch { /* not a URL */ }
-    const bad = !url || !/^https:\/\//i.test(s) || url.protocol !== "https:" || !url.hostname.includes(".") || url.username || url.password
-      || /[\s"'<>\\]|[\u0000-\u001f\u007f-\u009f​-‏‪-‮⁦-⁩]/.test(s) || s.length > MENU_LIMITS.href;
+    const url = safeHttpsUrl(s, MENU_LIMITS.href);
     if (!s) errors[path] = "Choose a page or enter a link.";
-    else if (bad) errors[path] = "Choose a page from the list, or enter a full https:// address.";
-    // Store what the browser will actually use (lower-case host, trailing slash, punycode).
-    return !bad && url ? url.href : s;
+    else if (!url) errors[path] = "Choose a page from the list, or enter a full https:// address.";
+    return url ?? s;
   };
   const list = (v: unknown, path: string, max: number): MenuLink[] => {
     if (!Array.isArray(v)) { errors[path] = "Invalid links."; return []; }

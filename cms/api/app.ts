@@ -4,14 +4,19 @@ import { bodyLimit } from "hono/body-limit";
 import { authRoutes, type AuthConfig } from "./auth/routes.ts";
 import { pageRoutes, type SaveLimit } from "./pages/routes.ts";
 import { menuRoutes } from "./menus/routes.ts";
+import { seoRoutes } from "./seo/routes.ts";
+import { settingsRoutes } from "./settings/routes.ts";
 import { previewAssets } from "./preview-assets.ts";
 
 const CHANGES = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 const tooLarge = bodyLimit({ maxSize: 64 * 1024, onError: (c) => c.json({ error: "Request too large." }, 413) });
 const pageSize = bodyLimit({ maxSize: 1_500_000, onError: (c) => c.json({ error: "The page is too large to save." }, 413) });
 
-/** siteRoot mounts the dev-only preview-asset route; leave it out in production. */
-export type AppConfig = AuthConfig & { siteRoot?: string; pageSaveLimit?: SaveLimit };
+/**
+ * siteRoot mounts the dev-only preview-asset route; leave it out in production.
+ * siteFilesRoot is where robots.txt and llms.txt are read from the first time the SEO screen opens.
+ */
+export type AppConfig = AuthConfig & { siteRoot?: string; siteFilesRoot?: string; pageSaveLimit?: SaveLimit };
 
 export function createApp(cfg: AppConfig) {
   const app = new Hono();
@@ -45,6 +50,8 @@ export function createApp(cfg: AppConfig) {
   app.route(`${base}/auth`, authRoutes(cfg));
   app.route(`${base}/pages`, pageRoutes(cfg.db, cfg.pageSaveLimit));
   app.route(`${base}/menus`, menuRoutes(cfg.db));
+  app.route(`${base}/seo`, seoRoutes(cfg.db, cfg.adminPath, cfg.siteFilesRoot));
+  app.route(`${base}/settings`, settingsRoutes(cfg.db));
   if (cfg.siteRoot) app.route(`${base}/preview-assets`, previewAssets(cfg.db, cfg.siteRoot));
   app.get(`${base}/health`, (c) => c.json({ ok: true }));
 

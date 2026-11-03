@@ -4,48 +4,11 @@ import { applyMenus, MENU_LIMITS, splitScripts, type MenuLink, type Menus } from
 import { api, ApiError } from "../lib/api.ts";
 import { previewDoc } from "../lib/preview.ts";
 import { Breadcrumb, Chip } from "../components/ui.tsx";
+import { FieldError, iconBtn, inputCls, LinkPicker, useUnsavedWarning, type Errors, type LinkOption } from "../components/form.tsx";
 
-type LinkOption = { group: string; label: string; href: string };
 type MenusData = { menus: Menus; version: number; hasChanges: boolean; updatedAt: string | null; updatedBy: string | null; links: LinkOption[] };
-type Errors = Record<string, string>;
 
-const EXTERNAL = "__external";
-const inputCls = "w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:border-brand-bright focus:ring-2 focus:ring-brand-bright/20 focus:outline-none aria-[invalid=true]:border-red-500";
-const iconBtn = "grid size-8 place-items-center rounded-md border border-slate-200 bg-white text-sm text-slate-500 hover:text-slate-900 disabled:opacity-35";
 const clone = (m: Menus): Menus => JSON.parse(JSON.stringify(m));
-
-function FieldError({ id, msg }: { id: string; msg?: string }) {
-  return msg ? <span id={id} className="text-xs font-medium text-red-600">{msg}</span> : null;
-}
-
-function LinkPicker({ id, value, options, error, onChange }: { id: string; value: string; options: LinkOption[]; error?: string; onChange: (href: string) => void }) {
-  const known = options.some((o) => o.href === value);
-  // Derived from the value, so it stays right when rows are moved.
-  const external = value !== "" && !known;
-  const groups = useMemo(() => [...new Set(options.map((o) => o.group))], [options]);
-  const errId = `${id}-err`;
-  return (
-    <div className="grid gap-1.5">
-      <label htmlFor={id} className="text-xs font-semibold">Link</label>
-      <select id={id} value={external ? EXTERNAL : known ? value : ""} aria-invalid={!!error && !external} aria-describedby={error && !external ? errId : undefined}
-        className={inputCls}
-        onChange={(e) => onChange(e.target.value === EXTERNAL ? "https://" : e.target.value)}>
-        <option value="" disabled>Choose a page…</option>
-        {groups.map((g) => (
-          <optgroup key={g} label={g}>
-            {options.filter((o) => o.group === g).map((o) => <option key={o.href} value={o.href}>{o.label}</option>)}
-          </optgroup>
-        ))}
-        <option value={EXTERNAL}>External link (https://…)</option>
-      </select>
-      {external && (
-        <input aria-label="External link address" value={value} onChange={(e) => onChange(e.target.value)} placeholder="https://example.com/"
-          aria-invalid={!!error} aria-describedby={error ? errId : undefined} className={`${inputCls} font-mono`} />
-      )}
-      <FieldError id={errId} msg={error} />
-    </div>
-  );
-}
 
 function LinkRows({ path, links, max, options, errors, onChange }: { path: string; links: MenuLink[]; max: number; options: LinkOption[]; errors: Errors; onChange: (links: MenuLink[]) => void }) {
   const set = (i: number, patch: Partial<MenuLink>) => onChange(links.map((l, j) => (j === i ? { ...l, ...patch } : l)));
@@ -151,18 +114,7 @@ export function MenusEditor() {
 
   const dirty = !!draft && JSON.stringify(draft) !== saved;
 
-  // Warn before closing the tab, or following a link inside the admin, with unsaved changes.
-  useEffect(() => {
-    if (!dirty) return;
-    const onUnload = (e: BeforeUnloadEvent) => e.preventDefault();
-    const onClick = (e: MouseEvent) => {
-      const a = (e.target as Element | null)?.closest?.("a[href]");
-      if (a && !window.confirm("You have unsaved menu changes. Leave without saving?")) { e.preventDefault(); e.stopPropagation(); }
-    };
-    window.addEventListener("beforeunload", onUnload);
-    document.addEventListener("click", onClick, true);
-    return () => { window.removeEventListener("beforeunload", onUnload); document.removeEventListener("click", onClick, true); };
-  }, [dirty]);
+  useUnsavedWarning(dirty, "You have unsaved menu changes. Leave without saving?");
 
   async function save() {
     if (!draft || !data) return;

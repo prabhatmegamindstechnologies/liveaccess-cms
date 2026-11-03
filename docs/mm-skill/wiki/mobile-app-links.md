@@ -25,3 +25,8 @@ They appear in 4 places: hero badges and "Get the app" section in `index.html`, 
   - `tools/` is not copied by the deploy workflow.
 
 Decision: store URLs are hard-coded (no `.env` or build step), as requested by the user.
+
+## CMS (from 2026-11-03)
+The store links are also kept in the admin under **Site settings → App links** (Super Admin only). Once the
+Publish centre exists, changing them there updates every badge and link; each page keeps its own Google Play
+`referrer` (utm) part. Until then, edit the HTML files as described above.

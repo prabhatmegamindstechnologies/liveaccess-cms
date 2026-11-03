@@ -26,7 +26,15 @@ https://claude.ai/artifact/UZJy25p3EXk3SEdQDXvF6U · Prototype: https://claude.a
 - `menus` (2026-11-03) — `GET /menus` → draft header/footer menus, version, and the site's pages for the link picker;
   `PUT /menus` `{ baseVersion, menus }` → draft row `menus.location = 'site'`; 409 / 422 (`errors` per field path).
   Page HTML is never touched: the Publish centre will run `applyMenus` on every page.
-- Saves are rate limited per user (`api/save-limit.ts`, in memory: pages 120/min, menus 30/min).
+- `seo` (2026-11-03) — `GET /seo` → redirects, robots, llms, defaults (each with version, last edited by/at), the
+  generated sitemap (`{ xml, count }`) and the link list; `PUT /seo/redirects|robots|llms|defaults` `{ baseVersion, value }`
+  → drafts in `settings` (`seo.*`) and the `redirects` table; 409 / 422 (`errors`). robots.txt / llms.txt are read from
+  `siteFilesRoot` on first open. No page or site file is touched.
+- `settings` (2026-11-03) — `GET /settings` (anyone signed in) → site name, footer tagline, App Store / Google Play
+  links, public + alert email, GA4 / GTM IDs, version, `canEdit`; `PUT /settings` `{ baseVersion, value }` is **Super Admin
+  only** (403 for Editors) → draft row `settings.key = 'site.settings'`. First open reads the live site.
+- Settings-row drafts share `api/versioned-setting.ts` (`saveVersioned`: lock, version check, first-save race → 409).
+- Saves are rate limited per user (`api/save-limit.ts`, in memory: pages 120/min, menus, SEO and settings 30/min).
 
 ## Menus (`packages/shared/src/menus.ts`)
 - `readMenus(html)` / `applyMenus(html, menus, pageFile)` work on text, only inside `<header class="site-header">` and
@@ -36,6 +44,23 @@ https://claude.ai/artifact/UZJy25p3EXk3SEdQDXvF6U · Prototype: https://claude.a
   site page (`about.html`, `./`, `guide-<slug>.html`, `area-<slug>.html`) or a full `https://` URL (no user:password,
   no hidden characters), stored normalised. External links get `target="_blank" rel="noopener"`.
 - The footer's "Cookie settings" button always stays last in the Company column.
+
+## SEO (`packages/shared/src/seo.ts`)
+- `buildSitemap` matches the hand-written sitemap.xml layout (tested byte-for-byte); published, non-noindex pages and
+  articles only.
+- `checkRobots` refuses `Disallow: /`, `/*`, `/$` under `User-agent: *` and a missing Sitemap line; `checkLlms` plain text.
+- `validateRedirects`: old address = old page address only (`.html` or no extension, no dot-folders), not a page or a
+  real `.html` file in the site folder, not the admin path; target = site page or safe https without `$`, `%{`,
+  `%<digit>` (Apache would expand them); no chains/loops (trailing-dot hosts and %-encoding seen through); max 500.
+- Publish must write redirects as `Redirect 301` (mod_alias) or escaped, anchored rules, and HTML-escape the defaults.
+- The site name lives in Site settings (not SEO Defaults).
+
+## Site settings (`packages/shared/src/site-settings.ts`)
+- GA4 ID is required (`G-…`) and can never be emptied (standing rule: the GA4 tag stays on every page); GTM optional,
+  added alongside GA4.
+- Store links: exact hosts `apps.apple.com` / `play.google.com`; the Play link is only `…/details?id=…` and Publish
+  keeps each page's own `&referrer=utm_…`. Email is strict (no `? & = % #`) because it goes into mailto links.
+- Publish must HTML-escape site name and tagline (text, attributes, JSON-LD).
 
 ## Gotchas
 - **Admin URL needs the trailing slash in dev:** `http://localhost:5173/la-studio/` (without it Vite shows its base-URL page).
