@@ -8,6 +8,22 @@ import { Shell } from "./components/Shell.tsx";
 import { Login } from "./screens/Login.tsx";
 import { PagesList } from "./screens/PagesList.tsx";
 import { PageEditor } from "./screens/PageEditor.tsx";
+import { ComingSoon } from "./screens/ComingSoon.tsx";
+import { MenusEditor } from "./screens/MenusEditor.tsx";
+
+// Sidebar sections that are not built yet.
+const SOON: { path: string; title: string; about: string }[] = [
+  { path: "/dashboard", title: "Dashboard", about: "Recent edits, drafts waiting to be published and new messages." },
+  { path: "/guides", title: "Troubleshooting guides", about: "Create and edit troubleshooting guide articles." },
+  { path: "/areas", title: "Process areas", about: "Create and edit process area articles." },
+  { path: "/media", title: "Media library", about: "Upload images, add alt text and reuse them across the site." },
+  { path: "/seo", title: "SEO & redirects", about: "Site-wide SEO settings and URL redirects." },
+  { path: "/settings", title: "Site settings", about: "Contact details, app store links and other site-wide values." },
+  { path: "/inbox", title: "Contact inbox", about: "Messages sent from the website contact form." },
+  { path: "/publish", title: "Publish centre", about: "Review draft changes and publish them to the live site." },
+  { path: "/users", title: "Users & roles", about: "Add Super Admins and Editors, reset passwords." },
+  { path: "/audit", title: "Audit log", about: "Who changed what, and when." }
+];
 
 function RequireAuth() {
   const { user, loading } = useAuth();
@@ -25,6 +41,8 @@ createRoot(document.getElementById("root")!).render(
             <Route index element={<Navigate to="/pages" replace />} />
             <Route path="/pages" element={<PagesList />} />
             <Route path="/pages/:key" element={<PageEditor />} />
+            <Route path="/menus" element={<MenusEditor />} />
+            {SOON.map((s) => <Route key={s.path} path={s.path} element={<ComingSoon title={s.title} about={s.about} />} />)}
             <Route path="*" element={<Navigate to="/pages" replace />} />
           </Route>
         </Routes>

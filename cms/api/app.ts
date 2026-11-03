@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { authRoutes, type AuthConfig } from "./auth/routes.ts";
 import { pageRoutes, type SaveLimit } from "./pages/routes.ts";
+import { menuRoutes } from "./menus/routes.ts";
 import { previewAssets } from "./preview-assets.ts";
 
 const CHANGES = new Set(["POST", "PUT", "PATCH", "DELETE"]);
@@ -43,6 +44,7 @@ export function createApp(cfg: AppConfig) {
 
   app.route(`${base}/auth`, authRoutes(cfg));
   app.route(`${base}/pages`, pageRoutes(cfg.db, cfg.pageSaveLimit));
+  app.route(`${base}/menus`, menuRoutes(cfg.db));
   if (cfg.siteRoot) app.route(`${base}/preview-assets`, previewAssets(cfg.db, cfg.siteRoot));
   app.get(`${base}/health`, (c) => c.json({ ok: true }));
 

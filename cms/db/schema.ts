@@ -104,7 +104,10 @@ export const media = pgTable("media", {
 export const menus = pgTable("menus", {
   id: serial("id").primaryKey(),
   location: text("location").notNull(),
-  items: jsonb("items").notNull().default(sql`'[]'::jsonb`)
+  items: jsonb("items").notNull().default(sql`'[]'::jsonb`),
+  version: integer("version").notNull().default(1),
+  updatedBy: integer("updated_by").references(() => users.id, { onDelete: "set null" }),
+  updatedAt: updatedAt()
 }, (t) => [uniqueIndex("menus_location_unique").on(t.location)]);
 
 export const settings = pgTable("settings", {

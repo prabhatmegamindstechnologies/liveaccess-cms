@@ -5,6 +5,7 @@ import type { Db } from "../../db/client.ts";
 import { pages, revisions, users } from "../../db/schema.ts";
 import { audit } from "../audit.ts";
 import { requireUser, type AuthVars } from "../auth/require-user.ts";
+import { saveLimit, type SaveLimit } from "../save-limit.ts";
 import { checkPageHtml } from "./guard.ts";
 
 const REVISION_GAP_MS = 10 * 60 * 1000;
@@ -23,24 +24,13 @@ function parseSeo(v: unknown): SeoInput | null | "invalid" {
 
 const changed = sql<boolean>`${pages.html} is distinct from ${pages.publishedHtml}`;
 
-export type SaveLimit = { max: number; windowMs: number };
+export type { SaveLimit };
 
 export function pageRoutes(db: Db, limit: SaveLimit = { max: 120, windowMs: 60_000 }) {
   const app = new Hono<{ Variables: AuthVars }>();
   app.use("*", requireUser(db));
-
-  // Per-user save limit (auto-save sends at most one save every 2 s per tab). In-memory, per server instance;
-  // a shared limiter comes with the Day 6 rate limits.
-  const recent = new Map<number, number[]>();
-  app.use("*", async (c, next) => {
-    if (c.req.method === "GET") return next();
-    const id = c.get("user").id, now = Date.now();
-    const hits = (recent.get(id) ?? []).filter((t) => now - t < limit.windowMs);
-    if (hits.length >= limit.max) return c.json({ error: "Too many saves. Wait a moment and try again." }, 429);
-    hits.push(now);
-    recent.set(id, hits);
-    await next();
-  });
+  // Auto-save sends at most one save every 2 s per tab.
+  app.use("*", saveLimit(limit));
 
   app.get("/", async (c) => {
     const rows = await db

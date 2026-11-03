@@ -15,6 +15,13 @@
       "when": 1793626217489,
       "tag": "0001_smart_vindicator",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793687868266,
+      "tag": "0002_menus_version",
+      "breakpoints": true
     }
   ]
 }
