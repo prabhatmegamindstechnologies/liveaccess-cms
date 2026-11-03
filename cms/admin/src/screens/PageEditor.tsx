@@ -5,6 +5,7 @@ import { addItem, buildFields, moveItem, removeItem, serialize, setImageAlt, spl
 import { api, ApiError } from "../lib/api.ts";
 import { ConflictError, createAutosaver, type SaveState } from "../lib/autosave.ts";
 import { highlight, previewDoc } from "../lib/preview.ts";
+import { SPLIT_FIELDS, SPLIT_GRID, SPLIT_PAGE } from "../lib/layout.ts";
 import { Breadcrumb, Chip, SaveStatus } from "../components/ui.tsx";
 import { FieldList } from "../components/FieldList.tsx";
 import { LivePreview } from "../components/LivePreview.tsx";
@@ -14,7 +15,6 @@ import { HistoryPanel } from "../components/HistoryPanel.tsx";
 type PageData = { key: string; title: string; url: string; html: string; version: number; hasChanges: boolean; seo: Seo };
 type Tab = "content" | "seo" | "history";
 const IDLE: SaveState = { status: "idle", pending: false, savedAt: null, message: "" };
-
 export function PageEditor() {
   const { key = "" } = useParams();
   const [page, setPage] = useState<PageData | null>(null);
@@ -142,7 +142,7 @@ export function PageEditor() {
   if (loadError) return <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{loadError} <Link to="/pages" className="font-semibold underline">Back to Pages</Link></p>;
 
   return (
-    <div className="mx-auto max-w-[1600px]">
+    <div className={`mx-auto max-w-[1600px] ${tab === "content" ? SPLIT_PAGE : ""}`}>
       <Breadcrumb items={[{ label: "Content" }, { label: "Pages", to: "/pages" }, { label: page?.title ?? "…" }]} />
       <Link to="/pages" className="mb-2 inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline"><span aria-hidden="true">←</span> Back to Pages</Link>
 
@@ -172,9 +172,9 @@ export function PageEditor() {
         ))}
       </div>
 
-      <div className={tab === "content" ? "grid grid-cols-1 items-start gap-7 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]" : "grid grid-cols-1"}>
+      <div className={tab === "content" ? `grid grid-cols-1 items-start gap-7 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] ${SPLIT_GRID}` : "grid grid-cols-1"}>
         {tab === "content" && (
-          <div className="grid min-w-0 gap-4">
+          <div className={`grid min-w-0 content-start gap-4 ${SPLIT_FIELDS}`}>
             <p className="rounded-lg bg-blue-50 px-3 py-2 text-sm text-blue-900">Each field is a piece of text or an image on the real page. Repeating items (cards, rows, list items, questions) can be added, moved or removed. The page design stays as it is.</p>
             <FieldList fields={fields} tick={tick}
               onChange={(f, v) => { writeField(f, v); changed("html"); }}
@@ -185,7 +185,7 @@ export function PageEditor() {
           </div>
         )}
         {page && (
-          <div className="min-w-0">
+          <div className="min-w-0 xl:h-full">
             <LivePreview key={`${page.key}-${reloadKey}`} srcDoc={srcDoc} url={page.url} visible={tab === "content"} onReady={onReady}
               onPick={(id) => setReveal({ id, n: Date.now() })} />
           </div>

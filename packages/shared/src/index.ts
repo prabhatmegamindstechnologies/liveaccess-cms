@@ -6,3 +6,4 @@ export * from "./seo.ts";
 export { safeHttpsUrl } from "./links.ts";
 export * from "./site-settings.ts";
 export * from "./guides.ts";
+export * from "./areas.ts";

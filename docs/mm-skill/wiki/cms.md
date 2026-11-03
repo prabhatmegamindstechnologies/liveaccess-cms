@@ -38,6 +38,9 @@ https://claude.ai/artifact/UZJy25p3EXk3SEdQDXvF6U · Prototype: https://claude.a
   will need); `PUT /guides/:id` `{ baseVersion, slug, title, summary, areaSlug, publishedDate, blocks, seo }` → auto-save
   (partial validation; slug locked once live; 409 / 422); `DELETE /guides/:id` → never-published drafts only. Guide saves
   may be up to 512 KB. `articles.published` = what is live (hasChanges compares it).
+- `areas` (2026-11-03) — same routes as guides from one module (`api/articles/routes.ts`, `articleRoutes("area")`):
+  `GET /areas/:id` also returns the area's guides; saved with a Save button (30/min); a draft area's slug change moves
+  its guides (version + 1, `area_renamed` audit); delete refused while guides use the area.
 - Settings-row drafts share `api/versioned-setting.ts` (`saveVersioned`: lock, version check, first-save race → 409).
 - Saves are rate limited per user (`api/save-limit.ts`, in memory: pages 120/min, menus, SEO and settings 30/min).
 
@@ -68,6 +71,14 @@ https://claude.ai/artifact/UZJy25p3EXk3SEdQDXvF6U · Prototype: https://claude.a
   hidden characters still checked); full for Publish. Blocks: heading H2/H3, paragraph, bullet/numbered list, safety
   note, disclaimer (images with the Media library; tables/quotes need new site CSS). Max 200 blocks, 100,000 characters.
 - In the browser, sanitise in `document.implementation.createHTMLDocument("")`, never the admin page's `document`.
+
+## Process areas (`packages/shared/src/areas.ts`)
+- `renderAreaPage(template, area, guides, doc)`: title "<Name>: process area | LiveAccess", og:title "<Name> | LiveAccess",
+  breadcrumb JSON-LD, crumbs, h1, lede, article (area spacing: blank line only before headings), the "Guides for
+  <name>." band built from the guides (title + first sentence of the summary; no band when there are none) and the CTA
+  "Questions about <name>?". All 8 real area pages rebuild byte-for-byte.
+- `validateArea` = `validateGuide` with `kind: "area"` (no area/date). New areas are site pages only; the app's Expert
+  Network and the "8 process areas" chips on home/features are separate.
 
 ## Site settings (`packages/shared/src/site-settings.ts`)
 - GA4 ID is required (`G-…`) and can never be emptied (standing rule: the GA4 tag stays on every page); GTM optional,

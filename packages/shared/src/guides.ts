@@ -31,15 +31,17 @@ export function guideFromPage(html: string): Omit<Guide, "blocks"> {
 }
 
 /** The article body in the pages' own layout (one block per line group, list items indented). */
-function articleBody(blocks: Block[], doc: Document, indent: string) {
+export function articleBody(blocks: Block[], doc: Document, indent: string, spacing: "guide" | "area" = "guide") {
   const parts = blocks.map((b) => {
     if (b.type !== "list") return blockHtml(b, doc);
     const t = b.style === "number" ? "ol" : "ul";
     const items = b.items.filter((x) => x.trim()).map((x) => `\n${indent}  <li>${sanitizeInline(x, doc)}</li>`).join("");
     return `<${t}>${items}\n${indent}</${t}>`;
   });
-  // As in the pages: a heading sits right above its first block; other blocks are separated by a blank line.
-  return parts.map((p, i) => (i === 0 ? p : `${blocks[i - 1]!.type === "heading" ? "\n" : "\n\n"}${indent}${p}`)).join("");
+  // As in the pages. Guides: a heading sits right above its first block, other blocks are separated by a blank line.
+  // Areas: a blank line only before each heading.
+  const blank = (i: number) => spacing === "area" ? blocks[i]!.type === "heading" : blocks[i - 1]!.type !== "heading";
+  return parts.map((p, i) => (i === 0 ? p : `${blank(i) ? "\n\n" : "\n"}${indent}${p}`)).join("");
 }
 
 /**
@@ -103,8 +105,10 @@ export const GUIDE_LIMITS = { title: 120, summary: 300, blocks: 200, listItems: 
  * `partial` (auto-save of a draft): empty fields and empty blocks are allowed, but types, limits, the slug format and
  * sanitising still apply. Without it, the guide must also be complete (what Publish needs).
  */
-export function validateGuide(input: unknown, areas: Set<string>, doc: Document, opts: { partial?: boolean } = {}): GuideCheck {
+export function validateGuide(input: unknown, areas: Set<string>, doc: Document, opts: { partial?: boolean; kind?: "guide" | "area" } = {}): GuideCheck {
   const need = !opts.partial;
+  // Process areas share everything except the area and date fields (see areas.ts).
+  const isGuide = (opts.kind ?? "guide") === "guide";
   const o = (input && typeof input === "object" && !Array.isArray(input) ? input : null) as Record<string, unknown> | null;
   if (!o) return { ok: false, errors: { guide: "Invalid guide." } };
   const errors: Record<string, string> = {};
@@ -130,10 +134,10 @@ export function validateGuide(input: unknown, areas: Set<string>, doc: Document,
   const summary = text(o.summary, "summary", "Summary", GUIDE_LIMITS.summary);
   const slug = typeof o.slug === "string" ? o.slug.trim() : "";
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug) || slug.length > GUIDE_LIMITS.slug) errors.slug = "Use lower-case letters, numbers and single hyphens (e.g. pump-cavitation).";
-  const areaSlug = typeof o.areaSlug === "string" && areas.has(o.areaSlug) ? o.areaSlug : "";
-  if (!areaSlug && (need || o.areaSlug !== "")) errors.areaSlug = "Choose a process area.";
-  const publishedDate = typeof o.publishedDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(o.publishedDate) && !Number.isNaN(Date.parse(o.publishedDate)) ? o.publishedDate : "";
-  if (!publishedDate) errors.publishedDate = "Choose a date.";
+  const areaSlug = isGuide && typeof o.areaSlug === "string" && areas.has(o.areaSlug) ? o.areaSlug : "";
+  if (isGuide && !areaSlug && (need || o.areaSlug !== "")) errors.areaSlug = "Choose a process area.";
+  const publishedDate = isGuide && typeof o.publishedDate === "string" && /^\d{4}-\d{2}-\d{2}$/.test(o.publishedDate) && !Number.isNaN(Date.parse(o.publishedDate)) ? o.publishedDate : "";
+  if (isGuide && !publishedDate) errors.publishedDate = "Choose a date.";
 
   const seoIn = (o.seo && typeof o.seo === "object" ? o.seo : {}) as Record<string, unknown>;
   const seo: GuideSeo = {

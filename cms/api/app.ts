@@ -6,7 +6,7 @@ import { pageRoutes, type SaveLimit } from "./pages/routes.ts";
 import { menuRoutes } from "./menus/routes.ts";
 import { seoRoutes } from "./seo/routes.ts";
 import { settingsRoutes } from "./settings/routes.ts";
-import { guideRoutes } from "./guides/routes.ts";
+import { articleRoutes } from "./articles/routes.ts";
 import { previewAssets } from "./preview-assets.ts";
 
 const CHANGES = new Set(["POST", "PUT", "PATCH", "DELETE"]);
@@ -30,11 +30,11 @@ export function createApp(cfg: AppConfig) {
     c.header("Cache-Control", c.res.headers.get("cache-control") ?? "no-store");
   });
 
-  // Page saves carry a whole page (up to ~1 MB) and guide saves a whole article; every other request stays small.
+  // Page saves carry a whole page (up to ~1 MB) and guide/area saves a whole article; every other request stays small.
   app.use("*", (c, next) => {
     const put = c.req.method === "PUT";
     if (put && c.req.path.startsWith(`${base}/pages/`)) return pageSize(c, next);
-    if (put && c.req.path.startsWith(`${base}/guides/`)) return guideSize(c, next);
+    if (put && (c.req.path.startsWith(`${base}/guides/`) || c.req.path.startsWith(`${base}/areas/`))) return guideSize(c, next);
     return tooLarge(c, next);
   });
 
@@ -59,7 +59,8 @@ export function createApp(cfg: AppConfig) {
   app.route(`${base}/menus`, menuRoutes(cfg.db));
   app.route(`${base}/seo`, seoRoutes(cfg.db, cfg.adminPath, cfg.siteFilesRoot));
   app.route(`${base}/settings`, settingsRoutes(cfg.db));
-  app.route(`${base}/guides`, guideRoutes(cfg.db, cfg.siteFilesRoot));
+  app.route(`${base}/guides`, articleRoutes("guide", cfg.db, cfg.siteFilesRoot));
+  app.route(`${base}/areas`, articleRoutes("area", cfg.db, cfg.siteFilesRoot, { max: 30, windowMs: 60_000 }));
   if (cfg.siteRoot) app.route(`${base}/preview-assets`, previewAssets(cfg.db, cfg.siteRoot));
   app.get(`${base}/health`, (c) => c.json({ ok: true }));
 

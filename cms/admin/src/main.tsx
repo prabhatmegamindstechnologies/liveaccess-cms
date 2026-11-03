@@ -12,13 +12,13 @@ import { ComingSoon } from "./screens/ComingSoon.tsx";
 import { MenusEditor } from "./screens/MenusEditor.tsx";
 import { SeoEditor } from "./screens/SeoEditor.tsx";
 import { SettingsEditor } from "./screens/SettingsEditor.tsx";
-import { GuidesList } from "./screens/GuidesList.tsx";
+import { ArticlesList } from "./screens/ArticlesList.tsx";
+import { AreaEditor } from "./screens/AreaEditor.tsx";
 import { GuideEditor } from "./screens/GuideEditor.tsx";
 
 // Sidebar sections that are not built yet.
 const SOON: { path: string; title: string; about: string }[] = [
   { path: "/dashboard", title: "Dashboard", about: "Recent edits, drafts waiting to be published and new messages." },
-  { path: "/areas", title: "Process areas", about: "Create and edit process area articles." },
   { path: "/media", title: "Media library", about: "Upload images, add alt text and reuse them across the site." },
   { path: "/inbox", title: "Contact inbox", about: "Messages sent from the website contact form." },
   { path: "/publish", title: "Publish centre", about: "Review draft changes and publish them to the live site." },
@@ -45,8 +45,10 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/menus" element={<MenusEditor />} />
             <Route path="/seo" element={<SeoEditor />} />
             <Route path="/settings" element={<SettingsEditor />} />
-            <Route path="/guides" element={<GuidesList />} />
+            <Route path="/guides" element={<ArticlesList key="guide" kind="guide" />} />
             <Route path="/guides/:id" element={<GuideEditor />} />
+            <Route path="/areas" element={<ArticlesList key="area" kind="area" />} />
+            <Route path="/areas/:id" element={<AreaEditor />} />
             {SOON.map((s) => <Route key={s.path} path={s.path} element={<ComingSoon title={s.title} about={s.about} />} />)}
             <Route path="*" element={<Navigate to="/pages" replace />} />
           </Route>

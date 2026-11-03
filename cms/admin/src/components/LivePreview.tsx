@@ -43,7 +43,8 @@ export function LivePreview({ srcDoc, url, visible, onReady, onPick }: Props) {
   }
 
   return (
-    <div className={visible ? "sticky top-4 grid gap-2" : "hidden"}>
+    // Narrow screens: sticky below the fields. Wide screens: fills the editor's right column (see lib/layout.ts).
+    <div className={visible ? "sticky top-4 grid gap-2 xl:static xl:flex xl:h-full xl:flex-col" : "hidden"}>
       <div className="flex items-center gap-2 text-xs text-slate-500">
         <span>Live preview</span>
         <span className="min-w-0 flex-1 truncate rounded-md border border-slate-200 bg-white px-2.5 py-1 font-mono">liveaccess.ai{url}</span>
@@ -54,7 +55,7 @@ export function LivePreview({ srcDoc, url, visible, onReady, onPick }: Props) {
           ))}
         </span>
       </div>
-      <div ref={box} className="relative h-[calc(100vh-15rem)] min-h-[480px] overflow-hidden rounded-xl border border-slate-200 bg-slate-200">
+      <div ref={box} className="relative h-[calc(100vh-15rem)] min-h-[480px] overflow-hidden rounded-xl border border-slate-200 bg-slate-200 xl:h-auto xl:min-h-0 xl:flex-1">
         <iframe ref={frame} title={`Preview of liveaccess.ai${url}`} sandbox="allow-same-origin" srcDoc={srcDoc} onLoad={handleLoad}
           className="absolute top-0 left-0 block border-0 bg-white" />
       </div>

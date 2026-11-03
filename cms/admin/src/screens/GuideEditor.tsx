@@ -5,6 +5,7 @@ import { renderGuidePage, slugify, splitScripts, validateGuide, type Guide } fro
 import { api, ApiError } from "../lib/api.ts";
 import { ConflictError, createAutosaver, type SaveState } from "../lib/autosave.ts";
 import { previewDoc } from "../lib/preview.ts";
+import { SPLIT_FIELDS, SPLIT_GRID, SPLIT_PAGE } from "../lib/layout.ts";
 import { Breadcrumb, Chip, SaveStatus } from "../components/ui.tsx";
 import { FieldError, inputCls, type Errors } from "../components/form.tsx";
 import { BlockEditor } from "../components/BlockEditor.tsx";
@@ -135,7 +136,7 @@ export function GuideEditor() {
   const status = Object.keys(errors).length ? <span role="status" className="rounded-full border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-semibold text-red-700">Not saved: fix the marked fields</span> : <SaveStatus state={saveState} />;
 
   return (
-    <div className="mx-auto max-w-[1600px]">
+    <div className={`mx-auto max-w-[1600px] ${SPLIT_PAGE}`}>
       <Breadcrumb items={[{ label: "Content" }, { label: "Troubleshooting guides", to: "/guides" }, { label: guide.title || "Untitled" }]} />
       <Link to="/guides" className="mb-2 inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:underline"><span aria-hidden="true">←</span> Back to guides</Link>
       <div className="mb-4 flex flex-wrap items-center gap-3">
@@ -166,8 +167,8 @@ export function GuideEditor() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 items-start gap-7 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-        <div className="grid min-w-0 gap-5">
+      <div className={`grid grid-cols-1 items-start gap-7 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] ${SPLIT_GRID}`}>
+        <div className={`grid min-w-0 content-start gap-5 ${SPLIT_FIELDS}`}>
           {missing.length > 0 && (
             <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
               <p className="font-semibold">Before publishing ({missing.length}):</p>
@@ -217,7 +218,7 @@ export function GuideEditor() {
           </section>
         </div>
 
-        <div className="min-w-0">
+        <div className="min-w-0 xl:h-full">
           {srcDoc
             ? <LivePreview srcDoc={srcDoc} url={`/guide-${guide.slug}.html`} visible onReady={() => {}} onPick={() => {}} />
             : <p className="rounded-xl border border-dashed border-slate-300 p-6 text-sm text-slate-500">The preview isn't available (no guide page to show it in).</p>}
