@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { api } from "../lib/api.ts";
-import { Breadcrumb, Chip } from "../components/ui.tsx";
+import { Breadcrumb, Chip, EditLink } from "../components/ui.tsx";
 
 type Row = { key: string; title: string; url: string; version: number; hasChanges: boolean; updatedAt: string; updatedBy: string | null };
 
@@ -25,7 +25,7 @@ export function PagesList() {
       <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
         <table className="w-full text-sm">
           <thead className="bg-slate-50 text-left text-xs tracking-wide text-slate-500 uppercase">
-            <tr><th className="px-4 py-3 font-semibold">Page</th><th className="px-4 py-3 font-semibold">URL</th><th className="px-4 py-3 font-semibold">Status</th><th className="px-4 py-3 font-semibold">Last edited</th><th className="px-4 py-3" /></tr>
+            <tr><th className="px-4 py-3 font-semibold">Page</th><th className="px-4 py-3 font-semibold">URL</th><th className="px-4 py-3 font-semibold">Status</th><th className="px-4 py-3 font-semibold">Last edited</th><th className="px-4 py-3 text-right font-semibold">Actions</th></tr>
           </thead>
           <tbody>
             {rows === null && !error && <tr><td colSpan={5} className="px-4 py-6 text-slate-500">Loading…</td></tr>}
@@ -35,7 +35,7 @@ export function PagesList() {
                 <td className="px-4 py-3 font-mono text-xs text-slate-500">{p.url}</td>
                 <td className="px-4 py-3"><span className="flex flex-wrap gap-1.5"><Chip tone="good">Published</Chip>{p.hasChanges && <Chip tone="changes">Unpublished changes</Chip>}</span></td>
                 <td className="px-4 py-3 text-slate-500">{new Date(p.updatedAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}{p.updatedBy ? ` · ${p.updatedBy}` : ""}</td>
-                <td className="px-4 py-3 text-right"><Link to={`/pages/${p.key}`} onClick={(e) => e.stopPropagation()} className="rounded-md border border-slate-200 px-3 py-1 text-xs font-semibold hover:border-slate-300">Edit</Link></td>
+                <td className="px-4 py-2 text-right"><EditLink to={`/pages/${p.key}`} name={p.title} /></td>
               </tr>
             ))}
           </tbody>

@@ -1,7 +1,7 @@
 // Users & roles (Super Admin only): add and edit users, reset passwords, unlock and disable accounts.
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { api, ApiError } from "../lib/api.ts";
-import { Breadcrumb, Chip } from "../components/ui.tsx";
+import { Breadcrumb, Chip, LineIcon, PENCIL, iconBtn } from "../components/ui.tsx";
 import { FieldError, inputCls, saveBtn, type Errors } from "../components/form.tsx";
 
 type Role = "super_admin" | "editor";
@@ -11,7 +11,15 @@ type Secret = { person: Person; password: string; isNew: boolean };
 type Confirm = { kind: "reset" | "disable" | "enable"; person: Person };
 
 const roleName = (r: Role) => (r === "super_admin" ? "Super Admin" : "Editor");
-const smallBtn = "rounded-md border border-slate-200 px-2.5 py-1 text-xs font-semibold whitespace-nowrap hover:border-slate-300";
+const KEY = "m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4M21 2l-9.6 9.6M13 15.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z";
+const DISABLE = "M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0zM4.9 4.9l14.2 14.2";
+const ENABLE = "M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0zM9 12l2 2 4-4";
+const UNLOCK = "M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2zM7 11V7a5 5 0 0 1 9.9-1";
+
+/** A row action: the icon shows, hovering gives its name, and `label` names the user for screen readers. */
+function RowAction({ icon, title, label, onClick }: { icon: string; title: string; label: string; onClick: () => void }) {
+  return <button type="button" className={iconBtn} title={title} aria-label={label} onClick={onClick}><LineIcon d={icon} /></button>;
+}
 
 // No look-alikes, as this gets read out or typed by hand. 220 = 4 × 55, so every letter is equally likely.
 const READABLE = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -263,7 +271,7 @@ export function UsersList() {
           <thead className="bg-slate-50 text-left text-xs tracking-wide text-slate-500 uppercase">
             <tr>
               <th className="px-4 py-3 font-semibold">Name</th><th className="px-4 py-3 font-semibold">Role</th><th className="px-4 py-3 font-semibold">Status</th>
-              <th className="px-4 py-3 font-semibold">Last sign-in</th><th className="px-4 py-3"><span className="sr-only">Actions</span></th>
+              <th className="px-4 py-3 font-semibold">Last sign-in</th><th className="px-4 py-3 text-right font-semibold">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -286,12 +294,13 @@ export function UsersList() {
                   </td>
                   <td className="px-4 py-3 text-slate-500">{p.lastLoginAt ? new Date(p.lastLoginAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) : "Never"}</td>
                   <td className="px-4 py-3">
-                    <span className="flex flex-wrap justify-end gap-1.5">
-                      {p.locked && <button type="button" className={smallBtn} onClick={() => unlock(p)} aria-label={`Unlock ${p.name}`}>Unlock</button>}
-                      <button type="button" className={smallBtn} onClick={() => setEditing(p)} aria-label={`Edit ${p.name}`}>Edit</button>
-                      {!self && <button type="button" className={smallBtn} onClick={() => setConfirm({ kind: "reset", person: p })} aria-label={`Reset password for ${p.name}`}>Reset password</button>}
-                      {!self && <button type="button" className={smallBtn} onClick={() => setConfirm({ kind: p.status === "active" ? "disable" : "enable", person: p })}
-                        aria-label={`${p.status === "active" ? "Disable" : "Enable"} ${p.name}`}>{p.status === "active" ? "Disable" : "Enable"}</button>}
+                    <span className="flex justify-end gap-0.5">
+                      {p.locked && <RowAction icon={UNLOCK} title="Unlock" label={`Unlock ${p.name}`} onClick={() => unlock(p)} />}
+                      <RowAction icon={PENCIL} title="Edit" label={`Edit ${p.name}`} onClick={() => setEditing(p)} />
+                      {!self && <RowAction icon={KEY} title="Reset password" label={`Reset password for ${p.name}`} onClick={() => setConfirm({ kind: "reset", person: p })} />}
+                      {!self && (p.status === "active"
+                        ? <RowAction icon={DISABLE} title="Disable" label={`Disable ${p.name}`} onClick={() => setConfirm({ kind: "disable", person: p })} />
+                        : <RowAction icon={ENABLE} title="Enable" label={`Enable ${p.name}`} onClick={() => setConfirm({ kind: "enable", person: p })} />)}
                     </span>
                   </td>
                 </tr>

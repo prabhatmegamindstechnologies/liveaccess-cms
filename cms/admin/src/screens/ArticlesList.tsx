@@ -1,8 +1,8 @@
 // Troubleshooting guides and process areas: list with status, and "+ New …" (starts as a draft).
 import { useEffect, useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { api, ApiError } from "../lib/api.ts";
-import { Breadcrumb, Chip } from "../components/ui.tsx";
+import { Breadcrumb, Chip, EditLink } from "../components/ui.tsx";
 import { inputCls, saveBtn } from "../components/form.tsx";
 
 type Row = { id: number; slug: string; title: string; status: "draft" | "published"; live: boolean; hasChanges: boolean; updatedAt: string; updatedBy: string | null };
@@ -72,7 +72,7 @@ export function ArticlesList({ kind }: { kind: Kind }) {
       <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white">
         <table className="w-full text-sm">
           <thead className="bg-slate-50 text-left text-xs tracking-wide text-slate-500 uppercase">
-            <tr><th className="px-4 py-3 font-semibold">{t.column}</th><th className="px-4 py-3 font-semibold">Address</th><th className="px-4 py-3 font-semibold">Status</th><th className="px-4 py-3 font-semibold">Last edited</th><th className="px-4 py-3" /></tr>
+            <tr><th className="px-4 py-3 font-semibold">{t.column}</th><th className="px-4 py-3 font-semibold">Address</th><th className="px-4 py-3 font-semibold">Status</th><th className="px-4 py-3 font-semibold">Last edited</th><th className="px-4 py-3 text-right font-semibold">Actions</th></tr>
           </thead>
           <tbody>
             {rows === null && !error && <tr><td colSpan={5} className="px-4 py-6 text-slate-500">Loading…</td></tr>}
@@ -88,7 +88,7 @@ export function ArticlesList({ kind }: { kind: Kind }) {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-slate-500">{new Date(g.updatedAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}{g.updatedBy ? ` · ${g.updatedBy}` : ""}</td>
-                <td className="px-4 py-3 text-right"><Link to={`/${kind}s/${g.id}`} onClick={(e) => e.stopPropagation()} className="rounded-md border border-slate-200 px-3 py-1 text-xs font-semibold hover:border-slate-300">Edit</Link></td>
+                <td className="px-4 py-2 text-right"><EditLink to={`/${kind}s/${g.id}`} name={g.title} /></td>
               </tr>
             ))}
           </tbody>

@@ -3,7 +3,7 @@ import { Fragment, useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { api } from "../lib/api.ts";
 import { describeAudit, type AuditItem } from "../lib/audit.ts";
-import { Breadcrumb } from "../components/ui.tsx";
+import { Breadcrumb, LineIcon, iconBtn } from "../components/ui.tsx";
 import { inputCls } from "../components/form.tsx";
 
 type Entry = { id: number; action: string; at: string; ip: string | null; detail: Record<string, unknown>; item: AuditItem | null; who: { id: number; name: string; email: string | null } | null };
@@ -89,7 +89,10 @@ export function AuditLog() {
           <label htmlFor="a-to" className="text-xs font-semibold">To</label>
           <input id="a-to" type="date" value={to} min={from || undefined} onChange={(e) => filter("to", e.target.value)} className={inputCls} />
         </div>
-        <button type="button" disabled={!filtered} onClick={() => setParams({})} className="rounded-md border border-slate-200 px-3 py-2 text-sm font-semibold hover:border-slate-300 disabled:opacity-40">Clear</button>
+        <button type="button" disabled={!filtered} onClick={() => setParams({})} title="Clear filters" aria-label="Clear filters"
+          className="grid size-[38px] place-items-center rounded-md text-slate-600 hover:bg-slate-100 hover:text-brand disabled:pointer-events-none disabled:opacity-40">
+          <LineIcon d="M6 6l12 12M18 6L6 18" />
+        </button>
       </div>
 
       {error && <p role="alert" className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
@@ -99,7 +102,7 @@ export function AuditLog() {
           <thead className="bg-slate-50 text-left text-xs tracking-wide text-slate-500 uppercase">
             <tr>
               <th className="px-4 py-3 font-semibold whitespace-nowrap">When</th><th className="px-4 py-3 font-semibold">Who</th>
-              <th className="px-4 py-3 font-semibold">What</th><th className="px-4 py-3"><span className="sr-only">Details</span></th>
+              <th className="px-4 py-3 font-semibold">What</th><th className="px-4 py-3 text-right font-semibold">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -117,8 +120,10 @@ export function AuditLog() {
                     </td>
                     <td className="px-4 py-3">{e.item?.link ? <Link to={e.item.link} className="underline decoration-slate-300 underline-offset-2 hover:text-brand">{text}</Link> : text}</td>
                     <td className="px-4 py-3 text-right">
-                      <button type="button" aria-expanded={open === e.id} aria-label={`Details: ${text}`} onClick={() => setOpen(open === e.id ? null : e.id)}
-                        className="rounded-md border border-slate-200 px-2.5 py-1 text-xs font-semibold hover:border-slate-300">Details</button>
+                      <button type="button" aria-expanded={open === e.id} aria-label={`Details: ${text}`} title="Details" onClick={() => setOpen(open === e.id ? null : e.id)}
+                        className={`${iconBtn} ${open === e.id ? "bg-brand-soft !text-brand" : ""}`}>
+                        <LineIcon d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                      </button>
                     </td>
                   </tr>
                   {open === e.id && (

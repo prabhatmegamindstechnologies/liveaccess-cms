@@ -21,6 +21,29 @@ export function Chip({ tone, children }: { tone: "good" | "draft" | "changes"; c
   return <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-bold whitespace-nowrap ${cls}`}>{children}</span>;
 }
 
+/** An outline icon (a 24×24 path). The button or link around it carries the label. */
+export function LineIcon({ d }: { d: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="size-[18px]">
+      <path d={d} />
+    </svg>
+  );
+}
+
+/** The look of an icon-only action in a list row. */
+export const iconBtn = "inline-grid size-8 place-items-center rounded-md text-slate-600 hover:bg-slate-100 hover:text-brand";
+
+export const PENCIL = "M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z";
+
+/** The pencil at the end of a list row. Rows open on click too, so this stops the click reaching the row. */
+export function EditLink({ to, name }: { to: string; name: string }) {
+  return (
+    <Link to={to} onClick={(e) => e.stopPropagation()} title="Edit" aria-label={`Edit ${name}`} className={iconBtn}>
+      <LineIcon d={PENCIL} />
+    </Link>
+  );
+}
+
 export function SaveStatus({ state }: { state: SaveState }) {
   const time = state.savedAt?.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   const view = {
