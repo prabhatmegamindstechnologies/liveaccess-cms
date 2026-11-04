@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Google tag (gtag.js). Reports only from the live site, so local testing doesn't count as traffic. -->
+  <script>window['ga-disable-G-JFHJD3T51M'] = !/(^|\.)liveaccess\.ai$/.test(location.hostname);</script>
+  <script type="text/plain" data-consent="analytics" src="https://www.googletagmanager.com/gtag/js?id=G-JFHJD3T51M"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    var consentGranted = false;
+    try { consentGranted = localStorage.getItem('la_consent_v1') === 'granted'; } catch (e) {}
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: consentGranted ? 'granted' : 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-JFHJD3T51M');
+  </script>
+  <script src="consent.js?v=2.1.5" defer></script>
+  <script src="analytics.js?v=2.1.3" defer></script>
+  <title>LiveAccess features: photo, voice and document search</title>
+  <meta name="description" content="LiveAccess features: plain-language advice, camera search, voice input, follow-up questions, the Expert Network and video calls with TPS engineers." />
+  <link rel="canonical" href="https://liveaccess.ai/features.html" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="LiveAccess" />
+  <meta property="og:title" content="LiveAccess features" />
+  <meta property="og:description" content="Camera search, voice in and out, follow-up questions, the Expert Network and video calls with TPS engineers." />
+  <meta property="og:url" content="https://liveaccess.ai/features.html" />
+  <meta property="og:image" content="https://liveaccess.ai/logo.png" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="preload" href="plus-jakarta.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="common.css?v=2.1.9" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "MobileApplication",
+        "@id": "https://liveaccess.ai/#app",
+        "name": "LiveAccess 24/7",
+        "operatingSystem": "iOS, iPadOS, Android",
+        "applicationCategory": "BusinessApplication",
+        "url": "https://liveaccess.ai/",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "publisher": { "@type": "Organization", "@id": "https://liveaccess.ai/#tps", "name": "TPS" },
+        "featureList": [
+          "Plain-language technical advice",
+          "Camera search with a photo of a nameplate, part or HMI screen",
+          "Voice input (speech-to-text) and read-aloud answers (text-to-speech)",
+          "Follow-up questions and saved search history",
+          "Plant information search for customers with a TPS-authorised account",
+          "Video call with a TPS engineer, with optional participant-started recording and voicemail",
+          "Expert Network: find experts by process area and chat in the app"
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://liveaccess.ai/" },
+          { "@type": "ListItem", "position": 2, "name": "Features", "item": "https://liveaccess.ai/features.html" }
+        ]
+      }
+    ]
+  }
+  </script>
+  <style>
+    .aud { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .aud article { border-top: 3px solid var(--orange); padding-top: 22px; display: grid; gap: 10px; align-content: start; }
+    .aud p { color: var(--ink-2); font-size: 15px; }
+    .areas { margin-top: 56px; display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: center; padding: 28px; border-radius: 18px; background: var(--paper); }
+    .areas .num { font: 800 64px/0.9 var(--f-display); font-stretch: 75%; color: var(--orange); }
+    .areas .num small { display: block; font: 500 12px/1.4 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-top: 8px; }
+    .areas ul { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; }
+    .areas li { border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; font-size: 14px; }
+    @media (max-width: 980px) { .aud { grid-template-columns: 1fr; } }
+    @media (max-width: 620px) { .areas { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body class="site">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="nav">
+      <a class="brand" href="./" aria-label="LiveAccess by TPS, home">
+        <img src="logo.png" alt="TPS" width="103" height="22" />
+        <span class="brand-name">LiveAccess 24/7</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="how-it-works.html">How it works</a>
+        <a href="features.html" aria-current="page">Features</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <a class="nav-cta" href="get-app.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="6" y="2" width="12" height="20" rx="2" />
+          <line x1="11" y1="18" x2="13" y2="18" />
+        </svg>
+        Get the app
+      </a>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero dark">
+      <div class="drop" aria-hidden="true"></div>
+      <div class="wrap">
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="./">Home</a><span aria-hidden="true">/</span><span>Features</span></nav>
+        <span class="eyebrow">Features</span>
+        <h1>Practical tools for <em>everyday plant support.</em></h1>
+        <p class="lede">Find information, get guidance and connect with support, right where you work.</p>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="wrap">
+        <div class="feat-grid">
+          <div class="feat"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg></span><h2 class="h3">Plain-language search</h2><p>Ask the way you would ask a colleague, in your preferred language. Provide equipment details when needed to identify the right information.</p></div>
+          <div class="feat"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z" /><circle cx="12" cy="13" r="3.5" /></svg></span><h2 class="h3">Camera search</h2><p>Photograph a nameplate, part or HMI screen and search with the picture.</p></div>
+          <div class="feat"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3" /></svg></span><h2 class="h3">Voice in, voice out</h2><p>Speak your question and tap Listen to hear the answer read aloud.</p></div>
+          <div class="feat"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6M8 13h8M8 17h5" /></svg></span><h2 class="h3">Safety first</h2><p>Where supporting documents are available, open them to review the guidance. Always confirm safety-critical steps against your site procedures or with a TPS engineer.</p></div>
+          <div class="feat"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" /></svg></span><h2 class="h3">Follow-up questions</h2><p>Keep asking in the same thread. Log in to view your saved search and conversation history in the app.</p></div>
+          <div class="feat"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3v3M12 18v3M3 12h3M18 12h3" /><circle cx="12" cy="12" r="5" /></svg></span><h2 class="h3">Authorised plant information</h2><span class="feat-note">For TPS customers</span><p>Browse your authorised equipment records, drawings and specifications directly in the app. Access is granted by TPS.</p></div>
+          <div class="feat"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15 8v8H3V8zm2 3 4-3v8l-4-3z" /></svg></span><h2 class="h3">Video call a TPS engineer</h2><p>Log in to show the problem live to a TPS engineer through the app. Engineers answer during their working hours. Video calls include background noise cancellation. Either participant can record a call, and both are notified on screen. If nobody answers, leave a voicemail and they can call you back in the app. Your calls, recording and chats stay in your call history for future review.</p></div>
+          <div class="feat"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6" /></svg></span><h2 class="h3">Chat or call an expert</h2><p>Find experts by process area, including high-shear mixing, liquid evaporation, spray drying, powder handling, automation and more, and chat or call them in the app. Your chats and calls stay in your call history for later.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band alt">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="eyebrow">Who it's for</span>
+          <h2>For the people who keep the line running.</h2>
+        </div>
+        <div class="aud">
+          <article><h3>Process engineers</h3><p>Troubleshoot complex equipment and tune production lines with technical advice in front of you.</p></article>
+          <article><h3>Maintenance teams</h3><p>Daily upkeep, planned maintenance and emergency repairs, with technical guidance at the machine.</p></article>
+          <article><h3>Production teams</h3><p>Practical guidance for day-to-day production tasks and operating questions.</p></article>
+        </div>
+        <div class="areas">
+          <div class="num">8<small>process areas<br />in the Expert Network</small></div>
+          <ul>
+            <li>Applications</li><li>Ingredients</li><li>High shear mixing</li><li>Liquid processing</li><li>Evaporation</li><li>Spray drying</li><li>Powder handling</li><li>Automation</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-band dark">
+      <div class="wrap">
+        <div>
+          <h2>See how it works in three simple steps.</h2>
+          <p class="lede">Walk through the app screen by screen, with optional TPS support when you need more help.</p>
+        </div>
+        <div class="cta-actions">
+          <a class="btn btn-primary" href="how-it-works.html">How it works</a>
+          <a class="btn btn-ghost" href="get-app.html">Get the app</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <b>LiveAccess 24/7</b><br />
+        The 24/7 service app from TPS for dairy, food and beverage plants.<br />
+        A service platform by <a href="https://tps.ltd/" target="_blank" rel="noopener">TPS</a>
+      </div>
+      <nav aria-label="Product">
+        <h2>Product</h2>
+        <ul>
+          <li><a href="how-it-works.html">How it works</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="get-app.html">Get the app</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
+        <ul>
+          <li><a href="guides.html">Troubleshooting guides</a></li>
+          <li><a href="process-areas.html">Process areas</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Company">
+        <h2>Company</h2>
+        <ul>
+          <li><a href="about.html">About</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="privacy-policy.html">Privacy Policy</a></li>
+          <li><a href="terms-and-condition.html">Terms &amp; Conditions</a></li>
+          <li><button type="button" class="linklike" data-cookie-settings>Cookie settings</button></li>
+        </ul>
+      </nav>
+      <div class="copyright">&copy; 2026 TPS. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script src="menu.js?v=2.1.3"></script>
+</body>
+</html>

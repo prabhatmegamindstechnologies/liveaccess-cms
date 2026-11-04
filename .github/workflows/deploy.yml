@@ -1,0 +1,31 @@
+name: Deploy to production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare deploy files
+        run: |
+          mkdir deploy
+          cp *.html *.css *.js *.png *.svg *.mp4 *.txt *.xml *.woff2 deploy/
+          cp -r images deploy/
+          cp .htaccess deploy/
+
+      - name: Deploy over FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port: 21
+          protocol: ftp
+          local-dir: './deploy/'
+          server-dir: ${{ secrets.SFTP_REMOTE_PATH }}

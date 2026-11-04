@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Google tag (gtag.js). Reports only from the live site, so local testing doesn't count as traffic. -->
+  <script>window['ga-disable-G-JFHJD3T51M'] = !/(^|\.)liveaccess\.ai$/.test(location.hostname);</script>
+  <script type="text/plain" data-consent="analytics" src="https://www.googletagmanager.com/gtag/js?id=G-JFHJD3T51M"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    var consentGranted = false;
+    try { consentGranted = localStorage.getItem('la_consent_v1') === 'granted'; } catch (e) {}
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: consentGranted ? 'granted' : 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-JFHJD3T51M');
+  </script>
+  <script src="consent.js?v=2.1.5" defer></script>
+  <script src="analytics.js?v=2.1.3" defer></script>
+  <title>Download — LiveAccess</title>
+  <meta name="description" content="Download the LiveAccess mobile app for iPhone, iPad and Android." />
+  <meta name="robots" content="noindex, follow" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="LiveAccess" />
+  <meta property="og:title" content="LiveAccess 24/7 — Your technical support, always at hand" />
+  <meta property="og:description" content="Find equipment information, get practical guidance and connect with TPS expertise to keep your plant running." />
+  <meta property="og:url" content="https://liveaccess.ai/download.html" />
+  <meta property="og:image" content="https://liveaccess.ai/logo.png" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="stylesheet" href="common.css?v=2.1.9" />
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .download-page {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 72px 24px;
+    }
+    .download-card {
+      width: 100%;
+      max-width: 480px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 12px 32px rgba(16, 24, 40, 0.08);
+      padding: 40px 32px;
+      text-align: center;
+    }
+    .app-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: var(--orange-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .download-card h1 { font-size: 26px; font-weight: 800; line-height: 1.2; margin-bottom: 10px; }
+    .download-card p { color: var(--text-secondary); font-size: 15px; margin-bottom: 24px; }
+    .download-card .store-badges { justify-content: center; }
+    .download-card .hint { font-size: 13px; margin: 20px 0 0; }
+
+    @media (max-width: 600px) {
+      .download-page { padding: 32px 16px; align-items: flex-start; }
+      .download-card { padding: 32px 20px; border-radius: 16px; }
+    }
+  </style>
+</head>
+<body class="page-get-app">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="nav">
+      <a class="brand" href="./" aria-label="LiveAccess by TPS, home">
+        <img src="logo.png" alt="TPS" width="103" height="22" />
+        <span class="brand-name">LiveAccess 24/7</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="how-it-works.html">How it works</a>
+        <a href="features.html">Features</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <a class="nav-cta" href="get-app.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="6" y="2" width="12" height="20" rx="2" />
+          <line x1="11" y1="18" x2="13" y2="18" />
+        </svg>
+        Get the app
+      </a>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main" class="download-page">
+    <div class="download-card">
+      <div class="app-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#E8541A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="6" y="2" width="12" height="20" rx="2" />
+          <line x1="11" y1="18" x2="13" y2="18" />
+        </svg>
+      </div>
+      <h1 id="download-title">Download LiveAccess</h1>
+      <p id="download-status" role="status">Choose your store to get the app.</p>
+      <div class="store-badges">
+        <a class="store-badge" data-store="ios" href="https://apps.apple.com/app/liveaccess-24-7/id6790754198" rel="noopener">
+          <img src="badge-app-store.svg" width="120" height="40" alt="Download LiveAccess on the App Store" />
+        </a>
+        <a class="store-badge" data-store="android" href="https://play.google.com/store/apps/details?id=com.liveaccess.app&referrer=utm_source%3Dwebsite%26utm_campaign%3Dqr" rel="noopener">
+          <img src="badge-google-play.png" width="134" height="40" alt="Get LiveAccess on Google Play" />
+        </a>
+      </div>
+      <p class="hint" id="download-hint" hidden>Not opening? Tap your store above.</p>
+    </div>
+  </main>
+
+  <script>
+    // QR codes point here. Phones go straight to their store; everyone else picks one.
+    // Store URLs live in the badge links above, so the redirect and the fallback can never disagree.
+    (function () {
+      var ua = navigator.userAgent;
+      var isIOS = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+      var isAndroid = !isIOS && /Android/.test(ua);
+      if (!isIOS && !isAndroid) return;
+
+      var link = document.querySelector(isIOS ? '[data-store="ios"]' : '[data-store="android"]');
+      if (!link) return;
+      document.getElementById('download-title').textContent = 'Opening ' + (isIOS ? 'the App Store' : 'Google Play') + '…';
+      document.getElementById('download-status').textContent = 'Taking you to LiveAccess in your app store.';
+      document.getElementById('download-hint').hidden = false;
+
+      // Count the QR scan before leaving: wait for GA to confirm, but never more than 1 second
+      // (GA blocked, offline, or disabled off the live site).
+      var gone = false;
+      function go() { if (!gone) { gone = true; window.location.replace(link.href); } }
+      gtag('event', 'qr_redirect', { store: isIOS ? 'ios' : 'android', event_callback: go });
+      setTimeout(go, 1000);
+    })();
+  </script>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <b>LiveAccess 24/7</b><br />
+        The 24/7 service app from TPS for dairy, food and beverage plants.<br />
+        A service platform by <a href="https://tps.ltd/" target="_blank" rel="noopener">TPS</a>
+      </div>
+      <nav aria-label="Product">
+        <h2>Product</h2>
+        <ul>
+          <li><a href="how-it-works.html">How it works</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="get-app.html">Get the app</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
+        <ul>
+          <li><a href="guides.html">Troubleshooting guides</a></li>
+          <li><a href="process-areas.html">Process areas</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Company">
+        <h2>Company</h2>
+        <ul>
+          <li><a href="about.html">About</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="privacy-policy.html">Privacy Policy</a></li>
+          <li><a href="terms-and-condition.html">Terms &amp; Conditions</a></li>
+          <li><button type="button" class="linklike" data-cookie-settings>Cookie settings</button></li>
+        </ul>
+      </nav>
+      <div class="copyright">&copy; 2026 TPS. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script src="menu.js?v=2.1.3"></script>
+</body>
+</html>

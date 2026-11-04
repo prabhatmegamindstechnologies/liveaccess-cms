@@ -1,0 +1,52 @@
+# LiveAccess 24/7
+
+> LiveAccess 24/7 is a mobile app from TPS for engineers in dairy, food and beverage plants. Users ask technical questions in plain language, by photo or by voice, and get technical advice. Users can also video-call a TPS engineer. Free to download for iPhone, iPad and Android.
+
+## Key facts
+
+- Maker: TPS (TPS Pte Ltd), an equipment and process integrator for the dairy, food and beverage industries: high shear mixers, liquid processing and spray drying. Company site: https://tps.ltd/
+- Users: process engineers, maintenance teams and operators.
+- Platforms: iOS, iPadOS, Android. App Store: https://apps.apple.com/app/liveaccess-24-7/id6790754198 · Google Play: https://play.google.com/store/apps/details?id=com.liveaccess.app
+- Price: free to download. Guest search works without an account.
+- Features: knowledge base search (in multiple languages),in-app document viewer (for TPS customers), camera search, voice input (speech-to-text), listen to answers (text-to-speech), follow-up questions and saved history, plant information search for customers with a TPS-authorised account, and video calls with a TPS engineer (either participant can record a call, with on-screen notification; voicemail if unanswered), chat or call experts by process area, and a call history of past calls and chats.
+- Expert Network: find experts by process area (applications, ingredients, high shear mixing, liquid, evaporation, spray drying, powder handling, automation) and chat in the app.
+- Users should confirm safety-critical steps with a TPS engineer.
+- Contact: liveaccess@tps.ltd
+
+## Pages
+
+- [Home](https://liveaccess.ai/): what LiveAccess is and the problem it solves
+- [How it works](https://liveaccess.ai/how-it-works.html): the four steps from question to fix
+- [Features](https://liveaccess.ai/features.html): all app features and who they are for
+- [About](https://liveaccess.ai/about.html): TPS, the company behind LiveAccess
+- [FAQ](https://liveaccess.ai/faq.html): common questions and answers
+- [Contact](https://liveaccess.ai/contact.html): email and office addresses
+- [Get the app](https://liveaccess.ai/get-app.html): download links
+- [Troubleshooting guides](https://liveaccess.ai/guides.html): step-by-step checks for common plant faults (mixer seal leaks, spray dryer build-up, evaporator fouling, lumps after mixing, plate heat exchanger leaks, pump cavitation)
+- [Process areas](https://liveaccess.ai/process-areas.html): topics and example questions for each Expert Network area
+
+## Troubleshooting guides
+
+- [High shear mixer seal leaks](https://liveaccess.ai/guide-high-shear-mixer-seal-leak.html): causes and checks for a leaking shaft seal
+- [Spray dryer powder build-up](https://liveaccess.ai/guide-spray-dryer-powder-buildup.html): causes and checks for deposits on the chamber, cone and ducts
+- [Evaporator fouling and falling capacity](https://liveaccess.ai/guide-evaporator-fouling.html): causes and checks when an evaporator loses capacity during a run
+- [Lumps and undissolved powder after mixing](https://liveaccess.ai/guide-powder-lumps-in-mixing.html): causes and checks for lumps and fish-eyes
+- [Plate heat exchanger leaks](https://liveaccess.ai/guide-plate-heat-exchanger-leak.html): external leaks and mixing of media
+- [Centrifugal pump noise and low flow](https://liveaccess.ai/guide-centrifugal-pump-cavitation.html): cavitation checks
+
+## Process areas
+
+- [Applications](https://liveaccess.ai/area-applications.html)
+- [Ingredients](https://liveaccess.ai/area-ingredients.html)
+- [High shear mixing](https://liveaccess.ai/area-high-shear-mixing.html)
+- [Liquid processing](https://liveaccess.ai/area-liquid-processing.html)
+- [Evaporation](https://liveaccess.ai/area-evaporation.html)
+- [Spray drying](https://liveaccess.ai/area-spray-drying.html)
+- [Powder handling](https://liveaccess.ai/area-powder-handling.html)
+- [Automation](https://liveaccess.ai/area-automation.html)
+
+## Optional
+
+- [Privacy Policy](https://liveaccess.ai/privacy-policy.html)
+- [Terms & Conditions](https://liveaccess.ai/terms-and-condition.html)
+- [Delete your account](https://liveaccess.ai/delete-account.html)

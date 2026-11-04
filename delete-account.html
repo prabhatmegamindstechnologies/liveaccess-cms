@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Google tag (gtag.js). Reports only from the live site, so local testing doesn't count as traffic. -->
+  <script>window['ga-disable-G-JFHJD3T51M'] = !/(^|\.)liveaccess\.ai$/.test(location.hostname);</script>
+  <script type="text/plain" data-consent="analytics" src="https://www.googletagmanager.com/gtag/js?id=G-JFHJD3T51M"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    var consentGranted = false;
+    try { consentGranted = localStorage.getItem('la_consent_v1') === 'granted'; } catch (e) {}
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: consentGranted ? 'granted' : 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-JFHJD3T51M');
+  </script>
+  <script src="consent.js?v=2.1.5" defer></script>
+  <script src="analytics.js?v=2.1.3" defer></script>
+  <title>Delete Your Account — LiveAccess</title>
+  <meta name="description" content="How to delete your LiveAccess account in the app under Profile, what happens next, and which records TPS keeps for business and legal reasons." />
+  <link rel="canonical" href="https://liveaccess.ai/delete-account.html" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="LiveAccess" />
+  <meta property="og:title" content="Delete Your Account — LiveAccess" />
+  <meta property="og:description" content="How to delete your LiveAccess account and what happens to your data." />
+  <meta property="og:url" content="https://liveaccess.ai/delete-account.html" />
+  <meta property="og:image" content="https://liveaccess.ai/logo.png" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="stylesheet" href="common.css?v=2.1.9" />
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 48px 24px 64px;
+    }
+
+    .intro {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .icon-circle {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--blue-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .intro h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .intro .underline {
+      width: 48px;
+      height: 3px;
+      background: var(--brand-orange);
+      margin: 0 auto 16px;
+      border-radius: 2px;
+    }
+    .intro p {
+      color: var(--text-secondary);
+      font-size: 15px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-icon.blue { background: var(--blue-bg); }
+    .card-icon.green { background: var(--green-bg); }
+    .card-content h2 {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .card-content p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-bottom: 14px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--brand-orange);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 11px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .btn:hover { opacity: 0.92; }
+    .btn-hint {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      margin-top: 10px;
+    }
+
+    .checklist {
+      list-style: none;
+    }
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+    .checklist li:last-child { margin-bottom: 0; }
+    .checklist svg {
+      min-width: 18px;
+      margin-top: 2px;
+    }
+    .checklist strong { font-weight: 600; }
+    .checklist span.desc { color: var(--text-secondary); font-weight: 400; }
+
+    .note {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: var(--green-bg);
+      border: 1px solid var(--green-border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-top: 16px;
+      font-size: 13.5px;
+      color: #05603A;
+    }
+    .note svg { min-width: 18px; margin-top: 2px; }
+
+    .support-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--brand-orange);
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+    }
+    .support-link:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      main { padding: 32px 16px 48px; }
+      .card { padding: 20px; }
+    }
+
+    @media (max-width: 480px) {
+      .card { flex-direction: column; }
+      .intro h1 { font-size: 22px; }
+      .intro p { font-size: 14px; }
+      .btn, .contact-btn { width: auto; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="nav">
+      <a class="brand" href="./" aria-label="LiveAccess by TPS, home">
+        <img src="logo.png" alt="TPS" width="103" height="22" />
+        <span class="brand-name">LiveAccess 24/7</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="how-it-works.html">How it works</a>
+        <a href="features.html">Features</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <a class="nav-cta" href="get-app.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="6" y="2" width="12" height="20" rx="2" />
+          <line x1="11" y1="18" x2="13" y2="18" />
+        </svg>
+        Get the app
+      </a>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="intro">
+      <div class="icon-circle">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <line x1="17" y1="8" x2="22" y2="13" />
+          <line x1="22" y1="8" x2="17" y2="13" />
+        </svg>
+      </div>
+      <h1>Delete Your Account</h1>
+      <div class="underline"></div>
+      <p>We're sorry to see you go. If you no longer wish to use LiveAccess, you can delete your account in the app, or ask us to delete it. Once your account is closed, it cannot be reopened.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon blue">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16v16H4z" />
+          <path d="M4 6l8 7 8-7" />
+        </svg>
+      </div>
+      <div class="card-content">
+        <h2>How to delete your account</h2>
+        <p>Delete your account in the app under <strong>Profile → Delete Account</strong>.</p>
+        <p>If TPS or your organisation manages your account, contact support through the Contact us form for help with deletion.</p>
+        <a class="btn" href="contact.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16v16H4z" />
+            <path d="M4 6l8 7 8-7" />
+          </svg>
+          Contact us
+        </a>
+        <div class="btn-hint">This opens our Contact us form.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-icon green">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12B76A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z" />
+        </svg>
+      </div>
+      <div class="card-content" style="width:100%;">
+        <h2>What Happens Next?</h2>
+        <ul class="checklist">
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#12B76A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+            <span><strong>Account closed:</strong> <span class="desc">Once your account is closed, it cannot be reopened. Requests made through the Contact us form require processing.</span></span>
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#12B76A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+            <span><strong>Records we keep:</strong> <span class="desc">Some records are kept to meet TPS's business and legal obligations, as described in our <a href="privacy-policy.html#retention">Privacy Policy</a>. These include chats, call history, recordings and voicemail shared with others, plus Firebase analytics. To ask for specific chats, recordings or voicemail to be deleted, email <a href="mailto:liveaccess@tps.ltd">liveaccess@tps.ltd</a>.</span></span>
+          </li>
+        </ul>
+        <div class="note">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#05603A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="10" rx="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          <span>Deleting your account can't be undone. Your account can't be reopened once it is closed.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-icon blue">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 2-3 4" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+      </div>
+      <div class="card-content">
+        <h2>Need Help?</h2>
+        <p>If you have any questions or need assistance, please contact our support team.</p>
+        <a class="support-link" href="mailto:liveaccess@tps.ltd?subject=Support%20Request%20-%20LiveAccess">
+          Contact Support
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E8541A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <b>LiveAccess 24/7</b><br />
+        The 24/7 service app from TPS for dairy, food and beverage plants.<br />
+        A service platform by <a href="https://tps.ltd/" target="_blank" rel="noopener">TPS</a>
+      </div>
+      <nav aria-label="Product">
+        <h2>Product</h2>
+        <ul>
+          <li><a href="how-it-works.html">How it works</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="get-app.html">Get the app</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
+        <ul>
+          <li><a href="guides.html">Troubleshooting guides</a></li>
+          <li><a href="process-areas.html">Process areas</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Company">
+        <h2>Company</h2>
+        <ul>
+          <li><a href="about.html">About</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="privacy-policy.html">Privacy Policy</a></li>
+          <li><a href="terms-and-condition.html">Terms &amp; Conditions</a></li>
+          <li><button type="button" class="linklike" data-cookie-settings>Cookie settings</button></li>
+        </ul>
+      </nav>
+      <div class="copyright">&copy; 2026 TPS. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script src="menu.js?v=2.1.3"></script>
+</body>
+</html>

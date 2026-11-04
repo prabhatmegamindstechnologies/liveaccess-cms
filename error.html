@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Served for server errors (403, 500) at any depth, so every relative link below resolves from the site root. -->
+  <base href="/" />
+  <title>Something went wrong | LiveAccess</title>
+  <meta name="description" content="Something went wrong on our side. Head back to the LiveAccess home page or contact us." />
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="preload" href="plus-jakarta.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="common.css?v=2.1.9" />
+  <style>
+    /* The inner-page hero is light, but .dark .btn-ghost sets white text, so the ghost buttons vanish. */
+    .page-hero .cta-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    .page-hero.dark .btn-ghost { color: var(--ink); border-color: var(--ink-2); }
+  </style>
+</head>
+<body class="site">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="nav">
+      <a class="brand" href="./" aria-label="LiveAccess by TPS, home">
+        <img src="logo.png" alt="TPS" width="103" height="22" />
+        <span class="brand-name">LiveAccess 24/7</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="how-it-works.html">How it works</a>
+        <a href="features.html">Features</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <a class="nav-cta" href="get-app.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="6" y="2" width="12" height="20" rx="2" />
+          <line x1="11" y1="18" x2="13" y2="18" />
+        </svg>
+        Get the app
+      </a>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero dark">
+      <div class="drop" aria-hidden="true"></div>
+      <div class="wrap">
+        <span class="eyebrow">Error</span>
+        <h1>Something <em>went wrong.</em></h1>
+        <p class="lede">The page could not be shown. Please try again in a moment, or use one of these.</p>
+        <div class="cta-actions">
+          <a class="btn btn-primary" href="./">Back to home</a>
+          <a class="btn btn-ghost" href="get-app.html">Get the app</a>
+          <a class="btn btn-ghost" href="contact.html">Contact us</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <b>LiveAccess 24/7</b><br />
+        The 24/7 service app from TPS for dairy, food and beverage plants.<br />
+        A service platform by <a href="https://tps.ltd/" target="_blank" rel="noopener">TPS</a>
+      </div>
+      <nav aria-label="Product">
+        <h2>Product</h2>
+        <ul>
+          <li><a href="how-it-works.html">How it works</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="get-app.html">Get the app</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
+        <ul>
+          <li><a href="guides.html">Troubleshooting guides</a></li>
+          <li><a href="process-areas.html">Process areas</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Company">
+        <h2>Company</h2>
+        <ul>
+          <li><a href="about.html">About</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="privacy-policy.html">Privacy Policy</a></li>
+          <li><a href="terms-and-condition.html">Terms &amp; Conditions</a></li>
+          <li><button type="button" class="linklike" data-cookie-settings>Cookie settings</button></li>
+        </ul>
+      </nav>
+      <div class="copyright">&copy; 2026 TPS. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script src="menu.js?v=2.1.3"></script>
+</body>
+</html>

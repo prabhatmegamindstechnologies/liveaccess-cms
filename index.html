@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Google tag (gtag.js). Reports only from the live site, so local testing doesn't count as traffic. -->
+  <script>window['ga-disable-G-JFHJD3T51M'] = !/(^|\.)liveaccess\.ai$/.test(location.hostname);</script>
+  <script type="text/plain" data-consent="analytics" src="https://www.googletagmanager.com/gtag/js?id=G-JFHJD3T51M"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    var consentGranted = false;
+    try { consentGranted = localStorage.getItem('la_consent_v1') === 'granted'; } catch (e) {}
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: consentGranted ? 'granted' : 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-JFHJD3T51M');
+  </script>
+  <script src="consent.js?v=2.1.5" defer></script>
+  <script src="analytics.js?v=2.1.3" defer></script>
+  <title>LiveAccess 24/7: AI service app for process plants | TPS</title>
+  <meta name="description" content="Find equipment information, get practical guidance and connect with TPS expertise to keep your plant running. Free for iPhone, iPad and Android." />
+  <link rel="canonical" href="https://liveaccess.ai/" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="LiveAccess" />
+  <meta property="og:title" content="LiveAccess 24/7 — Your technical support, always at hand" />
+  <meta property="og:description" content="Find equipment information, get practical guidance and connect with TPS expertise to keep your plant running." />
+  <meta property="og:url" content="https://liveaccess.ai/" />
+  <meta property="og:image" content="https://liveaccess.ai/logo.png" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="preload" href="plus-jakarta.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="common.css?v=2.1.9" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://liveaccess.ai/#tps",
+        "name": "TPS",
+        "legalName": "TPS Pte Ltd",
+        "url": "https://tps.ltd/",
+        "logo": "https://liveaccess.ai/logo.png",
+        "email": "liveaccess@tps.ltd",
+        "description": "Equipment and process integrator for the dairy, food and beverage industries: high shear mixers, liquid processing and spray drying.",
+        "sameAs": [
+          "https://tps.ltd/",
+          "https://www.linkedin.com/company/tps-pte-ltd/",
+          "https://www.youtube.com/channel/UCw833KbjJjC6KFGPnMHpQyA"
+        ],
+        "address": [
+          { "@type": "PostalAddress", "streetAddress": "36 Robinson Rd, #20-01", "postalCode": "068877", "addressLocality": "Singapore", "addressCountry": "SG" },
+          { "@type": "PostalAddress", "streetAddress": "Fuglehavevej 34", "postalCode": "2750", "addressLocality": "Ballerup", "addressCountry": "DK" }
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://liveaccess.ai/#website",
+        "name": "LiveAccess",
+        "url": "https://liveaccess.ai/",
+        "publisher": { "@id": "https://liveaccess.ai/#tps" }
+      },
+      {
+        "@type": "MobileApplication",
+        "@id": "https://liveaccess.ai/#app",
+        "name": "LiveAccess 24/7",
+        "description": "Mobile app that gives plant engineers technical advice. Search by text, photo or voice, and video-call a TPS engineer.",
+        "operatingSystem": "iOS, iPadOS, Android",
+        "applicationCategory": "BusinessApplication",
+        "url": "https://liveaccess.ai/",
+        "downloadUrl": [
+          "https://apps.apple.com/app/liveaccess-24-7/id6790754198",
+          "https://play.google.com/store/apps/details?id=com.liveaccess.app"
+        ],
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "publisher": { "@id": "https://liveaccess.ai/#tps" }
+      }
+    ]
+  }
+  </script>
+  <style>
+    .kicker { color: var(--orange-ink); font-weight: 700; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; }
+    .trio { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 32px; }
+    .trio > div { background: var(--paper-2); border-radius: 18px; padding: 24px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+    .trio h3 { font-size: 18px; }
+    .trio p { color: var(--ink-2); }
+    .head { display: grid; gap: 14px; margin-bottom: 52px; }
+    .head.center { text-align: center; justify-items: center; }
+    .ic { width: 22px; height: 22px; }
+
+    /* Hero */
+    .hero { position: relative; text-align: center; padding-top: 64px; overflow: hidden; }
+    .hero::before { content: ""; position: absolute; left: 50%; top: 140px; width: 980px; height: 980px; transform: translateX(-50%); background: radial-gradient(circle, rgba(232,84,26,.15), rgba(232,84,26,0) 62%); pointer-events: none; }
+    .hero .wrap { position: relative; }
+    .pill { display: inline-flex; gap: 8px; align-items: center; background: var(--orange-wash); color: var(--orange-ink); font-weight: 600; font-size: 13.5px; padding: 8px 15px; border-radius: 999px; }
+    .pill i { width: 7px; height: 7px; border-radius: 50%; background: var(--orange); }
+    .hero h1 { font-size: clamp(40px, 6.4vw, 74px); line-height: 1.02; font-weight: 800; letter-spacing: -0.04em; max-width: 18ch; margin: 24px auto 20px; }
+    .hero h1 span { color: var(--orange); }
+    .hero .lede { margin: 0 auto 32px; }
+    .hero .store-badges { justify-content: center; }
+    .note { margin-top: 14px; font-size: 13.5px; color: var(--muted); }
+    .stage { position: relative; display: flex; justify-content: center; margin-top: 60px; height: 440px; }
+    .stage .phone { position: relative; z-index: 2; margin-bottom: -170px; }
+    .float { position: absolute; z-index: 3; background: #fff; border-radius: 18px; padding: 14px 16px; box-shadow: 0 20px 44px rgba(18,24,38,.12); text-align: left; font-size: 13px; display: flex; gap: 12px; align-items: center; animation: bob 6s ease-in-out infinite; }
+    .float.f2 { animation-delay: -2s; }
+    .float.f3 { animation-delay: -4s; }
+    @keyframes bob { 50% { transform: translateY(-8px); } }
+    .float .dot { width: 38px; height: 38px; border-radius: 11px; background: var(--orange-wash); display: grid; place-items: center; color: var(--orange); flex-shrink: 0; }
+    .float b { display: block; font-size: 14px; }
+    .float small { color: var(--muted); }
+    .f1 { right: calc(50% + 160px); top: 80px; max-width: 250px; }
+    .f2 { right: calc(50% - 410px); top: 30px; }
+    .f3 { right: calc(50% - 380px); top: 230px; }
+    .trust { border-top: 1px solid var(--line); padding: 26px 16px; display: flex; justify-content: center; gap: 12px 44px; flex-wrap: wrap; color: var(--ink-2); font-size: 14px; font-weight: 600; position: relative; z-index: 4; background: #fff; }
+    .trust span { display: inline-flex; gap: 8px; align-items: center; }
+    .trust svg { color: var(--orange); }
+
+    /* Phone */
+    .phone { width: 280px; max-width: 100%; aspect-ratio: 9 / 18.6; border-radius: 44px; padding: 10px; background: var(--phone); box-shadow: 0 44px 90px rgba(18,24,38,.28); flex-shrink: 0; }
+    .phone .scr { height: 100%; border-radius: 35px; overflow: hidden; background: #fff; display: flex; flex-direction: column; font-size: 12.5px; line-height: 1.45; position: relative; }
+    .phone .notch { position: absolute; top: 9px; left: 50%; transform: translateX(-50%); width: 80px; height: 22px; border-radius: 12px; background: var(--phone); }
+    .phone .bar { padding: 40px 16px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ECEEF0; text-align: left; }
+    .phone .bar b { font-size: 13.5px; }
+    .phone .bar i { width: 28px; height: 28px; border-radius: 50%; background: var(--orange); display: grid; place-items: center; color: #fff; }
+    .phone .body { flex: 1; padding: 14px; display: flex; flex-direction: column; gap: 10px; text-align: left; }
+    .phone .me { align-self: flex-end; background: var(--orange-ink); color: #fff; padding: 9px 12px; border-radius: 15px 15px 4px 15px; max-width: 86%; }
+    .phone .ai { background: var(--screen-2); padding: 10px 12px; border-radius: 15px 15px 15px 4px; display: grid; gap: 8px; }
+    .phone .row { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--ink-2); }
+    .phone .row em { font-style: normal; color: var(--orange-ink); font-weight: 600; }
+    .phone .input { margin-top: auto; border: 1px solid #E3E6E8; border-radius: 12px; padding: 10px 12px; color: var(--muted); display: flex; justify-content: space-between; align-items: center; }
+
+    /* Why LiveAccess */
+    .why { display: grid; grid-template-columns: 1fr 1.05fr; gap: 72px; align-items: center; }
+    .why-points { list-style: none; display: grid; gap: 14px; margin-top: 30px; }
+    .why-points li { display: flex; gap: 14px; align-items: flex-start; }
+    .why-points .tick { width: 28px; height: 28px; border-radius: 9px; background: var(--orange-wash); color: var(--orange); display: grid; place-items: center; flex-shrink: 0; }
+    .why-points b { display: block; font-size: 15.5px; }
+    .why-points span span { color: var(--ink-2); font-size: 14.5px; }
+    .ba { display: grid; gap: 16px; }
+    .ba-card { border-radius: 22px; padding: 24px; display: grid; gap: 14px; }
+    .ba-card.before { background: var(--paper-2); }
+    .ba-card.after { background: #fff; border: 1px solid var(--line); box-shadow: 0 24px 50px rgba(18,24,38,.10); }
+    .ba-card .lbl { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 12.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+    .ba-card.after .lbl { color: var(--orange-ink); }
+    .ba-card .lbl em { font-style: normal; font-size: 12px; font-weight: 600; text-transform: none; letter-spacing: 0; padding: 4px 10px; border-radius: 999px; background: #E9ECF0; color: var(--ink-2); white-space: nowrap; }
+    .ba-card.after .lbl em { background: var(--orange-wash); color: var(--orange-ink); }
+    .trail { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: var(--ink-2); font-size: 14px; }
+    .trail li { background: #fff; border: 1px solid #E3E6EA; border-radius: 10px; padding: 7px 11px; }
+    .trail li + li::before { content: "→"; color: #B4BBC5; margin: 0 8px 0 -4px; }
+    .search { display: flex; gap: 10px; align-items: center; background: var(--paper-2); border-radius: 12px; padding: 12px 14px; font: 500 13.5px/1.4 var(--f-mono); color: var(--ink-2); }
+    .search svg { color: var(--orange); flex-shrink: 0; }
+    .answer { background: var(--orange-wash); border-radius: 14px; padding: 16px; font-size: 14.5px; display: grid; gap: 10px; }
+
+    /* Key features */
+    .bento { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .tile { border-radius: 24px; padding: 28px; background: #fff; border: 1px solid var(--line); display: grid; align-content: space-between; gap: 22px; min-height: 220px; transition: transform .2s ease, box-shadow .2s ease; }
+    .tile:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(18,24,38,.08); }
+    .tile:not(.wide):not(.or):not(.full) { align-content: start; }
+    .tile .ti { width: 46px; height: 46px; border-radius: 14px; background: var(--orange-wash); color: var(--orange); display: grid; place-items: center; }
+    .tile h3 { font-size: 19px; }
+    .tile p { color: var(--ink-2); font-size: 14.5px; margin-top: 6px; }
+    .tile-note { display: inline-block; margin-top: 6px; background: var(--orange-wash); color: var(--orange-ink); font-weight: 600; font-size: 12px; padding: 4px 10px; border-radius: 999px; }
+    .tile.wide { grid-column: span 2; background: var(--slate); color: #fff; border-color: var(--slate); grid-template-columns: 1fr 1fr; align-items: end; }
+    .tile.wide p { color: var(--on-slate-2); }
+    .tile.wide .ti { background: rgba(255,255,255,.08); color: var(--orange-on-dark); }
+    .tile.or { background: var(--orange-ink); color: #fff; border-color: var(--orange-ink); }
+    .tile.or p { color: #fff; }
+    .tile.or .ti { background: rgba(255,255,255,.18); color: #fff; }
+    .tile.full { grid-column: 1 / -1; min-height: 0; grid-template-columns: auto 1fr; align-items: center; background: var(--orange-wash); border-color: #FFDCCB; }
+    .tile.full .ti { background: #fff; }
+    .chatlet { display: grid; gap: 8px; font-size: 13.5px; }
+    .chatlet div { background: rgba(255,255,255,.08); border-radius: 14px; padding: 10px 13px; }
+    .chatlet div:first-child { background: var(--orange-ink); justify-self: end; border-bottom-right-radius: 4px; }
+    .chatlet div:last-child { border-bottom-left-radius: 4px; }
+    .more { margin-top: 32px; text-align: center; }
+
+    /* How it works */
+    .steps { list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .step { background: #fff; border-radius: 22px; padding: 26px; display: grid; gap: 10px; align-content: start; box-shadow: 0 1px 0 var(--line), 0 12px 30px rgba(18,24,38,.05); }
+    .step .n { width: 42px; height: 42px; border-radius: 13px; background: var(--orange-ink); color: #fff; display: grid; place-items: center; font-weight: 800; }
+    .step p { color: var(--ink-2); font-size: 14.5px; }
+    .optional-help { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; border: 1.5px dashed #F0A585; background: var(--orange-wash); border-radius: 18px; padding: 18px 24px; }
+    .optional-help .opt-tag { background: #fff; color: var(--orange-ink); font-weight: 700; font-size: 12px; letter-spacing: .05em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+    .optional-help h3 { font-size: 17px; }
+    .optional-help p { color: var(--ink-2); font-size: 14.5px; }
+    .head-row { display: flex; justify-content: space-between; align-items: end; gap: 20px; flex-wrap: wrap; margin-bottom: 52px; }
+    .head-row .head { margin-bottom: 0; }
+
+    /* Who it's for */
+    .people { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .people.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .managers-note { margin-top: 24px; text-align: center; color: var(--ink-2); font-size: 15px; }
+    .managers-note a { color: var(--orange-ink); text-decoration: underline; text-underline-offset: 2px; }
+    .person { border-radius: 24px; padding: 30px; background: #fff; display: grid; gap: 12px; align-content: start; }
+    .person .av { width: 54px; height: 54px; border-radius: 50%; background: var(--orange-wash); color: var(--orange); display: grid; place-items: center; }
+    #coverage .person { border: 1px solid var(--line); }
+    .person p a { color: var(--orange-ink); text-decoration: underline; text-underline-offset: 2px; }
+    .person h3 { font-size: 20px; }
+    .person p { color: var(--ink-2); font-size: 15px; }
+    .person ul { list-style: none; display: grid; gap: 6px; margin-top: 4px; }
+    .person li { font-size: 14px; color: var(--ink-2); display: flex; gap: 8px; }
+    .person li::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--orange); margin-top: 9px; flex-shrink: 0; }
+    .result { margin-top: 18px; background: var(--slate); color: #fff; border-radius: 28px; padding: 44px; display: grid; grid-template-columns: 1fr 1.6fr; gap: 40px; align-items: center; position: relative; overflow: hidden; }
+    .result::after { content: ""; position: absolute; right: -120px; top: -160px; width: 420px; height: 420px; border-radius: 50%; background: radial-gradient(circle, rgba(232,84,26,.35), rgba(232,84,26,0) 65%); pointer-events: none; }
+    .result .ri { width: 52px; height: 52px; border-radius: 15px; background: var(--orange); display: grid; place-items: center; margin-bottom: 18px; }
+    .result h3 { font-size: 30px; font-weight: 800; letter-spacing: -0.03em; }
+    .result > div > p { color: var(--on-slate-2); margin-top: 10px; }
+    .outcomes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; position: relative; z-index: 1; }
+    .outcomes div { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08); border-radius: 18px; padding: 20px; }
+    .outcomes b { display: block; font-size: 17px; margin-bottom: 4px; }
+    .outcomes span { color: var(--on-slate-2); font-size: 14px; }
+
+    /* Get the app */
+    .cta { background: var(--slate); color: #fff; border-radius: 32px; padding: 56px; display: grid; grid-template-columns: 1.2fr auto; gap: 40px; align-items: center; position: relative; overflow: hidden; }
+    .cta::before { content: ""; position: absolute; left: -100px; bottom: -200px; width: 460px; height: 460px; border-radius: 50%; background: radial-gradient(circle, rgba(232,84,26,.3), rgba(232,84,26,0) 65%); pointer-events: none; }
+    .cta > * { position: relative; }
+    .cta h2 { font-size: clamp(28px, 3.4vw, 42px); }
+    .cta p { color: var(--on-slate-2); margin: 12px 0 26px; max-width: 48ch; }
+    .cta p a { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+    .qr { background: #fff; border-radius: 20px; padding: 16px; text-align: center; color: var(--ink-2); width: 190px; }
+    .qr img { width: 158px; height: 158px; margin: 0 auto; display: block; }
+    .qr span { display: block; font-size: 12.5px; margin-top: 8px; line-height: 1.35; }
+
+    @media (max-width: 980px) {
+      .float { display: none; }
+      .why, .result { grid-template-columns: 1fr; gap: 40px; }
+      .bento { grid-template-columns: 1fr 1fr; }
+      .tile.wide { grid-column: span 2; grid-template-columns: 1fr; }
+      .steps { grid-template-columns: 1fr 1fr; }
+      .people, .people.two { grid-template-columns: 1fr; }
+      .cta { grid-template-columns: 1fr; padding: 36px 28px; }
+      .qr { display: none; }
+    }
+    @media (max-width: 620px) {
+      .hero { padding-top: 20px; }
+      .head, .head-row { margin-bottom: 28px; }
+      .optional-help { margin-top: 12px; }
+      .stage { height: 380px; }
+      .bento, .steps, .outcomes { grid-template-columns: 1fr; }
+      .tile.wide { grid-column: auto; }
+      .tile.full { grid-template-columns: 1fr; }
+      .result { padding: 30px 22px; }
+      .cta { padding: 30px 22px; border-radius: 24px; }
+    }
+  </style>
+</head>
+<body class="site">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="nav">
+      <a class="brand" href="./" aria-label="LiveAccess by TPS, home">
+        <img src="logo.png" alt="TPS" width="103" height="22" />
+        <span class="brand-name">LiveAccess 24/7</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="how-it-works.html">How it works</a>
+        <a href="features.html">Features</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <a class="nav-cta" href="get-app.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="6" y="2" width="12" height="20" rx="2" />
+          <line x1="11" y1="18" x2="13" y2="18" />
+        </svg>
+        Get the app
+      </a>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="wrap">
+        <h1>Your technical support, <span>always at hand.</span></h1>
+        <p class="lede">Find equipment information, get practical guidance and connect with TPS expertise to keep your plant running.</p>
+        <div class="store-badges">
+          <a class="store-badge" href="https://apps.apple.com/app/liveaccess-24-7/id6790754198" target="_blank" rel="noopener">
+            <img src="badge-app-store.svg" width="138" height="46" alt="Download LiveAccess on the App Store" />
+          </a>
+          <a class="store-badge" href="https://play.google.com/store/apps/details?id=com.liveaccess.app&referrer=utm_source%3Dwebsite%26utm_campaign%3Dhome" target="_blank" rel="noopener">
+            <img src="badge-google-play.png" width="154" height="46" alt="Get LiveAccess on Google Play" />
+          </a>
+        </div>
+        <p class="note">Available for iPhone, iPad and Android.</p>
+      </div>
+      <div class="stage">
+        <div class="float f1" aria-hidden="true"><span class="dot"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg></span><span><b>Plain-language search</b><small>Ask like you'd ask a colleague in your own language</small></span></div>
+        <div class="float f2" aria-hidden="true"><span class="dot"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h3l2-3h6l2 3h3v11H4z" /><circle cx="12" cy="13" r="3.5" /></svg></span><span><b>Search by photo</b><small>Nameplate, part or HMI</small></span></div>
+        <div class="float f3" aria-hidden="true"><span class="dot"><svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M15 8v8H3V8zm2 3 4-3v8l-4-3z" /></svg></span><span><b>TPS engineer</b><small>Video call when you need it</small></span></div>
+        <div class="phone" role="img" aria-label="Illustration of the LiveAccess app identifying a pump from a nameplate photo and giving service advice">
+          <div class="scr" aria-hidden="true">
+            <div class="notch"></div>
+            <div class="bar"><b>LiveAccess 24/7</b><i><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M15 8v8H3V8zm2 3 4-3v8l-4-3z" /></svg></i></div>
+            <div class="body">
+              <div class="me">What's the recommended seal kit for this pump?</div>
+              <div class="ai"><span>Pump identified from the nameplate photo: <b>Grundfos CR 32-4</b>. Recommended shaft seal kit: <b>type HQQE</b> (SiC/SiC/EPDM).</span><div class="row"><em>▶ Listen</em></div></div>
+              <div class="input">Ask a follow-up… <span style="display:flex;gap:7px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3" /></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z" /><circle cx="12" cy="13" r="3.5" /></svg></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="trust">
+        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>Guest search, no account needed</span>
+        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>TPS engineer one tap away</span>
+        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>Built by TPS</span>
+        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>Free to download</span>
+      </div>
+    </section>
+
+    <section class="band" id="why">
+      <div class="wrap why">
+        <div>
+          <span class="kicker">Why LiveAccess?</span>
+          <h2 style="margin:12px 0 18px">Stop digging through binders during a breakdown.</h2>
+          <p class="lede">LiveAccess gives your team instant technical advice for the process lines you work with every day.</p>
+          <ul class="why-points">
+            <li><span class="tick"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></span><span><b>The right answer, not a pile of PDFs</b><span>Ask a question and get technical advice for your equipment.</span></span></li>
+            <li><span class="tick"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></span><span><b>At the machine, not in the office</b><span>On the phone already in your pocket, with voice and camera.</span></span></li>
+            <li><span class="tick"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg></span><span><b>A TPS engineer when you need further details</b><span>Video-call a TPS engineer, straight from the app.</span></span></li>
+          </ul>
+        </div>
+        <div class="ba">
+          <div class="ba-card before">
+            <div class="lbl">Without LiveAccess <em>Hours to days</em></div>
+            <ol class="trail"><li>Walk to the office</li><li>Find the binder</li><li>Check the revision</li><li>Call the supplier</li></ol>
+          </div>
+          <div class="ba-card after">
+            <div class="lbl">With LiveAccess <em>Seconds</em></div>
+            <div class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>What's the recommended seal kit for this pump?</div>
+            <div class="answer">
+              <p>Pump identified from the nameplate: Grundfos CR 32-4. Recommended shaft seal kit: type HQQE (SiC/SiC/EPDM).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="three">
+      <div class="wrap">
+        <div class="head center">
+          <span class="kicker">How LiveAccess helps</span>
+          <h2>Three connected ways to keep your plant running.</h2>
+        </div>
+        <div class="trio">
+          <div><h3>Technical self-service</h3><p>Ask in plain words, snap a nameplate or speak, and get technical advice.</p></div>
+          <div><h3>TPS and expert support</h3><p>Video-call a TPS engineer, or message an expert in the Expert Network, when you need further details.</p></div>
+          <div><h3>Authorised plant information</h3><p>Access your plant’s equipment records, drawings and project documents, with access granted by TPS.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band alt" id="features">
+      <div class="wrap">
+        <div class="head center">
+          <span class="kicker">Key features</span>
+          <h2>Powerful tools designed for the demands of the plant floor.</h2>
+        </div>
+        <div class="bento">
+          <div class="tile wide">
+            <div>
+              <span class="ti"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="6" height="6" /><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3" /><rect x="4" y="4" width="16" height="16" rx="2" /></svg></span>
+              <h3 style="margin-top:22px">Plain-language advice</h3>
+              <p>Ask questions in your own words and your preferred language, and get advice for your equipment.</p>
+            </div>
+            <div class="chatlet" aria-hidden="true"><div>What torque should I use for the casing nuts on an Alfa Laval LKH UltraPure 20?</div><div>Tighten the casing cap nuts to 20 N·m (14.8 lbf·ft).</div></div>
+          </div>
+          <div class="tile or">
+            <span class="ti"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg></span>
+            <div><h3>Instant search</h3><p>Find technical advice for your equipment in seconds.</p></div>
+          </div>
+          <div class="tile">
+            <span class="ti"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6M9 13h6M9 17h6" /></svg></span>
+            <div><h3>Document viewer</h3><span class="tile-note">For TPS customers</span><p>Browse your authorised equipment records, drawings and specifications directly in the app.</p></div>
+          </div>
+          <div class="tile">
+            <span class="ti"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z" /><circle cx="12" cy="13" r="3.5" /></svg></span>
+            <div><h3>Camera &amp; voice search</h3><p>Snap a nameplate or part, or speak your question. Tap Listen to hear the answer.</p></div>
+          </div>
+          <div class="tile">
+            <span class="ti"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3" /><path d="M8 20v-4h8v4M7 9h10" /></svg></span>
+            <div><h3>Built for the plant floor</h3><p>A simple, fast interface for engineers, technicians and production teams.</p></div>
+          </div>
+          <div class="tile full">
+            <span class="ti"><svg class="ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15 8v8H3V8zm2 3 4-3v8l-4-3z" /></svg></span>
+            <div><h3>Talk to a TPS engineer</h3><p>Still stuck? Video-call a TPS engineer or chat with an expert in high-shear mixing, liquid evaporation, spray drying, powder handling and more.</p></div>
+          </div>
+        </div>
+        <p class="more"><a class="link-arrow" href="features.html">See all features <span aria-hidden="true">→</span></a></p>
+      </div>
+    </section>
+
+    <section class="band" id="how">
+      <div class="wrap">
+        <div class="head-row">
+          <div class="head">
+            <span class="kicker">How it works</span>
+            <h2>Get practical guidance in three simple steps.</h2>
+          </div>
+          <a class="link-arrow" href="how-it-works.html">See it screen by screen <span aria-hidden="true">→</span></a>
+        </div>
+        <ol class="steps">
+          <li class="step"><span class="n">1</span><h3>Open the app</h3><p>Create a free LiveAccess account or log in, or search general technical information as a guest.</p></li>
+          <li class="step"><span class="n">2</span><h3>Ask, snap or speak</h3><p>Type it, photograph the nameplate, or hold the mic and talk.</p></li>
+          <li class="step"><span class="n">3</span><h3>Get a clear answer</h3><p>Get advice, with follow-up questions in the same thread.</p></li>
+        </ol>
+        <div class="optional-help"><span class="opt-tag">Optional</span><h3>Need more help? Connect with TPS.</h3><p>Video-call a TPS engineer.</p></div>
+      </div>
+    </section>
+
+    <section class="band" id="coverage">
+      <div class="wrap">
+        <div class="head center">
+          <span class="kicker">What's covered</span>
+          <h2>What LiveAccess knows, and where answers come from.</h2>
+        </div>
+        <div class="people">
+          <article class="person">
+            <h3>General technical information</h3>
+            <p>Anyone can search, even as a guest. Answers draw on available equipment information and technical knowledge for dairy, food and beverage plants.</p>
+          </article>
+          <article class="person">
+            <h3>TPS expertise</h3>
+            <p>Video-call a TPS engineer, or chat with an expert in the Expert Network across eight <a href="process-areas.html">process areas</a>, from high shear mixing and spray drying to automation.</p>
+          </article>
+          <article class="person">
+            <h3>Your plant's own documents</h3>
+            <p>Authorised TPS customers can open their plant's equipment records, drawings and project documents in the app. TPS grants this access. To add your plant, <a href="contact.html">contact TPS</a>.</p>
+          </article>
+        </div>
+        <p class="managers-note">Answers may be inaccurate or out of date. Always confirm safety-critical steps against your site procedures or with a TPS engineer.</p>
+      </div>
+    </section>
+
+    <section class="band alt" id="who">
+      <div class="wrap">
+        <div class="head center">
+          <span class="kicker">Who it's for</span>
+          <h2>For the people who keep production running.</h2>
+        </div>
+        <div class="people">
+          <article class="person">
+            <span class="av"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" /><path d="M3.27 6.96 12 12.01l8.73-5.05M12 22.08V12" /></svg></span>
+            <h3>Process Engineers</h3>
+            <p>Troubleshooting complex equipment issues and optimizing production lines.</p>
+            <ul><li>Specs and setpoints on demand</li><li>Voice and photo input</li></ul>
+          </article>
+          <article class="person">
+            <span class="av"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z" /></svg></span>
+            <h3>Maintenance Teams</h3>
+            <p>Performing daily upkeep, planned maintenance and emergency repairs.</p>
+            <ul><li>Technical guidance at the machine</li><li>Engineer video calls when stuck</li></ul>
+          </article>
+          <article class="person">
+            <span class="av"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /></svg></span>
+            <h3>Production teams</h3>
+            <p>Getting practical guidance for daily production tasks and operating questions.</p>
+            <ul><li>Voice and photo search</li><li>No account needed to start</li></ul>
+          </article>
+        </div>
+        <div class="result">
+          <div>
+            <span class="ri"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg></span>
+            <h3>The Result</h3>
+            <p>Across your production line, every shift.</p>
+          </div>
+          <div class="outcomes">
+            <div><b>Find it faster</b><span>The right information in seconds, not a search through folders.</span></div>
+            <div><b>Reduce downtime</b><span>Help resolve issues at the machine and reduce time spent waiting for support.</span></div>
+            <div><b>Better service</b><span>Improve service efficiency with TPS engineers one tap away.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="managers">
+      <div class="wrap">
+        <div class="head center">
+          <span class="kicker">For managers</span>
+          <h2>What plant and maintenance managers need to know.</h2>
+        </div>
+        <div class="people two">
+          <article class="person">
+            <h3>Access for your team</h3>
+            <p>Anyone can search as a guest. Logging in lets your people save their search history and video-call a TPS engineer. TPS can give authorised customers access to their own plant's equipment records, drawings and project documents.</p>
+          </article>
+          <article class="person">
+            <h3>Setup</h3>
+            <p>Your team downloads the free app from the App Store or Google Play and can start asking questions straight away. For access to your plant's own documents, contact TPS.</p>
+          </article>
+          <article class="person">
+            <h3>Data handling</h3>
+            <p>Chat message text is encrypted on the device before it leaves the app. Attachments, recordings and voicemail are kept in private cloud storage, reached only through short-lived, access-controlled links. TPS does not sell personal data, and anyone can delete their account in the app.</p>
+          </article>
+          <article class="person">
+            <h3>Cost</h3>
+            <p>LiveAccess is free to download and use, with no subscriptions or in-app purchases.</p>
+          </article>
+        </div>
+        <p class="managers-note">Full details are in our <a href="privacy-policy.html">Privacy Policy</a>. Questions about access for your team? <a href="contact.html">Contact us</a>.</p>
+      </div>
+    </section>
+
+    <section class="band" id="get-app">
+      <div class="wrap">
+        <div class="cta">
+          <div>
+            <h2>Take LiveAccess onto the plant floor.</h2>
+            <p>Access equipment information, get practical guidance and connect with TPS support, all from your phone. Questions? Use our <a href="contact.html">Contact us</a> form.</p>
+            <div class="store-badges">
+              <a class="store-badge" href="https://apps.apple.com/app/liveaccess-24-7/id6790754198" target="_blank" rel="noopener">
+                <img src="badge-app-store.svg" width="138" height="46" alt="Download LiveAccess on the App Store" loading="lazy" />
+              </a>
+              <a class="store-badge" href="https://play.google.com/store/apps/details?id=com.liveaccess.app&referrer=utm_source%3Dwebsite%26utm_campaign%3Dhome" target="_blank" rel="noopener">
+                <img src="badge-google-play.png" width="154" height="46" alt="Get LiveAccess on Google Play" loading="lazy" />
+              </a>
+            </div>
+          </div>
+          <div class="qr">
+            <img src="app-qr.svg" width="158" height="158" alt="QR code that opens liveaccess.ai/download.html" loading="lazy" />
+            <span>Scan with your phone to download</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <b>LiveAccess 24/7</b><br />
+        The 24/7 service app from TPS for dairy, food and beverage plants.<br />
+        A service platform by <a href="https://tps.ltd/" target="_blank" rel="noopener">TPS</a>
+      </div>
+      <nav aria-label="Product">
+        <h2>Product</h2>
+        <ul>
+          <li><a href="how-it-works.html">How it works</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="get-app.html">Get the app</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
+        <ul>
+          <li><a href="guides.html">Troubleshooting guides</a></li>
+          <li><a href="process-areas.html">Process areas</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Company">
+        <h2>Company</h2>
+        <ul>
+          <li><a href="about.html">About</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="privacy-policy.html">Privacy Policy</a></li>
+          <li><a href="terms-and-condition.html">Terms &amp; Conditions</a></li>
+          <li><button type="button" class="linklike" data-cookie-settings>Cookie settings</button></li>
+        </ul>
+      </nav>
+      <div class="copyright">&copy; 2026 TPS. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script src="menu.js?v=2.1.3"></script>
+</body>
+</html>

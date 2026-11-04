@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Google tag (gtag.js). Reports only from the live site, so local testing doesn't count as traffic. -->
+  <script>window['ga-disable-G-JFHJD3T51M'] = !/(^|\.)liveaccess\.ai$/.test(location.hostname);</script>
+  <script type="text/plain" data-consent="analytics" src="https://www.googletagmanager.com/gtag/js?id=G-JFHJD3T51M"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    var consentGranted = false;
+    try { consentGranted = localStorage.getItem('la_consent_v1') === 'granted'; } catch (e) {}
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: consentGranted ? 'granted' : 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-JFHJD3T51M');
+  </script>
+  <script src="consent.js?v=2.1.5" defer></script>
+  <script src="analytics.js?v=2.1.3" defer></script>
+  <title>Terms & Conditions — LiveAccess</title>
+  <meta name="description" content="The terms for using the LiveAccess 24/7 app and website from TPS: accounts, acceptable use, AI-generated content, liability and account deletion." />
+  <link rel="canonical" href="https://liveaccess.ai/terms-and-condition.html" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="LiveAccess" />
+  <meta property="og:title" content="Terms & Conditions — LiveAccess" />
+  <meta property="og:description" content="The terms for using the LiveAccess 24/7 app and website from TPS." />
+  <meta property="og:url" content="https://liveaccess.ai/terms-and-condition.html" />
+  <meta property="og:image" content="https://liveaccess.ai/logo.png" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="stylesheet" href="common.css?v=2.1.9" />
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 48px 24px 64px;
+    }
+
+    .intro {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .icon-circle {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--blue-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .intro h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .intro .underline {
+      width: 48px;
+      height: 3px;
+      background: var(--brand-orange);
+      margin: 0 auto 16px;
+      border-radius: 2px;
+    }
+    .intro p {
+      color: var(--text-secondary);
+      font-size: 14.5px;
+    }
+
+    .doc-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+    }
+
+    .toc {
+      background: var(--blue-bg);
+      border-radius: 8px;
+      padding: 18px 20px;
+      margin-bottom: 32px;
+    }
+    .toc h2 {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--brand-navy);
+      margin-bottom: 10px;
+    }
+    .toc ol {
+      columns: 2;
+      column-gap: 24px;
+      padding-left: 18px;
+      font-size: 13.5px;
+    }
+    .toc li { margin-bottom: 6px; }
+    .toc a {
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+    .toc a:hover { color: var(--brand-orange); text-decoration: underline; }
+
+    section.term {
+      margin-bottom: 28px;
+      scroll-margin-top: 100px;
+    }
+    section.term:last-child { margin-bottom: 0; }
+    section.term h2 {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--brand-navy);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    section.term h2 .num {
+      color: var(--brand-orange);
+      font-weight: 700;
+    }
+    section.term p, section.term li {
+      font-size: 14.5px;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    section.term ul {
+      padding-left: 20px;
+      margin-bottom: 8px;
+    }
+    section.term strong { font-weight: 600; }
+    section.term a.inline-link {
+      color: var(--brand-orange);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    section.term a.inline-link:hover { text-decoration: underline; }
+
+    hr.divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 28px 0;
+    }
+
+    @media (max-width: 600px) {
+      main { padding: 32px 16px 48px; }
+      .doc-card { padding: 24px; }
+    }
+
+    @media (max-width: 480px) {
+      .toc ol { columns: 1; }
+      .doc-card { padding: 20px; }
+      .intro h1 { font-size: 22px; }
+      section.term h2 { font-size: 16px; }
+      section.term p, section.term li { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="nav">
+      <a class="brand" href="./" aria-label="LiveAccess by TPS, home">
+        <img src="logo.png" alt="TPS" width="103" height="22" />
+        <span class="brand-name">LiveAccess 24/7</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="how-it-works.html">How it works</a>
+        <a href="features.html">Features</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <a class="nav-cta" href="get-app.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="6" y="2" width="12" height="20" rx="2" />
+          <line x1="11" y1="18" x2="13" y2="18" />
+        </svg>
+        Get the app
+      </a>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="intro">
+      <div class="icon-circle">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <path d="M14 2v6h6" />
+          <line x1="9" y1="13" x2="15" y2="13" />
+          <line x1="9" y1="17" x2="15" y2="17" />
+        </svg>
+      </div>
+      <h1>Terms & Conditions</h1>
+      <div class="underline"></div>
+      <p>Please read these terms carefully before using LiveAccess.</p>
+    </div>
+
+    <div class="doc-card">
+      <div class="toc">
+        <h2>Contents</h2>
+        <ol>
+          <li><a href="#introduction">Introduction</a></li>
+          <li><a href="#eligibility">Eligibility</a></li>
+          <li><a href="#service">Description of Service</a></li>
+          <li><a href="#account">Account Registration &amp; Security</a></li>
+          <li><a href="#acceptable-use">Acceptable Use</a></li>
+          <li><a href="#data">User Content &amp; Data</a></li>
+          <li><a href="#communications">Expert Network, Chat &amp; Calls</a></li>
+          <li><a href="#ip">Intellectual Property</a></li>
+          <li><a href="#ai-disclaimer">AI-Generated Content Disclaimer</a></li>
+          <li><a href="#availability">Service Availability &amp; Disclaimer of Warranties</a></li>
+          <li><a href="#liability">Limitation of Liability</a></li>
+          <li><a href="#termination">Account Termination &amp; Deletion</a></li>
+          <li><a href="#changes">Changes to These Terms</a></li>
+          <li><a href="#law">Governing Law &amp; Dispute Resolution</a></li>
+          <li><a href="#contact">Contact Us</a></li>
+        </ol>
+      </div>
+
+      <section class="term" id="introduction">
+        <h2><span class="num">1.</span> Introduction</h2>
+        <p>These Terms &amp; Conditions govern your access to and use of the LiveAccess mobile application, provided by <strong>TPS Pte Ltd</strong>, a company registered at 36 Robinson Rd, #20-01, Singapore 068877.</p>
+        <p>By downloading, installing, registering for, or otherwise using LiveAccess — whether as a guest or with a registered account — you agree to be bound by these Terms. If you do not agree, please do not use the App.</p>
+      </section>
+
+      <section class="term" id="eligibility">
+        <h2><span class="num">2.</span> Eligibility</h2>
+        <p>You must be at least 18 years old to use LiveAccess. By creating an account, you confirm that you meet this requirement and that all information you provide is accurate and complete.</p>
+      </section>
+
+      <section class="term" id="service">
+        <h2><span class="num">3.</span> Description of Service</h2>
+        <p>LiveAccess provides mobile access to TPS's technical project and documentation platform, including:</p>
+        <ul>
+          <li>AI-assisted search over technical and equipment documentation, using text, voice input, or a photo, with the option to listen to an answer read aloud;</li>
+          <li>Viewing and downloading of documents in formats such as PDF, DWG, XLS/XLSX, CSV, DOC/DOCX, images, and video;</li>
+          <li>An Expert Network through which you can view Expert profiles and chat one-to-one with an Expert, including sending photos, videos, documents, and voice messages;</li>
+          <li>Log in to message TPS engineers and experts in the app;</li>
+          <li>Live video calls, voicemail, and callback with TPS support engineers and Experts, a call history, and call recording where a participant starts one (see Section 6);</li>
+          <li>Notifications for incoming and missed calls, voicemail, and chat messages;</li>
+          <li>Account and profile management tools, and, for TPS support engineers and Experts, tools to manage their availability.</li>
+        </ul>
+        <p>LiveAccess is free to download and use. Guests can search general technical information. A free LiveAccess account provides access to the registered-user features described in the app. Access to private plant documents is granted separately by TPS to each person, project by project. TPS engineers respond during their working hours and subject to availability.</p>
+        <!-- OPEN PRODUCT QUESTION: confirm whether a configuration-specific voicemail limitation remains. Existing qualification kept until confirmed. -->
+        <p>The availability of voicemail may depend on how the Service is configured for your organization.</p>
+      </section>
+
+      <section class="term" id="account">
+        <h2><span class="num">4.</span> Account Registration &amp; Security</h2>
+        <p>You are responsible for maintaining the confidentiality of your login credentials and for all activity that occurs under your account. Notify us immediately at <a class="inline-link" href="mailto:liveaccess@tps.ltd?subject=Account%20Security%20Concern%20-%20LiveAccess">liveaccess@tps.ltd</a> if you suspect unauthorized use of your account.</p>
+        <p>You can change your password at any time from within the App's account settings. If you forget your password, you can reset it using a verification code sent to your registered email address.</p>
+        <p>Calls and chat notifications for your account are delivered to the device you are signed in on. Sign out of LiveAccess before you dispose of, sell, or lend your device.</p>
+      </section>
+
+      <section class="term" id="acceptable-use">
+        <h2><span class="num">5.</span> Acceptable Use</h2>
+        <p>When using LiveAccess, you agree that you will not:</p>
+        <ul>
+          <li>Use the App's search, document-access, chat, or calling features for any unlawful purpose;</li>
+          <li>Send, through chat or a call, any content that is unlawful, harassing, abusive, defamatory, obscene, or that infringes the rights of others, or any file containing malware or other harmful code;</li>
+          <li>Share, through chat or a call, confidential or proprietary information that you are not authorized to disclose;</li>
+          <li>Capture, copy, or distribute another person's messages, voice, or image from a chat or call outside the App without their consent, other than through the App's own recording feature;</li>
+          <li>Impersonate any person, or misrepresent your identity, qualifications, or affiliation;</li>
+          <li>Attempt to reverse engineer, decompile, or otherwise access the underlying source code or models used by the Service;</li>
+          <li>Interfere with or disrupt the integrity or performance of the App or its backend systems.</li>
+        </ul>
+      </section>
+
+      <section class="term" id="data">
+        <h2><span class="num">6.</span> User Content &amp; Data</h2>
+        <p>To provide the Service, we collect and store: your full name, email address, mobile number, and hashed password at registration; your search queries, any photo attached to them, and the AI-generated answers returned to you, associated with your account for saved search and conversation history when you are signed in; the chat messages and attachments you exchange; and records of your calls, together with any voicemail or call recording. Our <a class="inline-link" href="privacy-policy.html">Privacy Policy</a> describes in full what we collect and how it is used.</p>
+        <p>LiveAccess requests camera, microphone, photo library, and notification permissions — and, on Android, the Phone permission needed to present incoming calls, and on older Android versions storage permission to save downloaded documents — each for the purposes set out in the <a class="inline-link" href="privacy-policy.html#permissions">Device Permissions</a> section of our Privacy Policy.</p>
+        <p><strong>Content You Send</strong> — You remain responsible for the messages, photos, videos, documents, and voice messages you send through LiveAccess, and you confirm that you have the right to share them. You retain ownership of that content; you grant TPS a limited right to store, transmit, and display it solely as needed to operate the Service.</p>
+        <p><strong>Call Recording Consent</strong> — Either participant in a video call can start or stop a recording of it. When a recording is started or stopped, the App notifies both participants on screen, and a "REC" indicator is displayed for as long as the call is being recorded. By continuing to participate in a call while that indicator is shown, you consent to the call being recorded and stored as described in our <a class="inline-link" href="privacy-policy.html#information">Privacy Policy</a>. If you do not consent to being recorded, end the call.</p>
+        <p><strong>Voicemail</strong> — By choosing to leave a voicemail after an unanswered call, you consent to it being recorded, stored, and made available to the person or team you were calling.</p>
+        <p>We do not sell your personal data to third parties. Data is used solely to operate, maintain, and improve the Service.</p>
+      </section>
+
+      <section class="term" id="communications">
+        <h2><span class="num">7.</span> Expert Network, Chat &amp; Calls</h2>
+        <p>The Expert Network lets you contact individuals whom TPS has designated as Experts. If you are an Expert, the name and profile details you provide are visible to other signed-in users, and you are responsible for keeping them accurate.</p>
+        <p>Guidance given by an Expert or a TPS support engineer through chat or a call is provided for general assistance and reference. It does not replace the original source documentation, your organization's own procedures, or the judgement of qualified personnel on site. Always verify critical technical information before relying on it for engineering, safety, or operational decisions.</p>
+        <p>TPS support engineers and Experts are available according to their working hours, and a call or message may not be answered immediately. LiveAccess is not an emergency service and must not be relied on to contact emergency responders.</p>
+        <p>You may edit or delete a chat message you have sent only for a limited time after sending it.</p>
+      </section>
+
+      <section class="term" id="ip">
+        <h2><span class="num">8.</span> Intellectual Property</h2>
+        <p>All content, features, and functionality made available through LiveAccess — including technical documentation, drawings, equipment data, and the App's design and software — are owned by TPS or its licensors and are protected by applicable intellectual property laws. Using LiveAccess grants you a limited, non-exclusive, revocable license to access and use this content within the App — it does not transfer any ownership rights to you.</p>
+      </section>
+
+      <section class="term" id="ai-disclaimer">
+        <h2><span class="num">9.</span> AI-Generated Content Disclaimer</h2>
+        <p>Search results and answers generated by the App's AI assistant — including answers to voice and photo searches, and answers read aloud — are provided for convenience and reference only. They may occasionally be inaccurate or incomplete, and voice input may be transcribed incorrectly. Always verify critical technical information against the original source document before relying on it for engineering, safety, or operational decisions.</p>
+      </section>
+
+      <section class="term" id="availability">
+        <h2><span class="num">10.</span> Service Availability &amp; Disclaimer of Warranties</h2>
+        <p>LiveAccess is provided on an "as is" and "as available" basis. We do not guarantee that the Service will be uninterrupted, error-free, or available at all times. The quality and availability of chat, video calls, and notifications depend on your device, its settings, and your network connection. Documents cached for offline use may become outdated; TPS makes no warranty as to the continued accuracy of offline or cached content after it has been downloaded.</p>
+        <p>To keep the Service secure and working correctly, we may require you to update to the latest version of the App before you can continue using it.</p>
+      </section>
+
+      <section class="term" id="liability">
+        <h2><span class="num">11.</span> Limitation of Liability</h2>
+        <p>To the maximum extent permitted by law, TPS shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of, or inability to use, LiveAccess, including but not limited to reliance on AI-generated search results or outdated offline content. TPS's total liability arising out of these Terms shall not exceed the amount, if any, paid by you for use of the Service.</p>
+      </section>
+
+      <section class="term" id="termination">
+        <h2><span class="num">12.</span> Account Termination &amp; Deletion</h2>
+        <p>Delete your account in the app under Profile → Delete Account. If TPS or your organisation manages your account, contact support through the <a class="inline-link" href="contact.html">Contact us</a> form for help with deletion. Visit our <a class="inline-link" href="delete-account.html">Delete Your Account</a> page for instructions.</p>
+        <p>TPS reserves the right to suspend or terminate your access to the Service if you breach these Terms or misuse the App.</p>
+      </section>
+
+      <section class="term" id="changes">
+        <h2><span class="num">13.</span> Changes to These Terms</h2>
+        <p>We may update these Terms from time to time. Continued use of LiveAccess after changes are posted constitutes acceptance of the revised Terms.</p>
+      </section>
+
+      <section class="term" id="law">
+        <h2><span class="num">14.</span> Governing Law &amp; Dispute Resolution</h2>
+        <p>These Terms are governed by and construed in accordance with the laws of Singapore. Any disputes arising out of or in connection with these Terms shall be subject to the exclusive jurisdiction of the courts of Singapore.</p>
+      </section>
+
+      <section class="term" id="contact">
+        <h2><span class="num">15.</span> Contact Us</h2>
+        <p>If you have any questions about these Terms, please contact us:</p>
+        <p>
+          <strong>TPS Pte Ltd</strong><br />
+          36 Robinson Rd, #20-01, Singapore 068877<br />
+          Email: <a class="inline-link" href="mailto:liveaccess@tps.ltd?subject=Terms%20%26%20Conditions%20Query%20-%20LiveAccess">liveaccess@tps.ltd</a>
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <b>LiveAccess 24/7</b><br />
+        The 24/7 service app from TPS for dairy, food and beverage plants.<br />
+        A service platform by <a href="https://tps.ltd/" target="_blank" rel="noopener">TPS</a>
+      </div>
+      <nav aria-label="Product">
+        <h2>Product</h2>
+        <ul>
+          <li><a href="how-it-works.html">How it works</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="get-app.html">Get the app</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
+        <ul>
+          <li><a href="guides.html">Troubleshooting guides</a></li>
+          <li><a href="process-areas.html">Process areas</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Company">
+        <h2>Company</h2>
+        <ul>
+          <li><a href="about.html">About</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="privacy-policy.html">Privacy Policy</a></li>
+          <li><a href="terms-and-condition.html">Terms &amp; Conditions</a></li>
+          <li><button type="button" class="linklike" data-cookie-settings>Cookie settings</button></li>
+        </ul>
+      </nav>
+      <div class="copyright">&copy; 2026 TPS. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script src="menu.js?v=2.1.3"></script>
+</body>
+</html>

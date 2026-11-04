@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Google tag (gtag.js). Reports only from the live site, so local testing doesn't count as traffic. -->
+  <script>window['ga-disable-G-JFHJD3T51M'] = !/(^|\.)liveaccess\.ai$/.test(location.hostname);</script>
+  <script type="text/plain" data-consent="analytics" src="https://www.googletagmanager.com/gtag/js?id=G-JFHJD3T51M"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    var consentGranted = false;
+    try { consentGranted = localStorage.getItem('la_consent_v1') === 'granted'; } catch (e) {}
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: consentGranted ? 'granted' : 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-JFHJD3T51M');
+  </script>
+  <script src="consent.js?v=2.1.5" defer></script>
+  <script src="analytics.js?v=2.1.3" defer></script>
+  <title>Troubleshooting guides for process plants | LiveAccess</title>
+  <meta name="description" content="Step-by-step checks for common faults: mixer seal leaks, spray dryer build-up, evaporator fouling, lumps, heat exchanger leaks and pump cavitation." />
+  <link rel="canonical" href="https://liveaccess.ai/guides.html" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="LiveAccess" />
+  <meta property="og:title" content="LiveAccess troubleshooting guides" />
+  <meta property="og:description" content="Step-by-step checks for common faults: mixer seal leaks, spray dryer build-up, evaporator fouling, lumps, heat exchanger leaks and pump cavitation." />
+  <meta property="og:url" content="https://liveaccess.ai/guides.html" />
+  <meta property="og:image" content="https://liveaccess.ai/logo.png" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="preload" href="plus-jakarta.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="common.css?v=2.1.9" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://liveaccess.ai/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Guides",
+            "item": "https://liveaccess.ai/guides.html"
+          }
+        ]
+      },
+      {
+        "@type": "ItemList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "url": "https://liveaccess.ai/guide-high-shear-mixer-seal-leak.html",
+            "name": "High shear mixer seal leaks: causes and checks"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "url": "https://liveaccess.ai/guide-spray-dryer-powder-buildup.html",
+            "name": "Spray dryer powder build-up: causes and checks"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "url": "https://liveaccess.ai/guide-evaporator-fouling.html",
+            "name": "Evaporator fouling and falling capacity: causes and checks"
+          },
+          {
+            "@type": "ListItem",
+            "position": 4,
+            "url": "https://liveaccess.ai/guide-powder-lumps-in-mixing.html",
+            "name": "Lumps and undissolved powder after mixing: causes and checks"
+          },
+          {
+            "@type": "ListItem",
+            "position": 5,
+            "url": "https://liveaccess.ai/guide-plate-heat-exchanger-leak.html",
+            "name": "Plate heat exchanger leaks and mixing of media: what to check"
+          },
+          {
+            "@type": "ListItem",
+            "position": 6,
+            "url": "https://liveaccess.ai/guide-centrifugal-pump-cavitation.html",
+            "name": "Centrifugal pump noise and low flow: cavitation checks"
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body class="site">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="nav">
+      <a class="brand" href="./" aria-label="LiveAccess by TPS, home">
+        <img src="logo.png" alt="TPS" width="103" height="22" />
+        <span class="brand-name">LiveAccess 24/7</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="how-it-works.html">How it works</a>
+        <a href="features.html">Features</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <a class="nav-cta" href="get-app.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="6" y="2" width="12" height="20" rx="2" />
+          <line x1="11" y1="18" x2="13" y2="18" />
+        </svg>
+        Get the app
+      </a>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero dark">
+      <div class="drop" aria-hidden="true"></div>
+      <div class="wrap">
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="./">Home</a><span aria-hidden="true">/</span><span>Guides</span></nav>
+        <span class="eyebrow">Troubleshooting guides</span>
+        <h1>Common plant problems, <em>checked step by step.</em></h1>
+        <p class="lede">Practical checks for common faults in dairy, food and beverage plants. Each guide lists symptoms, likely causes, what to check first and when to call a TPS engineer.</p>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="wrap">
+        <div class="feat-grid three">
+          <a class="feat feat-link" href="guide-high-shear-mixer-seal-leak.html"><span class="feat-note">High shear mixing</span><h3 class="h3">High shear mixer seal leaks: causes and checks</h3><p>A leaking shaft seal on a high shear mixer is one of the most common maintenance calls.</p></a>
+          <a class="feat feat-link" href="guide-spray-dryer-powder-buildup.html"><span class="feat-note">Spray drying</span><h3 class="h3">Spray dryer powder build-up: causes and checks</h3><p>Deposits on the chamber wall, cone or ducts reduce capacity, change powder quality and raise the fire risk.</p></a>
+          <a class="feat feat-link" href="guide-evaporator-fouling.html"><span class="feat-note">Evaporation</span><h3 class="h3">Evaporator fouling and falling capacity: causes and checks</h3><p>When an evaporator gives lower concentrate solids or needs more steam as the run goes on, fouling on the heating surface is the usual cause.</p></a>
+          <a class="feat feat-link" href="guide-powder-lumps-in-mixing.html"><span class="feat-note">High shear mixing</span><h3 class="h3">Lumps and undissolved powder after mixing: causes and checks</h3><p>Lumps, often called fish-eyes, form when powder is wetted on the outside before it is dispersed.</p></a>
+          <a class="feat feat-link" href="guide-plate-heat-exchanger-leak.html"><span class="feat-note">Liquid processing</span><h3 class="h3">Plate heat exchanger leaks and mixing of media: what to check</h3><p>A plate heat exchanger can leak to the outside, or leak inside so that product and service media mix.</p></a>
+          <a class="feat feat-link" href="guide-centrifugal-pump-cavitation.html"><span class="feat-note">Liquid processing</span><h3 class="h3">Centrifugal pump noise and low flow: cavitation checks</h3><p>A centrifugal pump that sounds like gravel, delivers less than usual or wears its impeller fast is often cavitating.</p></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-band dark">
+      <div class="wrap">
+        <div>
+          <h2>Problem not listed here?</h2>
+          <p class="lede">Ask LiveAccess about your own equipment by text, photo or voice.</p>
+        </div>
+        <div class="store-badges">
+          <a class="store-badge" data-store="ios" href="https://apps.apple.com/app/liveaccess-24-7/id6790754198" target="_blank" rel="noopener">
+            <img src="badge-app-store.svg" width="132" height="44" alt="Download LiveAccess on the App Store" />
+          </a>
+          <a class="store-badge" data-store="android" href="https://play.google.com/store/apps/details?id=com.liveaccess.app&amp;referrer=utm_source%3Dwebsite%26utm_campaign%3Dguides" target="_blank" rel="noopener">
+            <img src="badge-google-play.png" width="147" height="44" alt="Get LiveAccess on Google Play" />
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <b>LiveAccess 24/7</b><br />
+        The 24/7 service app from TPS for dairy, food and beverage plants.<br />
+        A service platform by <a href="https://tps.ltd/" target="_blank" rel="noopener">TPS</a>
+      </div>
+      <nav aria-label="Product">
+        <h2>Product</h2>
+        <ul>
+          <li><a href="how-it-works.html">How it works</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="get-app.html">Get the app</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
+        <ul>
+          <li><a href="guides.html">Troubleshooting guides</a></li>
+          <li><a href="process-areas.html">Process areas</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Company">
+        <h2>Company</h2>
+        <ul>
+          <li><a href="about.html">About</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="privacy-policy.html">Privacy Policy</a></li>
+          <li><a href="terms-and-condition.html">Terms &amp; Conditions</a></li>
+          <li><button type="button" class="linklike" data-cookie-settings>Cookie settings</button></li>
+        </ul>
+      </nav>
+      <div class="copyright">&copy; 2026 TPS. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script src="menu.js?v=2.1.3"></script>
+</body>
+</html>

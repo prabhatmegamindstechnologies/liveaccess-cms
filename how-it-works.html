@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Google tag (gtag.js). Reports only from the live site, so local testing doesn't count as traffic. -->
+  <script>window['ga-disable-G-JFHJD3T51M'] = !/(^|\.)liveaccess\.ai$/.test(location.hostname);</script>
+  <script type="text/plain" data-consent="analytics" src="https://www.googletagmanager.com/gtag/js?id=G-JFHJD3T51M"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    var consentGranted = false;
+    try { consentGranted = localStorage.getItem('la_consent_v1') === 'granted'; } catch (e) {}
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: consentGranted ? 'granted' : 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-JFHJD3T51M');
+  </script>
+  <script src="consent.js?v=2.1.5" defer></script>
+  <script src="analytics.js?v=2.1.3" defer></script>
+  <title>How LiveAccess Works: 3 Simple Steps | TPS</title>
+  <meta name="description" content="How the LiveAccess app works: open the app, ask by text, photo or voice, get technical advice, and video-call a TPS engineer if you're still stuck." />
+  <link rel="canonical" href="https://liveaccess.ai/how-it-works.html" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="LiveAccess" />
+  <meta property="og:title" content="How LiveAccess works" />
+  <meta property="og:description" content="Ask, snap or speak. Get clear technical advice. Call a TPS engineer if you're still stuck." />
+  <meta property="og:url" content="https://liveaccess.ai/how-it-works.html" />
+  <meta property="og:image" content="https://liveaccess.ai/logo.png" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="preload" href="plus-jakarta.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="common.css?v=2.1.9" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "HowTo",
+        "name": "How to get technical answers for your equipment with LiveAccess",
+        "description": "Get practical guidance in three simple steps with the LiveAccess 24/7 app from TPS.",
+        "tool": { "@type": "HowToTool", "name": "LiveAccess 24/7 app for iPhone, iPad or Android" },
+        "step": [
+          { "@type": "HowToStep", "position": 1, "name": "Open the app", "text": "Download LiveAccess 24/7 for free. Create a free LiveAccess account or log in, or start searching general technical information as a guest.", "url": "https://liveaccess.ai/how-it-works.html#step-1" },
+          { "@type": "HowToStep", "position": 2, "name": "Ask, snap or speak", "text": "Type the question in your own words, take a photo of the nameplate or part, or hold the mic and talk.", "url": "https://liveaccess.ai/how-it-works.html#step-2" },
+          { "@type": "HowToStep", "position": 3, "name": "Get a clear answer", "text": "You get technical advice. Tap Listen to hear it read aloud, or ask a follow-up.", "url": "https://liveaccess.ai/how-it-works.html#step-3" }
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://liveaccess.ai/" },
+          { "@type": "ListItem", "position": 2, "name": "How it works", "item": "https://liveaccess.ai/how-it-works.html" }
+        ]
+      }
+    ]
+  }
+  </script>
+  <style>
+    .how { display: grid; grid-template-columns: 1fr 360px; gap: 64px; align-items: center; }
+    .steps { display: grid; gap: 12px; }
+    .step {
+      text-align: left; width: 100%; font: inherit; color: inherit; cursor: pointer;
+      display: grid; grid-template-columns: 52px 1fr; gap: 18px; align-items: start;
+      padding: 20px 22px; border-radius: 14px; border: 1px solid var(--line); background: var(--paper);
+      transition: border-color .2s ease, background .2s ease;
+    }
+    .step:hover { border-color: #F0A585; }
+    .step[aria-selected="true"] { border-color: var(--orange); background: var(--orange-wash); }
+    .step .n { width: 52px; height: 52px; border-radius: 12px; display: grid; place-items: center; font: 800 22px/1 var(--f-display); background: var(--paper-2); color: var(--ink-2); }
+    .step[aria-selected="true"] .n { background: var(--orange-ink); color: #fff; }
+    .step h2 { font-size: 19px; line-height: 1.25; font-weight: 700; font-stretch: 88%; margin-bottom: 4px; }
+    .step p { color: var(--ink-2); font-size: 15px; }
+    .step.optional { grid-template-columns: 1fr; margin-top: 10px; border-style: dashed; }
+    .opt-tag { display: inline-block; margin-bottom: 6px; background: var(--paper-2); color: var(--orange-ink); font-weight: 700; font-size: 12px; letter-spacing: .05em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; }
+    .phone-note { text-align: center; color: var(--muted); font-size: 13px; margin-top: 14px; }
+
+    .phone { width: 100%; max-width: 340px; margin: 0 auto; aspect-ratio: 9 / 18.5; background: var(--phone); border-radius: 46px; padding: 12px; box-shadow: 0 30px 60px rgba(16,24,32,.25); }
+    .screen { height: 100%; background: #fff; border-radius: 36px; overflow: hidden; display: flex; flex-direction: column; }
+    .view { flex: 1; display: none; min-height: 0; }
+    .view.on { display: block; animation: rise .35s ease; }
+    @keyframes rise { from { transform: translateY(8px); opacity: .4; } to { transform: none; opacity: 1; } }
+    .view img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+
+    @media (max-width: 980px) {
+      .how { grid-template-columns: 1fr; gap: 40px; }
+      .phone-col { order: -1; }
+      .phone { max-width: 300px; }
+    }
+
+    /* Desktop: pin the steps while scrolling through a tall track, one step per stretch of scroll */
+    @media (min-width: 981px) and (min-height: 600px) {
+      .how-track { height: calc(100vh - var(--header-h) + 3 * 50vh); }
+      .how-track > .band { position: sticky; top: var(--header-h); height: calc(100vh - var(--header-h)); padding-block: 0; display: flex; align-items: center; }
+      .how-track .wrap { width: 100%; }
+      .how-track .step { padding-block: 16px; }
+      .how-track .phone { width: min(340px, calc((100vh - var(--header-h) - 64px) * 9 / 18.5)); }
+    }
+  </style>
+</head>
+<body class="site">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="nav">
+      <a class="brand" href="./" aria-label="LiveAccess by TPS, home">
+        <img src="logo.png" alt="TPS" width="103" height="22" />
+        <span class="brand-name">LiveAccess 24/7</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="how-it-works.html" aria-current="page">How it works</a>
+        <a href="features.html">Features</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <a class="nav-cta" href="get-app.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="6" y="2" width="12" height="20" rx="2" />
+          <line x1="11" y1="18" x2="13" y2="18" />
+        </svg>
+        Get the app
+      </a>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-hero dark">
+      <div class="drop" aria-hidden="true"></div>
+      <div class="wrap">
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="./">Home</a><span aria-hidden="true">/</span><span>How it works</span></nav>
+        <span class="eyebrow">How it works</span>
+        <h1>Get practical guidance in <em>three simple steps.</em></h1>
+        <p class="lede">LiveAccess gives you technical advice you can act on at the machine. Here is what using it looks like, screen by screen.</p>
+      </div>
+    </section>
+
+    <div class="how-track">
+    <section class="band alt">
+      <div class="wrap how">
+        <div class="steps" role="tablist" aria-label="Steps" aria-orientation="vertical">
+          <button class="step" role="tab" id="step-1" aria-selected="true" aria-controls="v1" data-v="1" type="button">
+            <span class="n">1</span>
+            <span><h2>Open the app</h2><p>Download LiveAccess 24/7 for free. Create a free LiveAccess account or log in, or start searching general technical information as a guest.</p></span>
+          </button>
+          <button class="step" role="tab" id="step-2" aria-selected="false" aria-controls="v2" data-v="2" type="button" tabindex="-1">
+            <span class="n">2</span>
+            <span><h2>Ask, snap or speak</h2><p>Type the question in your own words, take a photo of the nameplate or part, or hold the mic and talk.</p></span>
+          </button>
+          <button class="step" role="tab" id="step-3" aria-selected="false" aria-controls="v3" data-v="3" type="button" tabindex="-1">
+            <span class="n">3</span>
+            <span><h2>Get a clear answer</h2><p>You get technical advice. Tap Listen to hear it read aloud, or ask a follow-up.</p></span>
+          </button>
+          <button class="step optional" role="tab" id="step-4" aria-selected="false" aria-controls="v4" data-v="4" type="button" tabindex="-1">
+            <span><span class="opt-tag">Optional</span><h2>Need more help? Connect with TPS.</h2><p>Log in, then video-call a TPS engineer through the app or message an expert in the Expert Network. Engineers answer during their working hours. If nobody answers, leave a voicemail and they can call you back in the app.</p></span>
+          </button>
+        </div>
+
+        <div class="phone-col">
+        <div class="phone">
+          <div class="screen">
+            <div class="view on" id="v1" role="tabpanel" aria-labelledby="step-1">
+              <img src="images/how-step-1.webp" width="331" height="716" alt="LiveAccess 24/7 home screen with a Log in button and an Ask about your plant search bar" />
+            </div>
+
+            <div class="view" id="v2" role="tabpanel" aria-labelledby="step-2">
+              <img src="images/how-step-2.webp" width="331" height="718" alt="A photo of a butterfly valve and a typed question about servicing it, while the app prepares an answer" loading="lazy" />
+            </div>
+
+            <div class="view" id="v3" role="tabpanel" aria-labelledby="step-3">
+              <img src="images/how-step-3.webp" width="603" height="1311" alt="A step-by-step answer about powder sticking in a spray dryer, with a follow-up box below" loading="lazy" />
+            </div>
+
+            <div class="view" id="v4" role="tabpanel" aria-labelledby="step-4">
+              <img src="images/how-step-4.webp" width="329" height="718" alt="Need more help sheet offering a video call with a TPS engineer" loading="lazy" />
+            </div>
+          </div>
+        </div>
+        <p class="phone-note">Illustrative examples. Each screen shows a different question.</p>
+        </div>
+      </div>
+    </section>
+    </div>
+
+    <section class="band">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="eyebrow">Why not just search the drive?</span>
+          <h2>More of the answer, less of the hunt.</h2>
+        </div>
+        <div class="compare">
+          <table>
+            <thead><tr><th scope="col"><span class="visually-hidden">Task</span></th><th scope="col">Shared drive &amp; binders</th><th scope="col">LiveAccess</th></tr></thead>
+            <tbody>
+              <tr><td>Finding the page</td><td>Guess the folder, open PDFs one by one</td><td>Ask a question and find relevant information</td></tr>
+              <tr><td>At the machine</td><td>Walk back to the office or a laptop</td><td>On your phone, with voice and camera</td></tr>
+              <tr><td>Understanding the information</td><td>Unsure which version is current</td><td>Ask follow-up questions to clarify the guidance</td></tr>
+              <tr><td>When the document isn't enough</td><td>Email the supplier and wait</td><td>Video-call a TPS engineer</td></tr>
+              <tr><td>Night shifts &amp; weekends</td><td>Wait for office hours</td><td>App available 24/7; engineers by availability</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-band dark">
+      <div class="wrap">
+        <div>
+          <h2>Try it on your next technical question.</h2>
+          <p class="lede">Free to download. No account needed to start searching.</p>
+        </div>
+        <div class="cta-actions">
+          <a class="btn btn-primary" href="get-app.html">Get the app</a>
+          <a class="btn btn-ghost" href="features.html">See all features</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <b>LiveAccess 24/7</b><br />
+        The 24/7 service app from TPS for dairy, food and beverage plants.<br />
+        A service platform by <a href="https://tps.ltd/" target="_blank" rel="noopener">TPS</a>
+      </div>
+      <nav aria-label="Product">
+        <h2>Product</h2>
+        <ul>
+          <li><a href="how-it-works.html">How it works</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="get-app.html">Get the app</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
+        <ul>
+          <li><a href="guides.html">Troubleshooting guides</a></li>
+          <li><a href="process-areas.html">Process areas</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Company">
+        <h2>Company</h2>
+        <ul>
+          <li><a href="about.html">About</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="privacy-policy.html">Privacy Policy</a></li>
+          <li><a href="terms-and-condition.html">Terms &amp; Conditions</a></li>
+          <li><button type="button" class="linklike" data-cookie-settings>Cookie settings</button></li>
+        </ul>
+      </nav>
+      <div class="copyright">&copy; 2026 TPS. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script src="menu.js?v=2.1.3"></script>
+  <script>
+    (function () {
+      var steps = Array.prototype.slice.call(document.querySelectorAll('.step'));
+      function show(step) {
+        current = step;
+        steps.forEach(function (s) {
+          var on = s === step;
+          s.setAttribute('aria-selected', String(on));
+          s.tabIndex = on ? 0 : -1;
+          document.getElementById('v' + s.dataset.v).classList.toggle('on', on);
+        });
+      }
+      var track = document.querySelector('.how-track');
+      var pinned = window.matchMedia('(min-width: 981px) and (min-height: 600px)');
+      var current = steps[0];
+      function headerH() { return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 0; }
+      // Scroll distance over which the section stays pinned
+      function range() { return track.offsetHeight - (window.innerHeight - headerH()); }
+      function onScroll() {
+        if (!pinned.matches) return;
+        var p = (headerH() - track.getBoundingClientRect().top) / range();
+        var step = steps[Math.min(steps.length - 1, Math.max(0, Math.floor(p * steps.length)))];
+        if (step !== current) show(step);
+      }
+      // When pinned, selecting a step scrolls to its stretch of the track so scroll and selection stay in sync
+      function go(step) {
+        if (!pinned.matches) return show(step);
+        var i = steps.indexOf(step);
+        var top = track.getBoundingClientRect().top + window.scrollY - headerH();
+        window.scrollTo({ top: top + (i + 0.5) / steps.length * range() });
+      }
+      steps.forEach(function (s, i) {
+        s.addEventListener('click', function () { go(s); });
+        s.addEventListener('keydown', function (e) {
+          var d = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
+          if (!d) return;
+          e.preventDefault();
+          var next = steps[(i + d + steps.length) % steps.length];
+          next.focus({ preventScroll: true });
+          go(next);
+        });
+      });
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll);
+      var fromHash = document.getElementById(location.hash.slice(1));
+      if (fromHash && steps.indexOf(fromHash) > -1) go(fromHash);
+      else onScroll();
+    })();
+  </script>
+</body>
+</html>

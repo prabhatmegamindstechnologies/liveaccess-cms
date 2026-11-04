@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Google tag (gtag.js). Reports only from the live site, so local testing doesn't count as traffic. -->
+  <script>window['ga-disable-G-JFHJD3T51M'] = !/(^|\.)liveaccess\.ai$/.test(location.hostname);</script>
+  <script type="text/plain" data-consent="analytics" src="https://www.googletagmanager.com/gtag/js?id=G-JFHJD3T51M"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    var consentGranted = false;
+    try { consentGranted = localStorage.getItem('la_consent_v1') === 'granted'; } catch (e) {}
+    gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: consentGranted ? 'granted' : 'denied' });
+    gtag('js', new Date());
+    gtag('config', 'G-JFHJD3T51M');
+  </script>
+  <script src="consent.js?v=2.1.5" defer></script>
+  <script src="analytics.js?v=2.1.3" defer></script>
+  <title>Privacy Policy — LiveAccess</title>
+  <meta name="description" content="How TPS collects, uses, stores and protects personal data when you use the LiveAccess 24/7 app and website, and how to contact us about your data." />
+  <link rel="canonical" href="https://liveaccess.ai/privacy-policy.html" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="LiveAccess" />
+  <meta property="og:title" content="Privacy Policy — LiveAccess" />
+  <meta property="og:description" content="How TPS collects, uses, stores and protects personal data in the LiveAccess 24/7 app and website." />
+  <meta property="og:url" content="https://liveaccess.ai/privacy-policy.html" />
+  <meta property="og:image" content="https://liveaccess.ai/logo.png" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="stylesheet" href="common.css?v=2.1.9" />
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 48px 24px 64px;
+    }
+
+    .intro {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .icon-circle {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--blue-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .intro h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .intro .underline {
+      width: 48px;
+      height: 3px;
+      background: var(--brand-orange);
+      margin: 0 auto 16px;
+      border-radius: 2px;
+    }
+    .intro p {
+      color: var(--text-secondary);
+      font-size: 14.5px;
+    }
+
+    .doc-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+    }
+
+    .toc {
+      background: var(--blue-bg);
+      border-radius: 8px;
+      padding: 18px 20px;
+      margin-bottom: 32px;
+    }
+    .toc h2 {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--brand-navy);
+      margin-bottom: 10px;
+    }
+    .toc ol {
+      columns: 2;
+      column-gap: 24px;
+      padding-left: 18px;
+      font-size: 13.5px;
+    }
+    .toc li { margin-bottom: 6px; }
+    .toc a {
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+    .toc a:hover { color: var(--brand-orange); text-decoration: underline; }
+
+    section.term {
+      margin-bottom: 28px;
+      scroll-margin-top: 100px;
+    }
+    section.term:last-child { margin-bottom: 0; }
+    section.term h2 {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--brand-navy);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    section.term h2 .num {
+      color: var(--brand-orange);
+      font-weight: 700;
+    }
+    section.term p, section.term li {
+      font-size: 14.5px;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    section.term ul {
+      padding-left: 20px;
+      margin-bottom: 8px;
+    }
+    section.term strong { font-weight: 600; }
+    section.term a.inline-link {
+      color: var(--brand-orange);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    section.term a.inline-link:hover { text-decoration: underline; }
+
+    hr.divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 28px 0;
+    }
+
+    @media (max-width: 600px) {
+      main { padding: 32px 16px 48px; }
+      .doc-card { padding: 24px; }
+    }
+
+    @media (max-width: 480px) {
+      .toc ol { columns: 1; }
+      .doc-card { padding: 20px; }
+      .intro h1 { font-size: 22px; }
+      section.term h2 { font-size: 16px; }
+      section.term p, section.term li { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="nav">
+      <a class="brand" href="./" aria-label="LiveAccess by TPS, home">
+        <img src="logo.png" alt="TPS" width="103" height="22" />
+        <span class="brand-name">LiveAccess 24/7</span>
+      </a>
+      <nav class="nav-links" id="nav-links" aria-label="Main">
+        <a href="how-it-works.html">How it works</a>
+        <a href="features.html">Features</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <a class="nav-cta" href="get-app.html">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="6" y="2" width="12" height="20" rx="2" />
+          <line x1="11" y1="18" x2="13" y2="18" />
+        </svg>
+        Get the app
+      </a>
+      <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="intro">
+      <div class="icon-circle">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          <path d="M9 12l2 2 4-4" />
+        </svg>
+      </div>
+      <h1>Privacy Policy</h1>
+      <div class="underline"></div>
+      <p>This Privacy Policy explains how TPS Pte Ltd, registered at 36 Robinson Rd, #20-01, Singapore 068877, collects, uses, discloses, and protects your personal data when you use the LiveAccess mobile application, whether as a guest or with a registered account. By downloading, installing, or using LiveAccess, you agree to the collection and use of information as described in this policy.</p>
+    </div>
+
+    <div class="doc-card">
+      <div class="toc">
+        <h2>Contents</h2>
+        <ol>
+          <li><a href="#information">Information We Collect</a></li>
+          <li><a href="#permissions">Device Permissions</a></li>
+          <li><a href="#ai">AI &amp; Large Language Model (LLM) Usage</a></li>
+          <li><a href="#use">How We Use Your Information</a></li>
+          <li><a href="#downloads">Document Downloads &amp; Local Storage</a></li>
+          <li><a href="#providers">Third-Party Service Providers</a></li>
+          <li><a href="#sharing">Data Sharing &amp; Disclosure</a></li>
+          <li><a href="#retention">Data Retention</a></li>
+          <li><a href="#security">Data Security</a></li>
+          <li><a href="#rights">Your Rights &amp; Account Deletion</a></li>
+          <li><a href="#children">Children's Privacy</a></li>
+          <li><a href="#transfers">International Data Transfers</a></li>
+          <li><a href="#changes">Changes to This Privacy Policy</a></li>
+          <li><a href="#website">Website &amp; Cookies</a></li>
+          <li><a href="#contact">Contact Us</a></li>
+        </ol>
+      </div>
+
+      <section class="term" id="information">
+        <h2><span class="num">1.</span> Information We Collect</h2>
+        <p><strong>Account Information</strong> — When you register for LiveAccess, we collect your full name, email address, mobile number (including country code), and password (stored in hashed form, never in plain text). We also hold the role and company/organization associated with your account. If you update your profile, we store the updated information.</p>
+        <p><strong>Expert Profile Information</strong> — If TPS has designated your account as an Expert, you may add your area of expertise, years of experience, a LinkedIn profile link, and a short bio. Your name and these profile details are shown to other signed-in users in the App's Expert Network so that they can chat with or call you.</p>
+        <p><strong>Guest Use</strong> — You can search general technical information as a guest without creating an account. The questions, photos, and voice input you submit as a guest are processed to return an answer, but they are not linked to an account and are not saved to a search history.</p>
+        <p><strong>Search &amp; Usage Data</strong> — When you are signed in, we store your search queries (whether typed, spoken, or submitted with a photo), any photo you attach to a query, and the AI-generated answers and document references returned to you. These are associated with your account so that you can view your search history within the App. You can delete individual conversations from your history at any time.</p>
+        <p><strong>Voice Input &amp; "Listen" Playback</strong> — When you tap the microphone to search by voice, the App records your voice and sends the recording to our servers to be converted to text. When you tap "Listen", the text of the answer is sent to be converted to speech. The audio is used only to produce the transcription or playback and is not saved to your account. See Section 3 for the providers involved.</p>
+        <p><strong>Chat Messages &amp; Attachments</strong> — Signed-in users can message TPS engineers and experts in the app. When you use chat, we process the text messages, photos, videos, documents, and voice messages you send and receive, together with the time each was sent and who it was exchanged with.</p>
+        <ul>
+          <li>message text is encrypted on your device (AES-256-GCM) before it leaves the App. It is delivered through Agora Chat, our third-party messaging provider, which only handles the encrypted form — see Section 6;</li>
+          <li>an encrypted copy of each message is stored on our servers so that your chat history is available when you sign in again and can be searched from within the chat;</li>
+          <li>attachments and voice messages are uploaded to TPS's own private cloud storage and are made available only to the two participants of the conversation, through short-lived links;</li>
+          <li>you can edit or delete a message you sent for a limited time after sending it;</li>
+          <li>to open conversations quickly, the App keeps a small cache of your most recent messages on your device, in encrypted form. It is removed when you sign out.</li>
+        </ul>
+        <p><strong>Video Calls, Voicemail &amp; Call Recordings</strong> — Signed-in users can start a live video call with a TPS support engineer or with an Expert directly from the App (see <a class="inline-link" href="terms-and-condition.html#service">Description of Service</a> in our Terms &amp; Conditions). When you use this feature:</p>
+        <ul>
+          <li>the App uses your camera and microphone to transmit your live video and audio for the duration of the call;</li>
+          <li>calls are relayed through Agora (agora.io), our third-party real-time communications provider — see Section 6;</li>
+          <li>if a call is not answered, you may, where voicemail is available for that call, leave a recorded voicemail message of up to two minutes for the recipient, and the recipient (or you, from a missed-call/voicemail notification) may call back;</li>
+          <li>either participant can start or stop a recording of the call — for quality, training, or support-continuity purposes. When a recording is started or stopped, both participants are notified on screen, and a "REC" indicator is shown for as long as the call is being recorded.</li>
+        </ul>
+        <p>Voicemail messages and call recordings are stored in TPS's own cloud storage. They can be played back from the App's Call History by the people who took part in the call (or, for a voicemail, the caller and the intended recipient), and are otherwise accessible only to authorized TPS personnel.</p>
+        <p><strong>Call History</strong> — We keep a record of the calls you place and receive in the App: who the call was with, its date, time and duration, whether it was answered, missed, or declined, and whether a recording or voicemail exists for it.</p>
+        <p><strong>Availability &amp; Time Zone</strong> — If you are a TPS support engineer or an Expert, we store the working hours (shift) and time zone used to decide when calls should be routed to you. The App reads the time zone setting of your device for this purpose. It does not use GPS, and LiveAccess does not collect your location.</p>
+        <p><strong>Device &amp; Push Notification Data</strong> — To deliver incoming video-call, missed-call, voicemail, and chat-message alerts, LiveAccess registers your device for push notifications via Firebase Cloud Messaging (Android and iOS) and Apple Push Notification service / VoIP push (iOS). We store your device's push token, its platform (Android or iOS), and a random installation identifier generated by the App, solely to route these alerts to the device you are signed in on. This registration is removed when you sign out.</p>
+        <p><strong>Analytics</strong> — LiveAccess uses Firebase Analytics (a Google product) to understand how the App is used and to help us improve it. Firebase Analytics collects an app-instance identifier and, once you are logged in, your user ID, role, and client/organization ID and name, together with in-app events such as sign-up, login and password-reset activity, profile updates, searches performed (the method used and the length of the query, not its content), voice/camera search usage, AI responses received, "Listen" playback, screens viewed, and call-history and shift activity (e.g. call history opened, callback initiated, recordings or voicemail played). We do not use Firebase Analytics for advertising, and your device's advertising identifier is not collected.</p>
+        <p><strong>Crash &amp; Diagnostic Data</strong> — LiveAccess uses Firebase Crashlytics (a Google product) to detect and fix crashes and errors. When the App crashes or encounters an error, Crashlytics collects a crash/error report containing technical details such as the stack trace, device model, operating system version, and app version, together with a short log of recent technical events (for example the screens opened and requests that failed). Reports are tagged with your user ID, role, and client/organization ID so that we can investigate a problem affecting your account — they do not include your name, email address, message content, or search content.</p>
+        <p><strong>Bug Reports</strong> — LiveAccess includes a third-party bug-reporting tool, Shakebug (shakebug.com), that lets a tester report an issue by shaking the device. This tool is switched off by default and is enabled only on devices used by TPS for internal testing and troubleshooting. Where it has been enabled on a device, Shakebug may collect and transmit to its servers:</p>
+        <ul>
+          <li>your name, email address, user ID, role, and client/organization identifiers (so we can identify who submitted the report);</li>
+          <li>an in-app screenshot or screen recording captured for the report, and any photo or audio added to it;</li>
+          <li>device information such as device model, operating system version, and app version;</li>
+          <li>technical/diagnostic information generated by the App, including crash details.</li>
+        </ul>
+        <p>This data is used solely to help us diagnose and fix issues.</p>
+        <p><strong>Downloaded Documents</strong> — LiveAccess allows you to download technical documents (PDF, DWG, XLS/XLSX, CSV, DOC/DOCX, images, video) to your device's local storage for offline or field access. See Section 5.</p>
+      </section>
+
+      <section class="term" id="permissions">
+        <h2><span class="num">2.</span> Device Permissions</h2>
+        <p>LiveAccess asks for the following device permissions:</p>
+        <ul>
+          <li><strong>Camera</strong> — for video calls with TPS support engineers and Experts, and to take a photo to attach to a search, a chat, or a bug report;</li>
+          <li><strong>Microphone</strong> — for audio in video calls, voicemail, voice search, voice messages in a chat, and audio added to a bug report;</li>
+          <li><strong>Photos / media library</strong> — to let you choose an image to attach to a search or a bug report, and photos and videos to send in a chat;</li>
+          <li><strong>Notifications</strong> — to alert you to incoming calls, missed calls, voicemail, and new chat messages;</li>
+          <li><strong>Phone (Android only)</strong> — required by Android's calling framework so that an incoming LiveAccess call can ring and be answered like a phone call, including when the App is closed. LiveAccess does not use this permission to read your phone number, call log, or contacts, and does not place phone calls;</li>
+          <li><strong>Storage (older Android versions only)</strong> — to save documents you choose to download.</li>
+        </ul>
+        <p>LiveAccess does not request access to your location or your contacts. You can withdraw any permission at any time from your device settings; the features that depend on it will stop working until it is granted again.</p>
+      </section>
+
+      <section class="term" id="ai">
+        <h2><span class="num">3.</span> AI &amp; Large Language Model (LLM) Usage</h2>
+        <p>LiveAccess uses Artificial Intelligence (AI), including a third-party Large Language Model (LLM), as a core part of the App.</p>
+        <p>The AI reads your questions and your organization's documentation to generate answers, search results, and summaries about your plant and equipment.</p>
+        <p>To do this, your question, the earlier questions and answers in the same conversation, any photo you attach, and relevant excerpts from the documentation you are permitted to access are sent to our LLM provider, OpenAI (see Section 6). Live voice search is transcribed to text using Deepgram's speech-to-text service, recorded voice input is transcribed using OpenAI's speech services, and "Listen" audio is generated using OpenAI's speech services. Where an answer cannot be found in the documentation, the AI may answer from its general knowledge or from public web sources.</p>
+        <p>AI-generated responses may not always be accurate, complete, or up to date. Always use your own judgement and verify critical information before acting on it.</p>
+        <p>Do not rely solely on AI responses for safety-critical, compliance, or emergency decisions. Consult qualified personnel or official documentation when in doubt.</p>
+      </section>
+
+      <section class="term" id="use">
+        <h2><span class="num">4.</span> How We Use Your Information</h2>
+        <p>We use the information described above to:</p>
+        <ul>
+          <li>Operate, maintain, and provide the core functionality of LiveAccess;</li>
+          <li>Authenticate your account, manage your login session, and let you reset your password using a verification code sent to your email address;</li>
+          <li>Provide AI-assisted search results — from text, voice, or photo — and maintain your search history;</li>
+          <li>Deliver chat messages and attachments between you, TPS engineers and experts, and keep your chat history available to you;</li>
+          <li>Connect you with TPS support engineers and Experts via video call, voicemail, and callback, keep your call history, and produce call recordings where a participant starts one;</li>
+          <li>Route calls according to the working hours and time zone of TPS support engineers and Experts;</li>
+          <li>Send you push notifications and service emails about calls, voicemail, chat messages, and your account;</li>
+          <li>Understand how the App is used, and detect, diagnose, and fix crashes and bugs;</li>
+          <li>Respond to your support requests and communicate with you about your account or the Service.</li>
+        </ul>
+        <p>We do not use your personal data for advertising, and we do not sell your personal data to any third party.</p>
+      </section>
+
+      <section class="term" id="downloads">
+        <h2><span class="num">5.</span> Document Downloads &amp; Local Storage</h2>
+        <p>Documents you open in LiveAccess are temporarily cached within the App so that they can be displayed. If you choose to download a document, it is saved to your device's local storage (on older Android versions, the App requests storage permission solely for this purpose).</p>
+        <p>Once a document is downloaded from LiveAccess, it is stored locally on your device, and its security, retention, and deletion become your responsibility as the device owner. TPS does not track, access, or manage files after they have been downloaded, and cannot remotely delete locally stored copies. Please manage and delete downloaded files as appropriate — particularly before disposing of, selling, or transferring your device.</p>
+      </section>
+
+      <section class="term" id="providers">
+        <h2><span class="num">6.</span> Third-Party Service Providers</h2>
+        <p>We share limited personal data with the following third-party service providers strictly for the purposes described:</p>
+        <ul>
+          <li><strong>Agora (agora.io)</strong> — real-time video/voice communications, cloud call-recording, and chat message delivery infrastructure used to power the App's video call, voicemail, callback, and chat features, as described in Section 1. Chat message text reaches Agora only in encrypted form. Agora acts as our data sub-processor and processes data under its own privacy policy, available at agora.io/en/privacy-policy.</li>
+          <li><strong>Firebase (Google) — Analytics, Crashlytics &amp; Cloud Messaging</strong> — used for in-app analytics, crash and error reporting, and to deliver push notifications, as described in Section 1. Firebase acts as our data sub-processor and processes data under Google's privacy policy, available at firebase.google.com/support/privacy.</li>
+          <li><strong>Apple Push Notification service (Apple)</strong> — used to deliver push notifications and incoming-call alerts to iOS devices.</li>
+          <li><strong>OpenAI (openai.com)</strong> — provider of the Large Language Model and speech services used to generate AI answers, transcribe recorded voice input, and produce "Listen" audio, as described in Section 3. OpenAI acts as our data sub-processor and processes data under its own privacy policy, available at openai.com/policies/privacy-policy.</li>
+          <li><strong>Deepgram (deepgram.com)</strong> — speech-to-text service used to transcribe live voice search, as described in Section 3. Deepgram acts as our data sub-processor and processes data under its own privacy policy, available at deepgram.com/privacy.</li>
+          <li><strong>Microsoft Azure (Microsoft)</strong> — cloud hosting, database, search, and file-storage infrastructure on which our backend runs, including the storage of chat attachments, call recordings, and voicemail messages.</li>
+          <li><strong>Email delivery providers</strong> — used to send service emails such as account activation, password-reset verification codes, and missed-call notices.</li>
+          <li><strong>Shakebug (shakebug.com)</strong> — bug-reporting and diagnostic SDK, used only where it has been enabled as described in Section 1. Shakebug acts as our data sub-processor and processes data under its own privacy policy and security practices, available at shakebug.com/privacy.</li>
+        </ul>
+        <p>Beyond the providers listed above, we do not use any third-party advertising or ad-tracking SDKs in this version of the App.</p>
+      </section>
+
+      <section class="term" id="sharing">
+        <h2><span class="num">7.</span> Data Sharing &amp; Disclosure</h2>
+        <p>We do not sell your personal data. We may disclose your data:</p>
+        <ul>
+          <li>To other users of the App, as needed for the features you use: the person you chat with or call sees your name and the messages, attachments, video, and audio you send them, and an Expert's name and profile details are visible to signed-in users in the Expert Network;</li>
+          <li>To Agora, solely to relay video calls and chat messages and to record calls and voicemail messages, as described above;</li>
+          <li>To Firebase, solely for in-app analytics, crash reporting, and to deliver push notifications, as described above;</li>
+          <li>To OpenAI, solely to generate AI answers and to process recorded voice input and "Listen" audio, as described above;</li>
+          <li>To Deepgram, solely to transcribe live voice search, as described above;</li>
+          <li>To Shakebug, solely for bug-reporting/diagnostic purposes where it has been enabled, as described above;</li>
+          <li>To service providers who help us host and operate our backend infrastructure and send service emails, bound by confidentiality obligations;</li>
+          <li>Where required to comply with applicable law, regulation, legal process, or governmental request;</li>
+          <li>To protect the rights, property, or safety of TPS, our users, or others.</li>
+        </ul>
+      </section>
+
+      <section class="term" id="retention">
+        <h2><span class="num">8.</span> Data Retention</h2>
+        <p>We retain your account information and usage data for as long as your account remains active. If you delete your account, it is closed straight away and cannot be reopened. Some records are kept to meet our business and legal obligations, as described below. Locally downloaded documents are unaffected by account deletion and remain on your device until you remove them yourself.</p>
+        <p>Search history is kept so that you can return to it, and you can delete a conversation from it at any time. Chat messages, chat attachments, call history, voicemail messages, and call recordings are retained for as long as necessary to provide the Service to you and to the other person in the conversation or call, to provide support, ensure service quality, and meet our business and legal obligations. You may request deletion of a specific chat conversation, voicemail, or recording by contacting us (see Section 14).</p>
+        <p>Analytics and crash data are retained by Firebase in accordance with its standard retention periods.</p>
+      </section>
+
+      <section class="term" id="security">
+        <h2><span class="num">9.</span> Data Security</h2>
+        <p>We implement reasonable technical and organizational measures to protect your personal data, including password hashing, access controls, encrypted transmission (HTTPS), encryption of chat message text before it leaves your device, and private cloud storage for attachments, recordings, and voicemail that is reachable only through short-lived, access-controlled links. However, no method of electronic storage or transmission is 100% secure, and we cannot guarantee absolute security.</p>
+      </section>
+
+      <section class="term" id="rights">
+        <h2><span class="num">10.</span> Your Rights &amp; Account Deletion</h2>
+        <p>You may access and update your personal information at any time from within the App's Profile screen. You can also delete individual search conversations from your history, edit or delete a chat message for a limited time after sending it, and turn notifications or device permissions off from your device settings.</p>
+        <p>Delete your account in the app under <strong>Profile → Delete Account</strong>. If TPS or your organisation manages your account, contact support through the <a class="inline-link" href="contact.html">Contact us</a> form for help with deletion. Visit our <a class="inline-link" href="delete-account.html">Delete Your Account</a> page for instructions.</p>
+      </section>
+
+      <section class="term" id="children">
+        <h2><span class="num">11.</span> Children's Privacy</h2>
+        <p>You must be at least 18 years old to use LiveAccess. We do not knowingly collect personal data from children. If you believe a child has provided us with personal data, please contact us so that we can delete it.</p>
+      </section>
+
+      <section class="term" id="transfers">
+        <h2><span class="num">12.</span> International Data Transfers</h2>
+        <p>Your data may be transferred to, stored, and processed in a country other than your country of residence, including Singapore, where TPS Pte Ltd is registered, and the countries in which the service providers listed in Section 6 operate. By using LiveAccess, you consent to this transfer and processing of your data in accordance with this Privacy Policy.</p>
+      </section>
+
+      <section class="term" id="changes">
+        <h2><span class="num">13.</span> Changes to This Privacy Policy</h2>
+        <p>We may update this Privacy Policy from time to time to reflect changes in our practices or for legal, operational, or regulatory reasons. Continued use of LiveAccess after changes are posted constitutes your acceptance of the revised policy.</p>
+      </section>
+
+      <section class="term" id="website">
+        <h2><span class="num">14.</span> Website &amp; Cookies</h2>
+        <p>This Privacy Policy also applies to the LiveAccess website at liveaccess.ai, not only to the mobile application.</p>
+        <p><strong>Analytics cookies</strong> — The website uses Google Analytics (GA4) to understand how it is used, for example which pages are visited, the type of device and browser, and the approximate location of visitors. Google Analytics sets the cookies <code>_ga</code> and <code>_ga_JFHJD3T51M</code> only if you accept analytics cookies. Until you accept, no analytics cookies are set and no analytics data is sent to Google. Google acts as a service provider for this purpose and processes data under its own privacy policy.</p>
+        <p><strong>Your choice</strong> — When you first visit, a banner asks you to accept or reject analytics cookies. Your choice is stored in your browser (local storage, key <code>la_consent_v1</code>) so that we do not ask again on each page. You can change or withdraw your choice at any time using <strong>Cookie settings</strong> in the footer of any page. Rejecting analytics cookies does not limit your use of the website.</p>
+        <p><strong>Contact form</strong> — If you send us a message through the website, we use the details you provide (such as your name, email address and message) only to reply to you. Form submissions are delivered to us through a third-party form-handling service, which processes them on our behalf and only to pass your message to the LiveAccess team. We keep your message only as long as needed to handle your enquiry.</p>
+        <p><strong>Visitors in the European Economic Area</strong> — If you visit the website from the European Economic Area, the following also applies:</p>
+        <ul>
+          <li><strong>Data controller</strong> — TPS Pte Ltd, 36 Robinson Rd, #20-01, Singapore 068877, is the controller of personal data collected through the website. You can reach us at <a class="inline-link" href="mailto:liveaccess@tps.ltd?subject=Privacy%20Request%20-%20LiveAccess">liveaccess@tps.ltd</a>.</li>
+          <li><strong>Legal basis</strong> — We use analytics cookies only on the basis of your consent. We process contact form messages on the basis of our legitimate interest in replying to enquiries, or to take steps at your request before entering into a contract.</li>
+          <li><strong>Your rights</strong> — You have the right to access, correct and delete your personal data, to restrict or object to its processing, and to receive it in a portable format. Where processing is based on consent, you can withdraw your consent at any time using <strong>Cookie settings</strong> in the footer, without affecting processing carried out before you withdrew it. To exercise these rights, email us at the address above.</li>
+          <li><strong>Complaints</strong> — You have the right to lodge a complaint with the data protection authority in the country where you live or work. In Denmark this is Datatilsynet (datatilsynet.dk).</li>
+          <li><strong>Transfers outside the EEA</strong> — Where personal data is transferred outside the EEA, including to Singapore and to the service providers described in this policy, we rely on an adequacy decision of the European Commission where one exists, or on the European Commission's standard contractual clauses or another lawful transfer mechanism.</li>
+        </ul>
+      </section>
+
+      <section class="term" id="contact">
+        <h2><span class="num">15.</span> Contact Us</h2>
+        <p>If you have any questions about this Privacy Policy or how your personal data is collected, used, or shared, please contact us:</p>
+        <p>
+          <strong>TPS Pte Ltd</strong><br />
+          36 Robinson Rd, #20-01, Singapore 068877<br />
+          Email: <a class="inline-link" href="mailto:liveaccess@tps.ltd?subject=Privacy%20Policy%20Query%20-%20LiveAccess">liveaccess@tps.ltd</a>
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <b>LiveAccess 24/7</b><br />
+        The 24/7 service app from TPS for dairy, food and beverage plants.<br />
+        A service platform by <a href="https://tps.ltd/" target="_blank" rel="noopener">TPS</a>
+      </div>
+      <nav aria-label="Product">
+        <h2>Product</h2>
+        <ul>
+          <li><a href="how-it-works.html">How it works</a></li>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="get-app.html">Get the app</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Resources">
+        <h2>Resources</h2>
+        <ul>
+          <li><a href="guides.html">Troubleshooting guides</a></li>
+          <li><a href="process-areas.html">Process areas</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Company">
+        <h2>Company</h2>
+        <ul>
+          <li><a href="about.html">About</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="privacy-policy.html">Privacy Policy</a></li>
+          <li><a href="terms-and-condition.html">Terms &amp; Conditions</a></li>
+          <li><button type="button" class="linklike" data-cookie-settings>Cookie settings</button></li>
+        </ul>
+      </nav>
+      <div class="copyright">&copy; 2026 TPS. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script src="menu.js?v=2.1.3"></script>
+</body>
+</html>
+
