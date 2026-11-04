@@ -13,7 +13,7 @@ export function Login() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
-  if (user) return <Navigate to="/pages" replace />;
+  if (user) return <Navigate to="/dashboard" replace />;
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -21,7 +21,7 @@ export function Login() {
     setError("");
     try {
       await login(email, password);
-      navigate("/pages");
+      navigate("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Couldn't sign in.");
     } finally {

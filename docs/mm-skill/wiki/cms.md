@@ -51,6 +51,10 @@ https://claude.ai/artifact/UZJy25p3EXk3SEdQDXvF6U · Prototype: https://claude.a
 - `audit` (2026-11-04) — `GET /audit?page&user&group&from&to`, Super Admin only, read-only, 50 per page. `group`: content, website,
   users, publishing, sign-ins; default view hides `login`/`logout`. `detail` goes through an allow-list. Wording is in
   `admin/src/lib/audit.ts`: a new action needs a sentence there and a place in `GROUPS` (it shows by its raw name until then).
+- `dashboard` (2026-11-04) — `GET /dashboard`, any signed-in user, read-only: `waiting` (pages, guides and areas, 10 most recently
+  edited, with totals; reuses `changed` and `hasChanges`, so it matches the lists), `activity` (10 latest `CONTENT_ACTIONS`, with no
+  IP, email or `detail`, because Editors can read it), `messages`, `lastPublish`. Menus, SEO and settings changes aren't listed.
+  Sign-in and unknown addresses land here.
 - Account rules: temporary passwords (typed or generated) expire after 72 hours; sessions end after 7 days as well as 8 idle
   hours; creating, promoting or resetting a Super Admin needs the caller's own password (5 wrong tries a minute).
 - Roles: saving Menus, SEO & redirects and Site settings is Super Admin only; Editors get them read-only (`canEdit`).

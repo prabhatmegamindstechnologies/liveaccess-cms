@@ -11,6 +11,7 @@ import { previewAssets } from "./preview-assets.ts";
 import { publishRoutes, type PreviewConfig } from "./publish/routes.ts";
 import { userRoutes } from "./users/routes.ts";
 import { auditRoutes } from "./audit/routes.ts";
+import { dashboardRoutes } from "./dashboard/routes.ts";
 
 const CHANGES = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 const tooLarge = bodyLimit({ maxSize: 64 * 1024, onError: (c) => c.json({ error: "Request too large." }, 413) });
@@ -71,6 +72,7 @@ export function createApp(cfg: AppConfig) {
   app.route(`${base}/settings`, settingsRoutes(cfg.db));
   app.route(`${base}/users`, userRoutes(cfg.db, cfg.trustProxy));
   app.route(`${base}/audit`, auditRoutes(cfg.db));
+  app.route(`${base}/dashboard`, dashboardRoutes(cfg.db));
   app.route(`${base}/guides`, articleRoutes("guide", cfg.db, cfg.siteFilesRoot));
   app.route(`${base}/areas`, articleRoutes("area", cfg.db, cfg.siteFilesRoot, { max: 30, windowMs: 60_000 }));
   if (cfg.siteRoot) app.route(`${base}/preview-assets`, previewAssets(cfg.db, cfg.siteRoot));

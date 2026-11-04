@@ -44,7 +44,7 @@ const snapshot = (r: Row): Guide => ({
 const stable = (v: unknown): string => Array.isArray(v) ? `[${v.map(stable).join(",")}]`
   : v && typeof v === "object" ? `{${Object.keys(v).sort().map((k) => `${JSON.stringify(k)}:${stable((v as Record<string, unknown>)[k])}`).join(",")}}`
   : JSON.stringify(v);
-const hasChanges = (r: Row) => !r.published || stable(snapshot(r)) !== stable(r.published);
+export const hasChanges = (r: Row) => !r.published || stable(snapshot(r)) !== stable(r.published);
 
 const areaList = (db: Db) => db.select({ slug: articles.slug, name: articles.title }).from(articles).where(eq(articles.type, "area")).orderBy(articles.id);
 /** The guides that belong to an area, in database order (as they appear on the area page). */

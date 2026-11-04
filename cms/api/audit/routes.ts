@@ -9,8 +9,10 @@ const PAGE_SIZE = 50;
 
 // Routine sign-ins fill the log, so they only show under their own filter. Failed ones always show.
 const ROUTINE = ["login", "logout"];
+// Editors see these on the Dashboard too, so only add actions about pages, guides and areas.
+export const CONTENT_ACTIONS = ["page_edited", "page_restored", "guide_created", "guide_edited", "guide_deleted", "area_created", "area_edited", "area_deleted", "area_renamed"];
 const GROUPS: Record<string, string[]> = {
-  content: ["page_edited", "page_restored", "guide_created", "guide_edited", "guide_deleted", "area_created", "area_edited", "area_deleted", "area_renamed"],
+  content: CONTENT_ACTIONS,
   website: ["menus_edited", "site_settings_edited", "seo_redirects_edited", "seo_robots_edited", "seo_llms_edited", "seo_defaults_edited"],
   users: ["user_created", "user_edited", "user_password_reset", "user_unlocked", "password_changed", "password_change_failed", "own_password_failed"],
   publishing: ["preview_built"],
@@ -33,7 +35,7 @@ const shownDetail = (detail: unknown) => {
 };
 
 /** The titles of the items the entries are about, looked up now so they show current names. */
-async function itemsFor(db: Db, rows: Row[]) {
+export async function itemsFor(db: Db, rows: Row[]) {
   const ids = (type: string) => [...new Set(rows.filter((r) => r.entityType === type && r.entityId).map((r) => r.entityId!))];
   const numbers = (list: string[]) => list.filter((s) => /^\d{1,9}$/.test(s)).map(Number);
   const pageIds = ids("page"), articleIds = numbers(ids("article")), userIds = numbers(ids("user"));
@@ -52,7 +54,7 @@ async function itemsFor(db: Db, rows: Row[]) {
       return { title: a.title, link: `/${a.type}s/${id}` };
     }
     if (r.entityType === "user" && user.has(id)) return { title: user.get(id)!.name, link: "/users" };
-    const section = SECTIONS[r.entityType ?? ""];
+    const section = r.entityType && Object.hasOwn(SECTIONS, r.entityType) ? SECTIONS[r.entityType] : undefined;
     if (section) return { title: "", link: section };
     // Deleted since: the entry may have kept the title.
     const title = (r.detail as { title?: unknown } | null)?.title;

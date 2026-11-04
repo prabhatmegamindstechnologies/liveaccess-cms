@@ -22,7 +22,7 @@ function parseSeo(v: unknown): SeoInput | null | "invalid" {
   return { title: s.title.trim(), description: s.description.trim(), canonical: s.canonical, noindex: s.noindex };
 }
 
-const changed = sql<boolean>`${pages.html} is distinct from ${pages.publishedHtml}`;
+export const changed = sql<boolean>`${pages.html} is distinct from ${pages.publishedHtml}`;
 
 export type { SaveLimit };
 

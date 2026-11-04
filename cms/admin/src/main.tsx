@@ -9,6 +9,7 @@ import { Login } from "./screens/Login.tsx";
 import { PagesList } from "./screens/PagesList.tsx";
 import { PageEditor } from "./screens/PageEditor.tsx";
 import { ComingSoon } from "./screens/ComingSoon.tsx";
+import { Dashboard } from "./screens/Dashboard.tsx";
 import { MenusEditor } from "./screens/MenusEditor.tsx";
 import { SeoEditor } from "./screens/SeoEditor.tsx";
 import { SettingsEditor } from "./screens/SettingsEditor.tsx";
@@ -22,7 +23,6 @@ import { ChangePassword } from "./screens/ChangePassword.tsx";
 
 // Sidebar sections that are not built yet.
 const SOON: { path: string; title: string; about: string }[] = [
-  { path: "/dashboard", title: "Dashboard", about: "Recent edits, drafts waiting to be published and new messages." },
   { path: "/media", title: "Media library", about: "Upload images, add alt text and reuse them across the site." },
   { path: "/inbox", title: "Contact inbox", about: "Messages sent from the website contact form." }
 ];
@@ -48,7 +48,8 @@ createRoot(document.getElementById("root")!).render(
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route element={<RequireAuth />}>
-            <Route index element={<Navigate to="/pages" replace />} />
+            <Route index element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/pages" element={<PagesList />} />
             <Route path="/pages/:key" element={<PageEditor />} />
             <Route path="/menus" element={<MenusEditor />} />
@@ -63,7 +64,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/audit" element={<SuperAdminOnly><AuditLog /></SuperAdminOnly>} />
             <Route path="/change-password" element={<ChangePassword />} />
             {SOON.map((s) => <Route key={s.path} path={s.path} element={<ComingSoon title={s.title} about={s.about} />} />)}
-            <Route path="*" element={<Navigate to="/pages" replace />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Route>
         </Routes>
       </BrowserRouter>
