@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, Outlet, useLocation, useNavigate } from "react-router";
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import { useAuth } from "../lib/auth.tsx";
 import tpsLogo from "../assets/tps-logo.png";
 
@@ -12,6 +12,9 @@ const NAV: { group: string; items: { label: string; to: string }[] }[] = [
   { group: "Messages", items: [{ label: "Contact inbox", to: "/inbox" }] },
   { group: "Admin", items: [{ label: "Publish centre", to: "/publish" }, { label: "Users & roles", to: "/users" }, { label: "Audit log", to: "/audit" }] }
 ];
+
+// Not offered to Editors; the API refuses them too.
+const SUPER_ADMIN_ONLY = new Set(["/users", "/audit"]);
 
 // Outline icons (24×24 paths) shown next to each label, and alone when the sidebar is collapsed.
 const ICONS: Record<string, string> = {
@@ -48,6 +51,7 @@ export function Shell() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [collapsed, setCollapsed] = useState(readCollapsed);
+  const nav = NAV.map((g) => ({ ...g, items: g.items.filter((it) => user?.role === "super_admin" || !SUPER_ADMIN_ONLY.has(it.to)) }));
   const initials = (user?.name ?? "?").split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 
   function toggle() {
@@ -70,7 +74,7 @@ export function Shell() {
           </button>
         </div>
         <nav aria-label="Admin" className={`flex flex-1 flex-col gap-4 overflow-x-hidden overflow-y-auto py-3 [scrollbar-width:thin] ${collapsed ? "px-2" : "px-3"}`}>
-          {NAV.map((g) => (
+          {nav.map((g) => (
             <div key={g.group || "top"}>
               {g.group && !collapsed && <h2 className="mb-1.5 px-3 text-[11px] font-semibold tracking-wider text-slate-400 uppercase">{g.group}</h2>}
               {g.group && collapsed && <hr className="mx-2 mb-2 border-slate-200" />}
@@ -97,6 +101,7 @@ export function Shell() {
             {user?.name}
             <span className="block text-xs text-slate-500">{user?.role === "super_admin" ? "Super Admin" : "Editor"}</span>
           </span>
+          <Link to="/change-password" className="text-sm font-semibold text-slate-600 hover:text-slate-900">Change password</Link>
           <button type="button" className="rounded-md border border-slate-200 px-3 py-1.5 text-sm font-semibold hover:border-slate-300"
             onClick={async () => { await logout(); navigate("/login"); }}>
             Sign out

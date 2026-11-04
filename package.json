@@ -10,6 +10,7 @@
     "db:migrate": "pnpm --filter @liveaccess/cms db:migrate",
     "db:seed-admin": "pnpm --filter @liveaccess/cms seed:admin",
     "import:site": "pnpm --filter @liveaccess/cms import:site",
+    "build:site": "pnpm --filter @liveaccess/cms build:site",
     "dev:api": "pnpm --filter @liveaccess/cms dev",
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",

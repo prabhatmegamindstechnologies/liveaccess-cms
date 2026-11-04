@@ -22,6 +22,7 @@ export const env = {
   testDatabaseUrl: () => required("TEST_DATABASE_URL"),
   adminPath,
   port: Number(process.env.PORT ?? 8787),
+  previewPort: Number(process.env.PREVIEW_PORT ?? 4000),
   siteRoot: resolve(repoRoot, process.env.SITE_ROOT ?? "."),
   // Cookies are Secure unless local development explicitly turns it off (http://localhost has no TLS).
   secureCookies: process.env.CMS_INSECURE_COOKIES !== "1",

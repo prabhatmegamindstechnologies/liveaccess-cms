@@ -6,7 +6,7 @@ import { readMenus, validateMenus, type Menus } from "@liveaccess/shared";
 import type { Db } from "../../db/client.ts";
 import { articles, menus, pages, users } from "../../db/schema.ts";
 import { audit } from "../audit.ts";
-import { requireUser, type AuthVars } from "../auth/require-user.ts";
+import { requireSuperAdmin, requireUser, type AuthVars } from "../auth/require-user.ts";
 import { saveLimit, type SaveLimit } from "../save-limit.ts";
 
 const LOCATION = "site";
@@ -46,11 +46,12 @@ export function menuRoutes(db: Db, limit: SaveLimit = { max: 30, windowMs: 60_00
       updatedAt: row?.menu.updatedAt ?? null,
       updatedBy: row?.by ?? null,
       hasChanges: !same(draft, live),
-      links: await linkOptions(db)
+      links: await linkOptions(db),
+      canEdit: c.get("user").role === "super_admin"
     });
   });
 
-  app.put("/", async (c) => {
+  app.put("/", requireSuperAdmin, async (c) => {
     const body = await c.req.json().catch(() => null);
     if (!Number.isInteger(body?.baseVersion) || body?.menus === undefined) return c.json({ error: "Invalid menu data." }, 400);
     const user = c.get("user");

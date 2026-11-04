@@ -439,3 +439,10 @@ cms/dist/
 cms/.vercel/
 # The pnpm workspace folder packages/ is ours (the NuGet rule above would hide it)
 !/packages/*/
+# Local site preview (pnpm build:site)
+.site-preview/
+.site-preview.tmp/
+.site-preview.old/
+# Our publish code (the Click-Once rule above would hide it)
+!/cms/publish/
+!/cms/api/publish/

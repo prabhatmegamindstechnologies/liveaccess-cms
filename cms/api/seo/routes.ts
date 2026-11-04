@@ -8,7 +8,7 @@ import { buildSitemap, checkLlms, checkRobots, validateDefaults, validateRedirec
 import type { Db } from "../../db/client.ts";
 import { articles, pages, redirects, settings } from "../../db/schema.ts";
 import { audit } from "../audit.ts";
-import { requireUser, type AuthVars } from "../auth/require-user.ts";
+import { requireSuperAdmin, requireUser, type AuthVars } from "../auth/require-user.ts";
 import { saveLimit, type SaveLimit } from "../save-limit.ts";
 import { editorNames, FRESH, saveVersioned, type Meta, type Stored } from "../versioned-setting.ts";
 
@@ -84,10 +84,10 @@ export function seoRoutes(db: Db, adminPath: string, siteFilesRoot?: string, lim
         : "value" in s ? s.value : await seed(db, siteFilesRoot, part);
       out[part] = { value, version: s.version, updatedAt: s.updatedAt, updatedBy: s.updatedBy ? names.get(s.updatedBy) ?? null : null };
     }
-    return c.json({ ...out, sitemap: await sitemap(db), links: await linkOptions(db) });
+    return c.json({ ...out, sitemap: await sitemap(db), links: await linkOptions(db), canEdit: c.get("user").role === "super_admin" });
   });
 
-  app.put("/:part", async (c) => {
+  app.put("/:part", requireSuperAdmin, async (c) => {
     const part = c.req.param("part") as Part;
     // Own keys only: `in` would also accept inherited names like "constructor" or "__proto__".
     if (!Object.hasOwn(KEY, part)) return c.json({ error: "Not found." }, 404);

@@ -1,4 +1,4 @@
-import { StrictMode } from "react";
+import { StrictMode, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import "./index.css";
@@ -15,21 +15,30 @@ import { SettingsEditor } from "./screens/SettingsEditor.tsx";
 import { ArticlesList } from "./screens/ArticlesList.tsx";
 import { AreaEditor } from "./screens/AreaEditor.tsx";
 import { GuideEditor } from "./screens/GuideEditor.tsx";
+import { PublishCentre } from "./screens/PublishCentre.tsx";
+import { UsersList } from "./screens/UsersList.tsx";
+import { AuditLog } from "./screens/AuditLog.tsx";
+import { ChangePassword } from "./screens/ChangePassword.tsx";
 
 // Sidebar sections that are not built yet.
 const SOON: { path: string; title: string; about: string }[] = [
   { path: "/dashboard", title: "Dashboard", about: "Recent edits, drafts waiting to be published and new messages." },
   { path: "/media", title: "Media library", about: "Upload images, add alt text and reuse them across the site." },
-  { path: "/inbox", title: "Contact inbox", about: "Messages sent from the website contact form." },
-  { path: "/publish", title: "Publish centre", about: "Review draft changes and publish them to the live site." },
-  { path: "/users", title: "Users & roles", about: "Add Super Admins and Editors, reset passwords." },
-  { path: "/audit", title: "Audit log", about: "Who changed what, and when." }
+  { path: "/inbox", title: "Contact inbox", about: "Messages sent from the website contact form." }
 ];
 
 function RequireAuth() {
   const { user, loading } = useAuth();
   if (loading) return <p className="p-8 text-slate-500">Loading…</p>;
-  return user ? <Shell /> : <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/login" replace />;
+  return user.mustChangePassword ? <ChangePassword forced /> : <Shell />;
+}
+
+/** The API refuses these sections anyway; this says so instead of showing an error. */
+function SuperAdminOnly({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+  if (user?.role === "super_admin") return children;
+  return <p role="note" className="mx-auto max-w-6xl rounded-lg bg-blue-50 px-4 py-3 text-sm text-blue-900">This section is for Super Admins only.</p>;
 }
 
 createRoot(document.getElementById("root")!).render(
@@ -49,6 +58,10 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/guides/:id" element={<GuideEditor />} />
             <Route path="/areas" element={<ArticlesList key="area" kind="area" />} />
             <Route path="/areas/:id" element={<AreaEditor />} />
+            <Route path="/publish" element={<PublishCentre />} />
+            <Route path="/users" element={<SuperAdminOnly><UsersList /></SuperAdminOnly>} />
+            <Route path="/audit" element={<SuperAdminOnly><AuditLog /></SuperAdminOnly>} />
+            <Route path="/change-password" element={<ChangePassword />} />
             {SOON.map((s) => <Route key={s.path} path={s.path} element={<ComingSoon title={s.title} about={s.about} />} />)}
             <Route path="*" element={<Navigate to="/pages" replace />} />
           </Route>

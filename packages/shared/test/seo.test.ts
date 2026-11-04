@@ -157,3 +157,11 @@ describe("validateDefaults", () => {
     expect(validateDefaults(null).ok).toBe(false);
   });
 });
+
+describe("redirects from the images folder", () => {
+  it("are refused, because Apache would also move everything under the address", () => {
+    for (const from of ["/images", "/images/old.html"]) {
+      expect(validateRedirects([{ from, to: "./", code: 301 }], new Set(["./"])).ok, from).toBe(false);
+    }
+  });
+});

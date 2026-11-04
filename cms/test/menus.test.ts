@@ -21,8 +21,8 @@ beforeEach(async () => {
   await importSite(db, env.siteRoot);
 });
 
-async function signIn(email = "editor@example.com", name = "Test User") {
-  const { password } = await makeUser(db, { email, role: "editor" });
+async function signIn(email = "editor@example.com", name = "Test User", role: "super_admin" | "editor" = "super_admin") {
+  const { password } = await makeUser(db, { email, role });
   if (name !== "Test User") await db.execute(sql`update users set name = ${name} where email = ${email}`);
   const res = await app().request(`${api}/auth/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email, password }) });
   const cookie = (res.headers.get("set-cookie") ?? "").split(";")[0]!;
@@ -113,5 +113,15 @@ describe("menus API", () => {
     const { put } = await signIn();
     expect((await put({ menus: {} })).status).toBe(400);
     expect((await put({ baseVersion: 1, menus: "x" })).status).toBe(422);
+  });
+});
+
+describe("Editors and the menus", () => {
+  it("can read them, but only a Super Admin can save", async () => {
+    const { get, put } = await signIn("reader@example.com", "Test User", "editor");
+    const { menus: m, version, canEdit } = await (await get()).json();
+    expect(canEdit).toBe(false);
+    expect((await put({ baseVersion: version, menus: m })).status).toBe(403);
+    expect(await db.select().from(menus)).toEqual([]);
   });
 });

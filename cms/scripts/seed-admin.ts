@@ -5,7 +5,7 @@ import { createInterface } from "node:readline";
 import { eq, sql } from "drizzle-orm";
 import { env } from "../env.ts";
 import { createDb } from "../db/client.ts";
-import { users } from "../db/schema.ts";
+import { sessions, users } from "../db/schema.ts";
 import { assertPasswordRules, hashPassword } from "../api/auth/password.ts";
 
 function arg(name: string, fallback: string) {
@@ -38,7 +38,11 @@ try {
   const passwordHash = await hashPassword(password);
   const [existing] = await db.select().from(users).where(sql`lower(${users.email}) = ${email}`).limit(1);
   if (existing) {
-    await db.update(users).set({ passwordHash, role: "super_admin", status: "active", failedLogins: 0, lockedUntil: null }).where(eq(users.id, existing.id));
+    // This is the way back into a compromised account too, so nobody stays signed in with the old password.
+    await db.transaction(async (tx) => {
+      await tx.update(users).set({ passwordHash, role: "super_admin", status: "active", mustChangePassword: false, tempPasswordExpiresAt: null, failedLogins: 0, lockedUntil: null }).where(eq(users.id, existing.id));
+      await tx.delete(sessions).where(eq(sessions.userId, existing.id));
+    });
     console.log(`Updated Super Admin ${email} (password reset, account unlocked).`);
   } else {
     await db.insert(users).values({ name, email, passwordHash, role: "super_admin" });

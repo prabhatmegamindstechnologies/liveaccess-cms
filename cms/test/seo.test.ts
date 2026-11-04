@@ -24,8 +24,8 @@ beforeEach(async () => {
   await importSite(db, env.siteRoot);
 });
 
-async function signIn(email = "editor@example.com", name = "Test User") {
-  const { password } = await makeUser(db, { email, role: "editor" });
+async function signIn(email = "editor@example.com", name = "Test User", role: "super_admin" | "editor" = "super_admin") {
+  const { password } = await makeUser(db, { email, role });
   if (name !== "Test User") await db.execute(sql`update users set name = ${name} where email = ${email}`);
   const res = await app().request(`${api}/auth/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email, password }) });
   const cookie = (res.headers.get("set-cookie") ?? "").split(";")[0]!;
@@ -134,5 +134,16 @@ describe("SEO API", () => {
     const res = await b.put("llms", { baseVersion: 1, value: s.llms.value });
     expect(res.status).toBe(409);
     expect((await res.json()).error).toMatch(/changed by Asha Rao/);
+  });
+});
+
+describe("Editors and SEO", () => {
+  it("can read it, but only a Super Admin can save any part", async () => {
+    const { get, put } = await signIn("reader@example.com", "Test User", "editor");
+    const data = await get();
+    expect(data.canEdit).toBe(false);
+    for (const part of ["redirects", "robots", "llms", "defaults"]) {
+      expect((await put(part, { baseVersion: data[part].version, value: data[part].value })).status, part).toBe(403);
+    }
   });
 });

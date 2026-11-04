@@ -42,6 +42,18 @@ https://claude.ai/artifact/UZJy25p3EXk3SEdQDXvF6U · Prototype: https://claude.a
   `GET /areas/:id` also returns the area's guides; saved with a Save button (30/min); a draft area's slug change moves
   its guides (version + 1, `area_renamed` audit); delete refused while guides use the area.
 - Settings-row drafts share `api/versioned-setting.ts` (`saveVersioned`: lock, version check, first-save race → 409).
+- `users` (2026-11-04) — Super Admin only (`requireSuperAdmin`): `GET /users`; `POST /users` `{ name, email, role }` → user
+  + `temporaryPassword` (once); `PATCH /users/:id` `{ name?, email?, role?, status? }`; `POST /users/:id/reset-password`,
+  `/unlock`. No delete. Last active Super Admin and your own role/status are protected, under row locks. Role change,
+  disable or reset ends the user's sessions.
+- `auth/change-password` `{ currentPassword, newPassword }` — 5 tries a minute, ends other sessions. While
+  `users.must_change_password` is set, `requireUser` answers 403 `passwordChangeRequired` on everything else.
+- `audit` (2026-11-04) — `GET /audit?page&user&group&from&to`, Super Admin only, read-only, 50 per page. `group`: content, website,
+  users, publishing, sign-ins; default view hides `login`/`logout`. `detail` goes through an allow-list. Wording is in
+  `admin/src/lib/audit.ts`: a new action needs a sentence there and a place in `GROUPS` (it shows by its raw name until then).
+- Account rules: temporary passwords (typed or generated) expire after 72 hours; sessions end after 7 days as well as 8 idle
+  hours; creating, promoting or resetting a Super Admin needs the caller's own password (5 wrong tries a minute).
+- Roles: saving Menus, SEO & redirects and Site settings is Super Admin only; Editors get them read-only (`canEdit`).
 - Saves are rate limited per user (`api/save-limit.ts`, in memory: pages 120/min, menus, SEO and settings 30/min).
 
 ## Menus (`packages/shared/src/menus.ts`)
@@ -87,12 +99,30 @@ https://claude.ai/artifact/UZJy25p3EXk3SEdQDXvF6U · Prototype: https://claude.a
   keeps each page's own `&referrer=utm_…`. Email is strict (no `? & = % #`) because it goes into mailto links.
 - Publish must HTML-escape site name and tagline (text, attributes, JSON-LD).
 
+## Local preview (2026-11-04)
+- Publish centre → **Build preview**, or `pnpm build:site`: `cms/publish/build-site.ts` turns the drafts into a complete
+  site in `.site-preview/` (git-ignored; built in `.site-preview.tmp/`, swapped in only on success). Nothing is published
+  and no draft changes. `pnpm dev:api` serves it at `http://localhost:4000/` (`PREVIEW_PORT`, 127.0.0.1 only, dev only).
+- The output is what real Publish will write. Preview safety is only in the headers of `cms/api/preview-server.ts` (CSP
+  blocks GA/GTM/Formspree, noindex, no-store), which also copies `.htaccess` behaviour and reads its `Redirect` lines.
+- `POST /publish/preview`, `GET /publish/preview`: signed-in, one build at a time, mounted only with `AppConfig.preview`.
+- Drafts that fail full validation: never-published ones are left out, live ones use their `published` copy; both are listed.
+- `packages/shared/src/publish.ts`: `applyPageSeo`, `applySiteSettings`, `applyConsentJs`, `applySeoDefaults`,
+  `redirectsHtaccess`. A matching value leaves the page byte-for-byte (tested on all 29 pages).
+- Site name goes into `og:site_name` only. GA4 is also written into `consent.js`.
+- **GTM isn't applied:** `consent.js` loads only the first consent-gated tag, so the build warns instead.
+- `applyListing` keeps `guides.html` (cards + JSON-LD `ItemList`) and `process-areas.html` in step with what was built:
+  page order kept, new items last, card text only rewritten when the summary changed (it's hand-shortened on some cards).
+- **Before real Publish:** harden `cms/api/pages/guard.ts` (see the Security Gate in
+  `docs/mm-skill/tasks/2026-11-04-cms-local-publish.md`). Draft page HTML would otherwise reach the live site.
+
 ## Gotchas
 - **Admin URL needs the trailing slash in dev:** `http://localhost:5173/la-studio/` (without it Vite shows its base-URL page).
 - **FTP guard rail:** never add `*.html *.css *.js *.png *.svg *.mp4 *.txt *.xml *.woff2` files in the repo root on any
   branch that reaches `main` — `deploy.yml` uploads them to the live server.
 - **`.gitignore`** is the Visual Studio template; its NuGet rule `**/[Pp]ackages/*` hid `packages/`. Fixed with
   `!/packages/*/`.
+  Its `publish/` rule hid `cms/publish/` and `cms/api/publish/` too (fixed the same way): check `git status` for new folders.
 - **pnpm** (11.6) uses `saveExact` and `minimumReleaseAge: 10080` (7 days); esbuild install scripts are blocked on
   purpose (`allowBuilds: esbuild: false`) and tsx / drizzle-kit work without them.
 - **linkedom** overflows on extremely deep nesting; `sanitizeInline` strips tags when nesting > 200 before parsing.
@@ -106,9 +136,10 @@ docker compose up -d          # PostgreSQL 16 on 127.0.0.1:5433 (dbs: liveaccess
 pnpm install
 pnpm db:migrate
 pnpm db:seed-admin            # prompts for the admin@example.com password (min 12 chars)
-pnpm import:site              # 12 pages, 6 guides, 8 process areas
+pnpm import:site              # 12 pages, 6 guides, 8 process areas (first time only: it overwrites page drafts)
 pnpm dev:api                  # http://localhost:8787/la-studio/api
 pnpm dev:admin                # http://localhost:5173/la-studio/  (admin app, proxies /la-studio/api)
+pnpm build:site               # local preview from the drafts, open http://localhost:4000/
 pnpm test && pnpm typecheck
 ```
 Schema changes: edit `cms/db/schema.ts`, then `pnpm db:generate` and `pnpm db:migrate`.

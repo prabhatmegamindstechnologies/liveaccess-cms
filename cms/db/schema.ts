@@ -17,6 +17,9 @@ export const users = pgTable("users", {
   passwordHash: text("password_hash").notNull(),
   role: roleEnum("role").notNull().default("editor"),
   status: userStatusEnum("status").notNull().default("active"),
+  // Set on a temporary password: until the user picks their own, they can do nothing else.
+  mustChangePassword: boolean("must_change_password").notNull().default(false),
+  tempPasswordExpiresAt: timestamp("temp_password_expires_at", { withTimezone: true }),
   failedLogins: integer("failed_logins").notNull().default(0),
   lockedUntil: timestamp("locked_until", { withTimezone: true }),
   lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
@@ -150,7 +153,7 @@ export const auditLog = pgTable("audit_log", {
   detail: jsonb("detail"),
   ip: text("ip"),
   createdAt: createdAt()
-}, (t) => [index("audit_entity_idx").on(t.entityType, t.entityId, t.createdAt)]);
+}, (t) => [index("audit_entity_idx").on(t.entityType, t.entityId, t.createdAt), index("audit_created_idx").on(t.createdAt)]);
 
 export const publishJobs = pgTable("publish_jobs", {
   id: serial("id").primaryKey(),

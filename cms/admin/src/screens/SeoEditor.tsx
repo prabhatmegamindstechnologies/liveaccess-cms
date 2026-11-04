@@ -1,6 +1,6 @@
 // SEO & redirects: redirect rules, robots.txt, llms.txt and SEO defaults (each saved as a draft), plus the sitemap
 // that will be generated on publish. Per-page titles and descriptions live on each page's SEO tab.
-import { useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Redirect, SeoDefaults } from "@liveaccess/shared";
 import { api, ApiError } from "../lib/api.ts";
 import { Breadcrumb } from "../components/ui.tsx";
@@ -9,8 +9,9 @@ import { FieldError, iconBtn, inputCls, LinkPicker, SavedPill, saveBtn, useUnsav
 type Part<T> = { value: T; version: number; updatedAt: string | null; updatedBy: string | null };
 type SeoData = {
   redirects: Part<Redirect[]>; robots: Part<string>; llms: Part<string>; defaults: Part<SeoDefaults>;
-  sitemap: { xml: string; count: number }; links: LinkOption[];
+  sitemap: { xml: string; count: number }; links: LinkOption[]; canEdit: boolean;
 };
+const ReadOnly = createContext(false);
 type Tab = "redirects" | "files" | "defaults";
 type Status = { kind: "idle" | "saving" | "saved" | "error" | "conflict"; text?: string };
 const TABS: { id: Tab; label: string }[] = [{ id: "redirects", label: "Redirects" }, { id: "files", label: "Sitemap, robots & llms.txt" }, { id: "defaults", label: "Defaults" }];
@@ -49,6 +50,7 @@ function usePart<T>(name: string, initial: Part<T>) {
 }
 
 function SaveBar({ p, label = "Save" }: { p: { dirty: boolean; status: Status; save: () => void; meta: Part<unknown> }; label?: string }) {
+  if (useContext(ReadOnly)) return null;
   return (
     <div className="grid gap-2">
       {p.status.kind === "conflict" && (
@@ -179,6 +181,8 @@ export function SeoEditor() {
         Saved changes are drafts: the live site changes when they're published.
       </p>
 
+      {!data.canEdit && <p role="note" className="mb-4 rounded-lg bg-blue-50 px-4 py-2 text-sm text-blue-900">Only a Super Admin can change these. You can see the current values here.</p>}
+
       <div role="tablist" className="mb-5 flex gap-1 border-b border-slate-200">
         {TABS.map((t) => (
           <button key={t.id} role="tab" type="button" id={`tab-${t.id}`} aria-selected={tab === t.id} aria-controls={`panel-${t.id}`} onClick={() => setTab(t.id)}
@@ -189,6 +193,8 @@ export function SeoEditor() {
       </div>
 
       {/* Tabs stay mounted (only hidden) so unsaved typing survives switching tabs. */}
+      <ReadOnly.Provider value={!data.canEdit}>
+      <fieldset disabled={!data.canEdit} className="contents">
       <div role="tabpanel" id="panel-redirects" aria-labelledby="tab-redirects" hidden={tab !== "redirects"}>
         <RedirectsTab initial={data.redirects} links={data.links} />
       </div>
@@ -208,6 +214,8 @@ export function SeoEditor() {
       <div role="tabpanel" id="panel-defaults" aria-labelledby="tab-defaults" hidden={tab !== "defaults"}>
         <DefaultsTab initial={data.defaults} />
       </div>
+      </fieldset>
+      </ReadOnly.Provider>
     </div>
   );
 }

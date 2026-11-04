@@ -6,6 +6,8 @@ import { sessions, users } from "../../db/schema.ts";
 
 export const SESSION_COOKIE = "la_session";
 export const SESSION_IDLE_MS = 8 * 60 * 60 * 1000;
+// Use renews the idle limit, so a stolen session could otherwise last for ever.
+export const SESSION_MAX_MS = 7 * 24 * 60 * 60 * 1000;
 
 const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
 
@@ -30,7 +32,7 @@ export async function readSession(db: Db, token: string | undefined) {
     .select({ session: sessions, user: users })
     .from(sessions)
     .innerJoin(users, eq(users.id, sessions.userId))
-    .where(and(eq(sessions.tokenHash, sha256(token)), gt(sessions.expiresAt, new Date())))
+    .where(and(eq(sessions.tokenHash, sha256(token)), gt(sessions.expiresAt, new Date()), gt(sessions.createdAt, new Date(Date.now() - SESSION_MAX_MS))))
     .limit(1);
   const row = rows[0];
   if (!row || row.user.status !== "active") return null;

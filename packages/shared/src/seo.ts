@@ -119,6 +119,8 @@ export function validateRedirects(input: unknown, pages: Set<string>, adminPath 
     else if (/\/\.{1,2}(\/|$)|\/\//.test(from)) errors[`${i}.from`] = "Remove the empty, . or .. parts from this address.";
     else if (!isPageAddress(from)) errors[`${i}.from`] = "Only old page addresses can be redirected (ending in .html or with no extension), not files or hidden folders.";
     else if (taken.has(from)) errors[`${i}.from`] = "This address is a page on the site. Pick an address that no longer exists.";
+    // Apache's Redirect also matches everything under the address, so this would move every image on the site.
+    else if (from === "/images" || from.startsWith("/images/")) errors[`${i}.from`] = "This is the site's images folder, so it can't be redirected.";
     else if (from === `/${adminPath}` || from.startsWith(`/${adminPath}/`)) errors[`${i}.from`] = "Admin addresses can't be redirected.";
     else if (seen.has(from)) errors[`${i}.from`] = "There is already a redirect from this address.";
     seen.add(from);

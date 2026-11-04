@@ -6,7 +6,7 @@ import { previewDoc } from "../lib/preview.ts";
 import { Breadcrumb, Chip } from "../components/ui.tsx";
 import { FieldError, iconBtn, inputCls, LinkPicker, useUnsavedWarning, type Errors, type LinkOption } from "../components/form.tsx";
 
-type MenusData = { menus: Menus; version: number; hasChanges: boolean; updatedAt: string | null; updatedBy: string | null; links: LinkOption[] };
+type MenusData = { menus: Menus; version: number; hasChanges: boolean; updatedAt: string | null; updatedBy: string | null; links: LinkOption[]; canEdit: boolean };
 
 const clone = (m: Menus): Menus => JSON.parse(JSON.stringify(m));
 
@@ -154,13 +154,17 @@ export function MenusEditor() {
         <h1 className="text-2xl font-bold tracking-tight">Menus</h1>
         {data.hasChanges && <Chip tone="changes">Unpublished changes</Chip>}
         <span className="flex-1" />
-        <span role="status" className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold">
-          <i aria-hidden="true" className={`size-2 rounded-full ${dirty ? "bg-amber-500" : "bg-green-600"}`} />{statusText}
-        </span>
-        <button type="button" onClick={save} disabled={!dirty || status.kind === "saving"}
-          className="rounded-lg bg-brand px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#a8370a] disabled:opacity-50">
-          {status.kind === "saving" ? "Saving…" : "Save"}
-        </button>
+        {data.canEdit && (
+          <>
+            <span role="status" className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold">
+              <i aria-hidden="true" className={`size-2 rounded-full ${dirty ? "bg-amber-500" : "bg-green-600"}`} />{statusText}
+            </span>
+            <button type="button" onClick={save} disabled={!dirty || status.kind === "saving"}
+              className="rounded-lg bg-brand px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#a8370a] disabled:opacity-50">
+              {status.kind === "saving" ? "Saving…" : "Save"}
+            </button>
+          </>
+        )}
       </div>
       <p className="mb-5 text-sm text-slate-500">
         Header and footer links on every page. Only labels, links and order change; the header and footer design stay the same.
@@ -168,6 +172,7 @@ export function MenusEditor() {
         {data.updatedBy && data.updatedAt && <> Last saved by {data.updatedBy}, {new Date(data.updatedAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}.</>}
       </p>
 
+      {!data.canEdit && <p role="note" className="mb-4 rounded-lg bg-blue-50 px-4 py-2 text-sm text-blue-900">Only a Super Admin can change the menus. You can see the current ones here.</p>}
       {status.kind === "conflict" && (
         <div role="alert" className="mb-4 flex flex-wrap items-center gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
           <span className="flex-1">{status.text} Your changes were not saved.</span>
@@ -181,6 +186,7 @@ export function MenusEditor() {
         {homeHtml && <MenuPreview homeHtml={homeHtml} menus={draft} />}
       </section>
 
+      <fieldset disabled={!data.canEdit} className="contents">
       <div className="grid items-start gap-6 xl:grid-cols-2">
         <section className="grid gap-5 rounded-xl border border-slate-200 bg-white p-5">
           <h2 className="text-sm font-semibold tracking-wide text-slate-500 uppercase">Header menu</h2>
@@ -220,6 +226,7 @@ export function MenusEditor() {
           ))}
         </div>
       </div>
+      </fieldset>
     </div>
   );
 }
