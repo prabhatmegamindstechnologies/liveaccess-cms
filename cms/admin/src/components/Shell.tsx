@@ -62,17 +62,21 @@ export function Shell() {
   }
   // FAQ is a page too; highlight only FAQ (not Pages) while it is open.
   const isActive = (to: string) => (to === "/pages" ? pathname.startsWith("/pages") && pathname !== "/pages/faq" : pathname === to || pathname.startsWith(`${to}/`));
+  const toggleButton = (
+    <button type="button" onClick={toggle} aria-expanded={!collapsed} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+      className="grid size-8 shrink-0 place-items-center rounded-md text-slate-600 hover:bg-slate-100 hover:text-slate-900">
+      <Icon d={collapsed ? "M4 4h16v16H4zM9 4v16M13 10l2 2-2 2" : "M4 4h16v16H4zM9 4v16M16 10l-2 2 2 2"} />
+    </button>
+  );
 
   return (
     <div className="flex min-h-screen">
       <aside data-collapsed={collapsed} className={`sticky top-0 hidden h-screen shrink-0 flex-col border-r border-slate-200 bg-white text-slate-700 transition-[width] duration-200 motion-reduce:transition-none lg:flex ${collapsed ? "w-[72px]" : "w-64"}`}>
-        <div className={`flex items-center border-b border-slate-200 h-[61px] shrink-0 ${collapsed ? "flex-col justify-center gap-1 px-2" : "justify-between px-5"}`}>
-          <img src={tpsLogo} alt="TPS" width={150} height={32} className={collapsed ? "h-auto w-11" : "h-8 w-auto"} />
-          <button type="button" onClick={toggle} aria-expanded={!collapsed} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            className="grid size-8 shrink-0 place-items-center rounded-md border border-slate-300 text-slate-600 hover:border-slate-400 hover:bg-slate-50 hover:text-slate-900">
-            <Icon d={collapsed ? "M4 4h16v16H4zM9 4v16M13 10l2 2-2 2" : "M4 4h16v16H4zM9 4v16M16 10l-2 2 2 2"} />
-          </button>
+        <div className={`flex items-center border-b border-slate-200 h-[61px] shrink-0 ${collapsed ? "justify-center px-2" : "justify-between px-5"}`}>
+          <img src={tpsLogo} alt="TPS" width={150} height={32} className={collapsed ? "h-auto w-14 max-w-full" : "h-8 w-auto"} />
+          {!collapsed && toggleButton}
         </div>
+        {collapsed && <div className="flex shrink-0 justify-center pt-3">{toggleButton}</div>}
         <nav aria-label="Admin" className={`flex flex-1 flex-col gap-4 overflow-x-hidden overflow-y-auto py-3 [scrollbar-width:thin] ${collapsed ? "px-2" : "px-3"}`}>
           {nav.map((g) => (
             <div key={g.group || "top"}>
