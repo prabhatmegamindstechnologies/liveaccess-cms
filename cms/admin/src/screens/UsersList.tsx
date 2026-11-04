@@ -1,7 +1,7 @@
 // Users & roles (Super Admin only): add and edit users, reset passwords, unlock and disable accounts.
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { api, ApiError } from "../lib/api.ts";
-import { Breadcrumb, Chip, LineIcon, PENCIL, iconBtn } from "../components/ui.tsx";
+import { Breadcrumb, Chip, KEY, LineIcon, PENCIL, iconBtn } from "../components/ui.tsx";
 import { FieldError, inputCls, saveBtn, type Errors } from "../components/form.tsx";
 
 type Role = "super_admin" | "editor";
@@ -11,7 +11,6 @@ type Secret = { person: Person; password: string; isNew: boolean };
 type Confirm = { kind: "reset" | "disable" | "enable"; person: Person };
 
 const roleName = (r: Role) => (r === "super_admin" ? "Super Admin" : "Editor");
-const KEY = "m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4M21 2l-9.6 9.6M13 15.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z";
 const DISABLE = "M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0zM4.9 4.9l14.2 14.2";
 const ENABLE = "M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0zM9 12l2 2 4-4";
 const UNLOCK = "M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2zM7 11V7a5 5 0 0 1 9.9-1";

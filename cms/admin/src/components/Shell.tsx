@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import { useAuth } from "../lib/auth.tsx";
+import { KEY, LineIcon, iconBtn } from "./ui.tsx";
 import tpsLogo from "../assets/tps-logo.png";
 
 // Sections not built yet open a "coming soon" screen (see SOON in main.tsx).
@@ -105,11 +106,12 @@ export function Shell() {
             {user?.name}
             <span className="block text-xs text-slate-500">{user?.role === "super_admin" ? "Super Admin" : "Editor"}</span>
           </span>
-          <Link to="/change-password" className="text-sm font-semibold text-slate-600 hover:text-slate-900">Change password</Link>
-          <button type="button" className="rounded-md border border-slate-200 px-3 py-1.5 text-sm font-semibold hover:border-slate-300"
-            onClick={async () => { await logout(); navigate("/login"); }}>
-            Sign out
-          </button>
+          <span className="flex gap-0.5">
+            <Link to="/change-password" title="Change password" aria-label="Change password" className={iconBtn}><LineIcon d={KEY} /></Link>
+            <button type="button" title="Sign out" aria-label="Sign out" className={iconBtn} onClick={async () => { await logout(); navigate("/login"); }}>
+              <LineIcon d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+            </button>
+          </span>
         </header>
         <main className="min-w-0 flex-1 px-6 py-6">
           <Outlet />

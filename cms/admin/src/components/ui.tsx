@@ -34,6 +34,7 @@ export function LineIcon({ d }: { d: string }) {
 export const iconBtn = "inline-grid size-8 place-items-center rounded-md text-slate-600 hover:bg-slate-100 hover:text-brand";
 
 export const PENCIL = "M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z";
+export const KEY = "m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4M21 2l-9.6 9.6M13 15.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z";
 
 /** The pencil at the end of a list row. Rows open on click too, so this stops the click reaching the row. */
 export function EditLink({ to, name }: { to: string; name: string }) {
