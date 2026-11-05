@@ -28,6 +28,9 @@ importers:
       hono:
         specifier: 4.13.14
         version: 4.13.14
+      jodit:
+        specifier: 4.18.11
+        version: 4.18.11
       linkedom:
         specifier: 0.18.14
         version: 0.18.14
@@ -1272,6 +1275,9 @@ packages:
     resolution: {integrity: sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ==}
     hasBin: true
 
+  jodit@4.18.11:
+    resolution: {integrity: sha512-Yi41FmNpm80K+Khhl9NZ7FD9hRKxzMPYTRgRtBTiTG8CbdC0tlSULaZTBJouXCsOHoRRJ3p0o4nfJMbs/1PvTg==}
+
   lightningcss-android-arm64@1.32.0:
     resolution: {integrity: sha512-YK7/ClTt4kAK0vo6w3X+Pnm0D2cf2vPHbhOXdoNti1Ga0al1P4TBZhwjATvjNwLEBCnKvjJc2jQgHXH0NEwlAg==}
     engines: {node: '>= 12.0.0'}
@@ -2369,6 +2375,8 @@ snapshots:
       entities: 7.0.1
 
   jiti@2.7.0: {}
+
+  jodit@4.18.11: {}
 
   lightningcss-android-arm64@1.32.0:
     optional: true

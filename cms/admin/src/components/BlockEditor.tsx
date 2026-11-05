@@ -1,6 +1,9 @@
 // Content blocks of a guide: the types the site already styles, each editable, movable and removable.
+import { lazy, Suspense } from "react";
 import type { Block } from "@liveaccess/shared";
 import { FieldError, iconBtn, inputCls, type Errors } from "./form.tsx";
+
+const RichTextEditor = lazy(() => import("./RichTextEditor.tsx"));
 
 type Props = { blocks: Block[]; errors: Errors; onChange: (blocks: Block[]) => void };
 
@@ -28,11 +31,9 @@ function BlockFields({ b, id, set }: { b: Block; id: string; set: (b: Block) => 
   }
   if (b.type === "paragraph") {
     return (
-      <div className="grid gap-1">
-        <textarea id={id} aria-label="Paragraph text" value={b.html} rows={Math.min(8, Math.max(2, Math.ceil(b.html.length / 80)))} maxLength={3000}
-          onChange={(e) => set({ ...b, html: e.target.value })} className={`${inputCls} resize-y`} />
-        <span className="text-[11px] text-slate-500">{tagsHelp}</span>
-      </div>
+      <Suspense fallback={<p className="text-sm text-slate-500">Loading the editor…</p>}>
+        <RichTextEditor id={id} value={b.html} onChange={(html) => set({ ...b, html })} />
+      </Suspense>
     );
   }
   if (b.type === "list") {

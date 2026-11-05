@@ -85,8 +85,20 @@ https://claude.ai/artifact/UZJy25p3EXk3SEdQDXvF6U · Prototype: https://claude.a
   unexpected template. Layout rule: a heading sits right above its block, other blocks are separated by a blank line.
 - `validateGuide(..., { partial })`: partial for auto-save (unfinished drafts OK; types, limits, slug format, sanitising,
   hidden characters still checked); full for Publish. Blocks: heading H2/H3, paragraph, bullet/numbered list, safety
-  note, disclaimer (images with the Media library; tables/quotes need new site CSS). Max 200 blocks, 100,000 characters.
+  note, disclaimer (images with the Media library; quotes need new site CSS). Max 200 blocks, 100,000 characters.
 - In the browser, sanitise in `document.implementation.createHTMLDocument("")`, never the admin page's `document`.
+- **Paragraph editor (2026-11-05):** `cms/admin/src/components/RichTextEditor.tsx`, Jodit, guides and areas only, loaded on demand.
+  Fonts and sizes follow Jodit's own lists (plus the two site fonts), kept in the `RICH_*` lists in `sanitize.ts`; the server removes anything
+  off them. Colours are free (Prabhat, 2026-11-05): any solid colour, rewritten as `#RRGGBB`. Prabhat wants stock Jodit where possible. `cleanParagraph` gives the stored form: a single plain paragraph stays bare inline text, so existing guides don't
+  change; anything richer starts with a block tag, and `isRichParagraph` picks the renderer from that. `.cms-table` is in `common.css`.
+- **Jodit:** `jodit` 4.18.11, used directly, not through `jodit-react`. Its main module loads only core plugins, so others (justify,
+  clean-html, paste, select-cells, symbols…) must be imported by hand, or their buttons quietly do nothing. Its colour popup's hex box
+  and picker take the text selection away, so `RichTextEditor.tsx` holds it and puts it back. Font colour and Background colour are two
+  buttons around Jodit's `ColorPickerWidget`, as its stock button has them on tabs. Emoji Picker is paid, so emoji is a custom dropdown. Update it when an advisory appears.
+  Pasted HTML reaches the live page before any save, so it's cleaned on `beforePasteInsert`, drops are refused, and `admin/index.html` sets
+  `base-uri 'self'; connect-src 'self'`. Add that as a header when the admin's hosting is set up.
+- **Don't start a second Vite:** a failed `pnpm dev:admin` (port in use) still rewrites `.vite/deps`, and the running server then answers
+  504 "Outdated Optimize Dep" and the admin goes blank. Stop every copy, then start one.
 
 ## Process areas (`packages/shared/src/areas.ts`)
 - `renderAreaPage(template, area, guides, doc)`: title "<Name>: process area | LiveAccess", og:title "<Name> | LiveAccess",

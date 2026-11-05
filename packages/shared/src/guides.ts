@@ -2,7 +2,7 @@
 // (only the guide's own places change, so the layout stays as it is), and check guides sent by the admin.
 import { blockHtml, type Block } from "./blocks.ts";
 import { hasHiddenChars } from "./links.ts";
-import { normalizeSpace, sanitizeInline } from "./sanitize.ts";
+import { cleanParagraph, normalizeSpace, sanitizeInline } from "./sanitize.ts";
 
 export type GuideSeo = { title: string; description: string; noindex: boolean };
 export type Guide = { slug: string; title: string; summary: string; areaSlug: string; publishedDate: string; blocks: Block[]; seo: GuideSeo };
@@ -98,7 +98,7 @@ export function slugify(title: string): string {
 /* ---------- validation ---------- */
 
 export type GuideCheck = { ok: true; guide: Guide } | { ok: false; errors: Record<string, string> };
-export const GUIDE_LIMITS = { title: 120, summary: 300, blocks: 200, listItems: 50, inline: 3000, total: 100_000, slug: 80 } as const;
+export const GUIDE_LIMITS = { title: 120, summary: 300, blocks: 200, listItems: 50, inline: 3000, paragraph: 20_000, total: 100_000, slug: 80 } as const;
 
 /**
  * Checks a guide sent by the admin. `areas` = allowed process area slugs; `doc` sanitises inline HTML.
@@ -128,6 +128,13 @@ export function validateGuide(input: unknown, areas: Set<string>, doc: Document,
     if (total > GUIDE_LIMITS.total) return "";
     if (hasHiddenChars(v)) hidden = true;
     return normalizeSpace(sanitizeInline(v.slice(0, GUIDE_LIMITS.inline * 2), doc));
+  };
+  const paragraph = (v: unknown) => {
+    if (typeof v !== "string") return "";
+    total += v.length;
+    if (total > GUIDE_LIMITS.total) return "";
+    if (hasHiddenChars(v)) hidden = true;
+    return cleanParagraph(v.slice(0, GUIDE_LIMITS.paragraph * 2), doc);
   };
 
   const title = text(o.title, "title", "Title", GUIDE_LIMITS.title);
@@ -159,9 +166,9 @@ export function validateGuide(input: unknown, areas: Set<string>, doc: Document,
       if (b.level !== 2 && b.level !== 3) bad("Choose heading level 2 or 3.");
       blocks.push({ type: "heading", level: b.level === 3 ? 3 : 2, text: t });
     } else if (b.type === "paragraph") {
-      const html = inline(b.html);
+      const html = paragraph(b.html);
       if (!html && need) bad("Paragraph is empty.");
-      else if (html.length > GUIDE_LIMITS.inline) bad(`Paragraph can be at most ${GUIDE_LIMITS.inline} characters.`);
+      else if (html.length > GUIDE_LIMITS.paragraph) bad(`Paragraph can be at most ${GUIDE_LIMITS.paragraph} characters.`);
       blocks.push({ type: "paragraph", html });
     } else if (b.type === "list") {
       // Drafts keep empty items (a new, still empty row); complete guides drop them.

@@ -1,5 +1,5 @@
 // Guide and process-area blocks: read from the current article markup, and render back to the same markup.
-import { normalizeSpace, sanitizeInline } from "./sanitize.ts";
+import { isRichParagraph, normalizeSpace, sanitizeInline, sanitizeRich } from "./sanitize.ts";
 
 export type Block =
   | { type: "heading"; level: 2 | 3; text: string }
@@ -44,7 +44,7 @@ export function blockHtml(b: Block, doc: Document, mediaSrc: (id: number) => str
     case "heading":
       return b.level === 3 ? `<h3>${esc(b.text)}</h3>` : `<h2>${esc(b.text)}</h2>`;
     case "paragraph":
-      return `<p>${inline(b.html)}</p>`;
+      return isRichParagraph(b.html) ? sanitizeRich(b.html, doc) : `<p>${inline(b.html)}</p>`;
     case "list": {
       const t = b.style === "number" ? "ol" : "ul";
       return `<${t}>${b.items.filter((x) => x.trim()).map((x) => `<li>${inline(x)}</li>`).join("")}</${t}>`;

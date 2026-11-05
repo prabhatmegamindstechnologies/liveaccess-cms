@@ -298,6 +298,9 @@ html:has(body.site) { scroll-behavior: smooth; }
 .article li strong { color: var(--ink); }
 .note-safety { background: var(--orange-wash); border-left: 4px solid var(--orange); border-radius: 12px; padding: 18px 20px; color: var(--ink); font-size: 15.5px; line-height: 1.6; }
 .article-note { margin-top: 32px; font-size: 14.5px !important; color: var(--muted) !important; }
+.cms-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 15px; line-height: 1.5; }
+.cms-table th, .cms-table td { border: 1px solid var(--border); padding: 10px 12px; text-align: left; vertical-align: top; color: var(--ink-2); }
+.cms-table th { background: var(--bg-page); color: var(--ink); font-weight: 600; }
 
 .split { display: grid; grid-template-columns: .9fr 1.1fr; gap: 64px; align-items: start; }
 
