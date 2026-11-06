@@ -195,3 +195,7 @@ Schema changes: edit `cms/db/schema.ts`, then `pnpm db:generate` and `pnpm db:mi
 `vercel.json` builds the admin, then runs `pnpm db:migrate` on Production deployments only (`VERCEL_ENV`). A failed migration fails the deployment, and a failed build never migrates. It overrides the
 dashboard's Build Command. Previews don't migrate, so they mustn't share the production database: a preview with a newer schema would break until the next Production deployment. Migrations must stay
 additive where possible, because they run before the new code goes live. The file only applies if the project's Root Directory is the repo root; if it's `cms`, the file belongs there (both scripts exist there too).
+
+## Admin output on Vercel (2026-11-06)
+`vercel.json` publishes `cms/dist`, and Vite builds into `cms/dist/<ADMIN_PATH>` so files sit at the URLs the page asks for (`/la-studio/assets/...`). Don't point `outputDirectory` at the admin folder itself (blank page) or at `.` (publishes the whole repo).
+`vercel.json` can't read `ADMIN_PATH`, so `la-studio` is written in its redirect and rewrite: change them together. **The API has no Vercel Function yet**, so the sign-in page loads there but signing in fails.

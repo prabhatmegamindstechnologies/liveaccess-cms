@@ -15,5 +15,6 @@ export default defineConfig({
     // Keep the browser's Host header so the API's same-origin check sees localhost:5173 on both sides.
     proxy: { [`/${env.adminPath}/api`]: { target: `http://localhost:${env.port}`, changeOrigin: false } }
   },
-  build: { outDir: "../dist/admin", emptyOutDir: true }
+  // The folder matches `base`: Vercel serves cms/dist as it is, so the files must sit at the URLs the page asks for.
+  build: { outDir: `../dist/${env.adminPath}`, emptyOutDir: true }
 });
