@@ -90,7 +90,7 @@ describe("validateGuide", () => {
     expect(r.ok).toBe(true);
     if (r.ok) expect(r.guide.blocks).toHaveLength(3);
     expect(validateGuide(draft, areaSet, doc).ok).toBe(false);
-    for (const bad of [{ title: "x".repeat(121) }, { slug: "Bad Slug" }, { areaSlug: "nope" }, { blocks: [{ type: "image" }] }, { publishedDate: "x" }]) {
+    for (const bad of [{ title: "x".repeat(121) }, { slug: "Bad Slug" }, { areaSlug: "nope" }, { blocks: [{ type: "quote" }] }, { publishedDate: "x" }]) {
       expect(validateGuide({ ...draft, ...bad }, areaSet, doc, { partial: true }).ok, JSON.stringify(bad)).toBe(false);
     }
   });

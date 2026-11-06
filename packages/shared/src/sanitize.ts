@@ -1,5 +1,6 @@
 // Inline-only HTML allow-list used for every editable text field (layout lock).
 // Works with any DOM: the browser's `document`, or linkedom's in Node.
+import { isMediaSrc } from "./media.ts";
 
 const INLINE = new Set(["B", "STRONG", "EM", "I", "SPAN", "SMALL", "A", "BR", "TIME", "CODE"]);
 const DROP = new Set(["SCRIPT", "STYLE", "IFRAME", "OBJECT", "EMBED", "NOSCRIPT", "TEMPLATE", "SVG"]);
@@ -143,6 +144,12 @@ function walkRich(node: Node, depth: number, inCell: boolean): string {
       out += "<br>";
       return;
     }
+    // Only library images: the address is checked whole, and nothing else on the tag is kept.
+    if (tag === "IMG") {
+      const src = el.getAttribute("src") ?? "";
+      if (isMediaSrc(src)) out += `<img src="${src}" alt="${escAttr(el.getAttribute("alt") ?? "")}">`;
+      return;
+    }
     const cell = inCell || tag === "TD" || tag === "TH";
     // Table cells hold inline text only, so blocks and tables inside a cell lose their tags and keep their text.
     if (!RICH_INLINE.has(tag) && (!RICH_BLOCK.has(tag) || inCell)) {
@@ -194,7 +201,7 @@ export function cleanParagraph(html: string, doc: Document): string {
   const rich = normalizeSpace(sanitizeRich(html, doc)).replace(/(?:\s*<br>)+\s*(?=<\/(?:p|li|td|th)>)/g, "");
   const box = doc.createElement("div");
   box.innerHTML = rich;
-  if (!(box.textContent ?? "").trim() && !rich.includes("<table")) return "";
+  if (!(box.textContent ?? "").trim() && !/<(?:table|img)[\s>]/.test(rich)) return "";
   const inner = /^<p>((?:(?!<\/?p[\s>]).)*)<\/p>$/.exec(rich)?.[1];
   return inner !== undefined && sanitizeInline(inner, doc) === inner ? inner : rich;
 }

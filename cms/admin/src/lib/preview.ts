@@ -1,5 +1,6 @@
 // Preview helpers: the real page in a sandboxed iframe, with a few editor-only styles.
 import { API_BASE } from "./api.ts";
+import { toAdmin } from "./media.ts";
 
 // In development the site's CSS/images come through the API; in production the admin shares the site's domain.
 export const PREVIEW_BASE = import.meta.env.DEV ? `${API_BASE}/preview-assets/` : "/";
@@ -13,7 +14,7 @@ const PREVIEW_CSS =
 /** Page HTML (scripts already removed) → srcdoc with a <base> for assets and the editor styles. */
 export function previewDoc(htmlWithoutScripts: string): string {
   const inject = `<base data-cms href="${PREVIEW_BASE}"><style id="cms-preview">${PREVIEW_CSS}</style>`;
-  return htmlWithoutScripts.replace(/<head(\s[^>]*)?>/i, (m) => m + inject);
+  return toAdmin(htmlWithoutScripts).replace(/<head(\s[^>]*)?>/i, (m) => m + inject);
 }
 
 /** Outlines one element in the preview and scrolls the iframe (not the admin page) to it. */

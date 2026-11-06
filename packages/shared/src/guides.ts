@@ -1,6 +1,6 @@
 // Troubleshooting guides: read a guide from its page, render a guide into an existing guide page's markup
 // (only the guide's own places change, so the layout stays as it is), and check guides sent by the admin.
-import { blockHtml, type Block } from "./blocks.ts";
+import { blockHtml, type Block, type MediaSrc } from "./blocks.ts";
 import { hasHiddenChars } from "./links.ts";
 import { cleanParagraph, normalizeSpace, sanitizeInline } from "./sanitize.ts";
 
@@ -31,9 +31,9 @@ export function guideFromPage(html: string): Omit<Guide, "blocks"> {
 }
 
 /** The article body in the pages' own layout (one block per line group, list items indented). */
-export function articleBody(blocks: Block[], doc: Document, indent: string, spacing: "guide" | "area" = "guide") {
+export function articleBody(blocks: Block[], doc: Document, indent: string, spacing: "guide" | "area" = "guide", mediaSrc?: MediaSrc) {
   const parts = blocks.map((b) => {
-    if (b.type !== "list") return blockHtml(b, doc);
+    if (b.type !== "list") return blockHtml(b, doc, mediaSrc);
     const t = b.style === "number" ? "ol" : "ul";
     const items = b.items.filter((x) => x.trim()).map((x) => `\n${indent}  <li>${sanitizeInline(x, doc)}</li>`).join("");
     return `<${t}>${items}\n${indent}</${t}>`;
@@ -48,7 +48,7 @@ export function articleBody(blocks: Block[], doc: Document, indent: string, spac
  * Puts a guide into a guide page's markup (`template` = any existing guide page). Throws if the template isn't in the
  * expected form, instead of guessing. `doc` is any Document (the browser's or linkedom's), used to sanitise inline HTML.
  */
-export function renderGuidePage(template: string, g: Guide, areaName: string, doc?: Document): string {
+export function renderGuidePage(template: string, g: Guide, areaName: string, doc?: Document, mediaSrc?: MediaSrc): string {
   const d = doc ?? (globalThis as { document?: Document }).document;
   if (!d) throw new Error("renderGuidePage needs a Document.");
   const url = guideUrl(g.slug);
@@ -86,7 +86,7 @@ export function renderGuidePage(template: string, g: Guide, areaName: string, do
     (_m, a, b, c, e, f) => `${a}${g.publishedDate}${b}${longDate(g.publishedDate)}${c}area-${g.areaSlug}.html${e}${esc(areaName)}${f}`, "byline");
 
   // Article body.
-  swap(/(<article class="article">\n([ \t]*))[\s\S]*?(\n[ \t]*<\/article>)/, (_m, a, indent, b) => `${a}${articleBody(g.blocks, d, indent!)}${b}`, "article");
+  swap(/(<article class="article">\n([ \t]*))[\s\S]*?(\n[ \t]*<\/article>)/, (_m, a, indent, b) => `${a}${articleBody(g.blocks, d, indent!, "guide", mediaSrc)}${b}`, "article");
   return out;
 }
 
@@ -183,6 +183,13 @@ export function validateGuide(input: unknown, areas: Set<string>, doc: Document,
       if (!t && need) bad("Note text is empty.");
       const ttl = b.variant === "safety" ? text(b.title, `blocks.${i}`, "Note title", 80, false) : "";
       blocks.push({ type: "callout", variant: b.variant, title: ttl, text: t });
+    } else if (b.type === "image") {
+      const mediaId = Number.isInteger(b.mediaId) && (b.mediaId as number) > 0 ? b.mediaId as number : null;
+      const alt = text(b.alt, `blocks.${i}`, "Alt text", 300, false);
+      const caption = text(b.caption, `blocks.${i}`, "Caption", 300, false);
+      if (!mediaId && need) bad("Choose an image.");
+      else if (!alt && need) bad("Add alt text for this image.");
+      blocks.push({ type: "image", mediaId, position: b.position === "left" || b.position === "right" || b.position === "full" ? b.position : "center", alt, caption });
     } else {
       bad("This block type can't be used in guides yet.");
     }

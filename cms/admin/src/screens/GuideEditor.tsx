@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from "react-router";
 import { renderGuidePage, slugify, splitScripts, validateGuide, type Guide } from "@liveaccess/shared";
 import { api, ApiError } from "../lib/api.ts";
 import { ConflictError, createAutosaver, type SaveState } from "../lib/autosave.ts";
+import { mediaSrc, rememberMedia } from "../lib/media.ts";
 import { previewDoc } from "../lib/preview.ts";
 import { SPLIT_FIELDS, SPLIT_GRID, SPLIT_PAGE } from "../lib/layout.ts";
 import { Breadcrumb, Chip, SaveStatus } from "../components/ui.tsx";
@@ -12,7 +13,7 @@ import { BlockEditor } from "../components/BlockEditor.tsx";
 import { LivePreview } from "../components/LivePreview.tsx";
 
 type Meta = { id: number; status: "draft" | "published"; live: boolean; hasChanges: boolean; version: number; updatedAt: string; updatedBy: string | null };
-type Loaded = { guide: Guide & Meta; areas: { slug: string; name: string }[]; template: string; problems: Errors };
+type Loaded = { guide: Guide & Meta; areas: { slug: string; name: string }[]; template: string; problems: Errors; mediaFiles: Record<string, string> };
 type Tab = "content" | "seo";
 const IDLE: SaveState = { status: "idle", pending: false, savedAt: null, message: "" };
 const pick = (g: Guide): Guide => ({ slug: g.slug, title: g.title, summary: g.summary, areaSlug: g.areaSlug, publishedDate: g.publishedDate, blocks: g.blocks, seo: g.seo });
@@ -34,6 +35,7 @@ export function GuideEditor() {
 
   useEffect(() => {
     api<Loaded>(`/guides/${id}`).then((d) => {
+      rememberMedia(d.mediaFiles);
       setData(d);
       setMeta(d.guide);
       version.current = d.guide.version;
@@ -103,7 +105,7 @@ export function GuideEditor() {
     if (!data?.template || !preview) return "";
     try {
       const area = data.areas.find((a) => a.slug === preview.areaSlug)?.name ?? "(choose a process area)";
-      return previewDoc(splitScripts(renderGuidePage(data.template, { ...preview, slug: preview.slug || "draft" }, area, inert)).html);
+      return previewDoc(splitScripts(renderGuidePage(data.template, { ...preview, slug: preview.slug || "draft" }, area, inert, mediaSrc)).html);
     } catch {
       return "";
     }

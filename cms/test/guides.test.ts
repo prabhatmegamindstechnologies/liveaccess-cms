@@ -127,7 +127,7 @@ describe("guides API", () => {
     const b = await signIn("ben@example.com", "Ben Ode");
     const id = await guideId("evaporator-fouling");
     const { guide } = await a.json("GET", `/${id}`);
-    const bad = await a.req("PUT", `/${id}`, { baseVersion: 1, ...fields(guide), blocks: [{ type: "image", mediaId: 1 }], areaSlug: "nope" });
+    const bad = await a.req("PUT", `/${id}`, { baseVersion: 1, ...fields(guide), blocks: [{ type: "quote", text: "x" }], areaSlug: "nope" });
     expect(bad.status).toBe(422);
     expect(Object.keys((await bad.json()).errors).sort()).toEqual(["areaSlug", "blocks.0"]);
     expect((await a.req("PUT", `/${id}`, { baseVersion: 1, ...fields(guide), title: "A" })).status).toBe(200);

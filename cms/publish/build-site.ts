@@ -5,12 +5,14 @@ import { cp, copyFile, mkdir, readFile, readdir, rename, rm, writeFile } from "n
 import { extname, join, resolve, sep } from "node:path";
 import { parseHTML } from "linkedom";
 import {
-  applyConsentJs, applyListing, applyMenus, applyPageSeo, applySeoDefaults, applySiteSettings, buildSitemap, guideCardsFromPage, redirectsHtaccess,
+  applyConsentJs, applyListing, applyMenus, applyPageSeo, applySeoDefaults, applySiteSettings, buildSitemap, guideCardsFromPage, MEDIA_DIR, mediaKeysIn, redirectsHtaccess,
   renderAreaPage, renderGuidePage, validateArea, validateGuide,
   type AreaGuide, type Block, type Guide, type ListingItem, type Menus, type SeoDefaults, type SiteSettings
 } from "@liveaccess/shared";
+import { localDriver, type MediaStorage } from "../api/media/storage.ts";
 import type { Db } from "../db/client.ts";
-import { articles, menus, pages, redirects, settings } from "../db/schema.ts";
+import { articles, media, menus, pages, redirects, settings } from "../db/schema.ts";
+import { env } from "../env.ts";
 
 export const PREVIEW_DIR = ".site-preview";
 const WORK_DIR = ".site-preview.tmp";
@@ -39,16 +41,17 @@ const snapshot = (r: Row): Guide => ({
 
 /** Reads every draft the build needs. Values without a draft row stay undefined: the page's own value is kept. */
 async function readDrafts(db: Db) {
-  const [pageRows, articleRows, menuRows, settingRows, redirectRows] = await Promise.all([
+  const [pageRows, articleRows, menuRows, settingRows, redirectRows, mediaRows] = await Promise.all([
     db.select().from(pages).orderBy(pages.id),
     db.select().from(articles).orderBy(articles.id),
     db.select().from(menus),
     db.select().from(settings),
-    db.select().from(redirects).orderBy(redirects.id)
+    db.select().from(redirects).orderBy(redirects.id),
+    db.select({ id: media.id, key: media.storageKey, fileName: media.fileName }).from(media)
   ]);
   const draft = <T>(key: string) => (settingRows.find((s) => s.key === key)?.value as { value?: T } | undefined)?.value;
   return {
-    pageRows, articleRows, redirectRows,
+    pageRows, articleRows, redirectRows, mediaRows,
     menus: menuRows.find((m) => m.location === "site")?.items as Menus | undefined,
     site: draft<SiteSettings>("site.settings"),
     defaults: draft<SeoDefaults>("seo.defaults"),
@@ -86,18 +89,26 @@ async function swapIn(work: string, out: string) {
   await rm(old, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
 }
 
-async function build(db: Db, root: string, work: string): Promise<BuildResult> {
+async function build(db: Db, root: string, work: string, storage: MediaStorage): Promise<BuildResult> {
   const d = await readDrafts(db);
   const skipped: Skipped[] = [];
   const warnings: string[] = [];
   const written = new Set<string>();
   const counts = { pages: 0, guides: 0, areas: 0, files: 0 };
+  const usedMedia = new Set<string>();
+  const mediaById = new Map(d.mediaRows.map((m) => [m.id, m]));
+  const mediaSrc = (id: number) => {
+    const m = mediaById.get(id);
+    if (!m) warnings.push(`A guide or area has an image that's no longer in the library (number ${id}), so it's left out.`);
+    return m ? `${MEDIA_DIR}${m.key}` : null;
+  };
 
   const names = await readdir(root);
   const write = async (file: string, content: string) => {
     if (!/^[a-z0-9][a-z0-9.-]*$/i.test(file)) throw new Error(`Refused to write ${JSON.stringify(file)}.`);
     await writeFile(join(work, file), content);
     written.add(file);
+    for (const key of mediaKeysIn(content)) usedMedia.add(key);
   };
 
   // The live address is only known from the pages themselves (the home page has no mailto link).
@@ -159,7 +170,7 @@ async function build(db: Db, root: string, work: string): Promise<BuildResult> {
     if (!guide) continue;
     const file = `guide-${guide.slug}.html`;
     try {
-      await write(file, finish(renderGuidePage(await template("guide", row), guide, areaNames.get(guide.areaSlug) ?? "", doc()), file));
+      await write(file, finish(renderGuidePage(await template("guide", row), guide, areaNames.get(guide.areaSlug) ?? "", doc(), mediaSrc), file));
       guides.push({ row, guide });
       counts.guides++;
     } catch (e) {
@@ -175,7 +186,7 @@ async function build(db: Db, root: string, work: string): Promise<BuildResult> {
       const order = guideCardsFromPage(page).map((c) => c.slug);
       const rank = (slug: string) => (order.includes(slug) ? order.indexOf(slug) : order.length);
       const cards: AreaGuide[] = guides.filter((g) => g.guide.areaSlug === area.slug).map((g) => g.guide).sort((a, b) => rank(a.slug) - rank(b.slug));
-      await write(file, finish(renderAreaPage(page, area, cards, doc()), file));
+      await write(file, finish(renderAreaPage(page, area, cards, doc(), mediaSrc), file));
       counts.areas++;
     } catch (e) {
       skipped.push({ kind: "area", id: row.id, title: row.title, reason: message(e), live: false });
@@ -228,6 +239,14 @@ async function build(db: Db, root: string, work: string): Promise<BuildResult> {
     }
   }
 
+  /* Library images: only the ones the site uses, so an image nobody has published never reaches it. */
+  if (usedMedia.size) await mkdir(join(work, MEDIA_DIR), { recursive: true });
+  for (const key of usedMedia) {
+    const data = await storage.get(key);
+    if (data) await writeFile(join(work, MEDIA_DIR, key), data);
+    else warnings.push(`The image ${d.mediaRows.find((m) => m.key === key)?.fileName ?? key} is missing from storage, so it won't show.`);
+  }
+
   /* Links that lead nowhere in this build */
   const missing = (href: string) => /^(guide|area)-[a-z0-9-]+\.html$/.test(href) && !written.has(href);
   if (d.menus) {
@@ -246,7 +265,7 @@ async function build(db: Db, root: string, work: string): Promise<BuildResult> {
  * Builds the site into `<previewRoot>/.site-preview`. Works in a temporary folder and swaps it in only when everything
  * succeeded, so a failed build leaves the last good preview in place.
  */
-export async function buildSite(db: Db, opts: { siteRoot: string; previewRoot: string }): Promise<BuildResult> {
+export async function buildSite(db: Db, opts: { siteRoot: string; previewRoot: string; storage?: MediaStorage }): Promise<BuildResult> {
   const root = resolve(opts.siteRoot);
   const out = resolve(opts.previewRoot, PREVIEW_DIR);
   const work = resolve(opts.previewRoot, WORK_DIR);
@@ -259,7 +278,7 @@ export async function buildSite(db: Db, opts: { siteRoot: string; previewRoot: s
   await rm(work, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
   await mkdir(work, { recursive: true });
   try {
-    const result = await build(db, root, work);
+    const result = await build(db, root, work, opts.storage ?? localDriver(env.mediaRoot));
     await swapIn(work, out);
     return result;
   } catch (e) {

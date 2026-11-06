@@ -1,6 +1,7 @@
 // Fields read from the real page, grouped by section; repeating items get move / remove / add controls.
 import { useEffect, useState, type ReactNode } from "react";
 import type { Field } from "@liveaccess/shared";
+import { fromAdmin } from "../lib/media.ts";
 import { PREVIEW_BASE } from "../lib/preview.ts";
 
 type ItemOp = "up" | "down" | "remove" | "add";
@@ -9,6 +10,7 @@ type Props = {
   tick: number;
   onChange: (f: Field, value: string) => void;
   onAlt: (f: Field, alt: string) => void;
+  onImage: (f: Field) => void;
   onItem: (op: ItemOp, f: Field) => void;
   onFocusField: (f: Field) => void;
   /** Set when text is clicked in the preview; `n` changes on every click. */
@@ -36,7 +38,7 @@ function wrapSelection(id: string, tag: "strong" | "em", f: Field, onChange: Pro
   ta.focus();
 }
 
-function FieldInput({ f, tick, onChange, onAlt, onFocusField }: { f: Field } & Omit<Props, "fields" | "onItem">) {
+function FieldInput({ f, tick, onChange, onAlt, onImage, onFocusField }: { f: Field } & Omit<Props, "fields" | "onItem">) {
   const id = `fld-${f.id}`;
   if (f.type === "img") {
     const src = f.el.getAttribute("src") ?? "";
@@ -46,8 +48,8 @@ function FieldInput({ f, tick, onChange, onAlt, onFocusField }: { f: Field } & O
         <div className="flex items-center gap-3">
           <img src={/^(https?:|data:|\/)/.test(src) ? src : PREVIEW_BASE + src} alt="" className="h-16 w-24 rounded-md border border-slate-200 bg-slate-100 object-cover object-top" />
           <div className="grid gap-1">
-            <button type="button" disabled title="The media library arrives on Day 3" className="rounded-md border border-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-400">Change image (Day 3)</button>
-            <span className="font-mono text-[11px] text-slate-500">{src}</span>
+            <button type="button" onClick={() => onImage(f)} className="w-fit rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold hover:border-slate-300">Change image</button>
+            <span className="font-mono text-[11px] break-all text-slate-500">{fromAdmin(src)}</span>
           </div>
         </div>
         <label htmlFor={id} className="text-xs font-semibold">Alt text</label>

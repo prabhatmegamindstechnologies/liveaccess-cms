@@ -1,0 +1,2 @@
+ALTER TABLE "media" ADD COLUMN "updated_at" timestamp with time zone DEFAULT now() NOT NULL;--> statement-breakpoint
+CREATE UNIQUE INDEX "media_storage_key_unique" ON "media" USING btree ("storage_key");

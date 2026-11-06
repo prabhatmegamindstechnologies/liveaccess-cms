@@ -13,4 +13,10 @@
     outline: 2px solid var(--color-brand-bright);
     outline-offset: 2px;
   }
+
+  /* A library image can be 2400 px wide. */
+  .jodit-wysiwyg img {
+    max-width: 100%;
+    height: auto;
+  }
 }

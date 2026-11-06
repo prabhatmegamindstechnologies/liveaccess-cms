@@ -37,8 +37,11 @@ export function importBlocks(article: Element): Block[] {
   return out;
 }
 
-/** Renders one block with the site's existing classes. `mediaSrc` resolves image blocks (Day 3). */
-export function blockHtml(b: Block, doc: Document, mediaSrc: (id: number) => string | null = () => null): string {
+/** Gives the address of a library image, or null if it isn't in the library. */
+export type MediaSrc = (id: number) => string | null;
+
+/** Renders one block with the site's existing classes. `mediaSrc` resolves image blocks. */
+export function blockHtml(b: Block, doc: Document, mediaSrc: MediaSrc = () => null): string {
   const inline = (s: string) => sanitizeInline(s, doc);
   switch (b.type) {
     case "heading":

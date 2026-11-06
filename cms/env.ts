@@ -29,6 +29,7 @@ export const env = {
   port: Number(process.env.PORT ?? 8787),
   previewPort: Number(process.env.PREVIEW_PORT ?? 4000),
   siteRoot: resolve(repoRoot, process.env.SITE_ROOT ?? "."),
+  mediaRoot: resolve(repoRoot, process.env.MEDIA_ROOT ?? ".media"),
   // Cookies are Secure unless local development explicitly turns it off (http://localhost has no TLS).
   secureCookies: process.env.CMS_INSECURE_COOKIES !== "1",
   // Trust proxy headers (x-real-ip, x-forwarded-host) only on Vercel or when told to.

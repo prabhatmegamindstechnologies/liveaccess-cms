@@ -1,13 +1,15 @@
 // Edit one page: fields from the real page on the left, live preview on the right, auto-saved as a draft.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router";
-import { addItem, buildFields, moveItem, removeItem, serialize, setImageAlt, splitScripts, writeField, type Field } from "@liveaccess/shared";
+import { addItem, buildFields, moveItem, removeItem, serialize, setImageAlt, setImageSrc, splitScripts, writeField, type Field } from "@liveaccess/shared";
 import { api, ApiError } from "../lib/api.ts";
 import { ConflictError, createAutosaver, type SaveState } from "../lib/autosave.ts";
+import { fromAdmin, toAdmin, type MediaItem } from "../lib/media.ts";
 import { highlight, previewDoc } from "../lib/preview.ts";
 import { SPLIT_FIELDS, SPLIT_GRID, SPLIT_PAGE } from "../lib/layout.ts";
 import { Breadcrumb, Chip, SaveStatus } from "../components/ui.tsx";
 import { FieldList } from "../components/FieldList.tsx";
+import { MediaPicker } from "../components/MediaPicker.tsx";
 import { LivePreview } from "../components/LivePreview.tsx";
 import { SeoPanel, type Seo } from "../components/SeoPanel.tsx";
 import { HistoryPanel } from "../components/HistoryPanel.tsx";
@@ -27,6 +29,7 @@ export function PageEditor() {
   const [historyRefresh, setHistoryRefresh] = useState(0);
   const [reloadKey, setReloadKey] = useState(0);
   const [reveal, setReveal] = useState<{ id: number; n: number } | null>(null);
+  const [changingImage, setChangingImage] = useState<Field | null>(null);
 
   const version = useRef(0);
   const scripts = useRef<string[]>([]);
@@ -67,7 +70,8 @@ export function PageEditor() {
         const send = { ...pending.current };
         pending.current = { html: false, seo: false };
         const body: Record<string, unknown> = { baseVersion: version.current };
-        if (send.html && doc.current) body.html = serialize(doc.current, scripts.current);
+        // The preview shows library images through the API; the page itself keeps their site address.
+        if (send.html && doc.current) body.html = fromAdmin(serialize(doc.current, scripts.current));
         if (send.seo && seo.current) body.seo = seo.current;
         if (!("html" in body) && !("seo" in body)) return;
         const json = JSON.stringify(body);
@@ -117,6 +121,13 @@ export function PageEditor() {
       if (op === "remove") alertBox("Keep at least one item here.");
       return;
     }
+    rebuild();
+    changed("html");
+  }
+
+  function onImagePicked(m: MediaItem) {
+    if (changingImage) setImageSrc(changingImage, toAdmin(m.src), m.altText, m.width, m.height);
+    setChangingImage(null);
     rebuild();
     changed("html");
   }
@@ -179,6 +190,7 @@ export function PageEditor() {
             <FieldList fields={fields} tick={tick}
               onChange={(f, v) => { writeField(f, v); changed("html"); }}
               onAlt={(f, alt) => { setImageAlt(f, alt); changed("html"); }}
+              onImage={setChangingImage}
               onItem={onItem}
               reveal={reveal}
               onFocusField={(f) => highlight(doc.current, f.el)} />
@@ -193,6 +205,7 @@ export function PageEditor() {
         {tab === "seo" && page && <SeoPanel initial={seo.current ?? page.seo} url={page.url} onChange={(s) => { seo.current = s; changed("seo"); }} />}
         {tab === "history" && page && <HistoryPanel pageKey={page.key} refresh={historyRefresh} onRestore={restore} />}
       </div>
+      {changingImage && <MediaPicker onPick={onImagePicked} onClose={() => setChangingImage(null)} />}
     </div>
   );
 }

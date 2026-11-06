@@ -4,11 +4,11 @@
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { Hono } from "hono";
-import { and, asc, count, desc, eq, ne, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray, ne, sql } from "drizzle-orm";
 import { parseHTML } from "linkedom";
 import { slugify, validateArea, validateGuide, type Block, type Guide } from "@liveaccess/shared";
 import type { Db } from "../../db/client.ts";
-import { articles, revisions, users } from "../../db/schema.ts";
+import { articles, media, revisions, users } from "../../db/schema.ts";
 import { audit } from "../audit.ts";
 import { requireUser, type AuthVars } from "../auth/require-user.ts";
 import { saveLimit, type SaveLimit } from "../save-limit.ts";
@@ -50,6 +50,14 @@ const areaList = (db: Db) => db.select({ slug: articles.slug, name: articles.tit
 /** The guides that belong to an area, in database order (as they appear on the area page). */
 const guidesOf = (db: Db, slug: string) => db.select({ id: articles.id, slug: articles.slug, title: articles.title, summary: articles.summary, status: articles.status, published: articles.published })
   .from(articles).where(and(eq(articles.type, "guide"), eq(articles.areaSlug, slug))).orderBy(asc(articles.id));
+
+/** The files of the library images in these blocks, by image number, for the editor's preview. */
+async function mediaFiles(db: Db, blocks: Block[]) {
+  const ids = blocks.flatMap((b) => (b.type === "image" && b.mediaId ? [b.mediaId] : []));
+  if (!ids.length) return {};
+  const rows = await db.select({ id: media.id, key: media.storageKey }).from(media).where(inArray(media.id, ids));
+  return Object.fromEntries(rows.map((r) => [r.id, r.key]));
+}
 
 /** A page to render the preview into: the article's own live file, or any file of that kind. */
 async function template(root: string | undefined, kind: Kind, slug: string | undefined) {
@@ -111,6 +119,7 @@ export function articleRoutes(kind: Kind, db: Db, siteFilesRoot?: string, limit:
       : { guides: (await guidesOf(db, r.row.slug)).map(({ published, ...g }) => ({ ...g, live: published != null })) };
     return c.json({
       [one]: view(r.row, r.by), ...extra,
+      mediaFiles: await mediaFiles(db, r.row.blocks as Block[]),
       template: await template(siteFilesRoot, kind, (r.row.published as Guide | null)?.slug),
       problems: full.ok ? {} : full.errors
     });

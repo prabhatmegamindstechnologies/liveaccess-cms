@@ -443,6 +443,7 @@ cms/.vercel/
 .site-preview/
 .site-preview.tmp/
 .site-preview.old/
+.media/
 # Our publish code (the Click-Once rule above would hide it)
 !/cms/publish/
 !/cms/api/publish/

@@ -1,7 +1,9 @@
 // Content blocks of a guide: the types the site already styles, each editable, movable and removable.
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useRef, useState } from "react";
 import type { Block } from "@liveaccess/shared";
+import { mediaSrc, rememberMedia, toAdmin, type MediaItem } from "../lib/media.ts";
 import { FieldError, iconBtn, inputCls, type Errors } from "./form.tsx";
+import { MediaPicker } from "./MediaPicker.tsx";
 
 const RichTextEditor = lazy(() => import("./RichTextEditor.tsx"));
 
@@ -11,12 +13,60 @@ const NEW: Record<string, () => Block> = {
   "Heading": () => ({ type: "heading", level: 2, text: "" }),
   "Paragraph": () => ({ type: "paragraph", html: "" }),
   "List": () => ({ type: "list", style: "bullet", items: [""] }),
+  "Image": () => ({ type: "image", mediaId: null, position: "center", alt: "", caption: "" }),
   "Safety note": () => ({ type: "callout", variant: "safety", title: "Safety first.", text: "" }),
   "Disclaimer": () => ({ type: "callout", variant: "disclaimer", title: "", text: "" })
 };
 const label = (b: Block) => b.type === "heading" ? `Heading (H${b.level})` : b.type === "list" ? (b.style === "number" ? "Numbered list" : "Bullet list")
-  : b.type === "callout" ? (b.variant === "safety" ? "Safety note" : "Disclaimer") : b.type === "paragraph" ? "Paragraph" : b.type;
+  : b.type === "callout" ? (b.variant === "safety" ? "Safety note" : "Disclaimer") : b.type === "paragraph" ? "Paragraph" : b.type === "image" ? "Image" : b.type;
 const tagsHelp = "Allowed: <strong>bold</strong>, <em>highlight</em>, <a href=\"…\">link</a>.";
+
+type ImageBlock = Extract<Block, { type: "image" }>;
+type ParagraphBlock = Extract<Block, { type: "paragraph" }>;
+
+function ImageFields({ b, id, set }: { b: ImageBlock; id: string; set: (b: Block) => void }) {
+  const [picking, setPicking] = useState(false);
+  const src = b.mediaId ? mediaSrc(b.mediaId) : null;
+  const pick = (m: MediaItem) => {
+    rememberMedia({ [m.id]: m.key });
+    setPicking(false);
+    set({ ...b, mediaId: m.id, alt: m.altText });
+  };
+  return (
+    <div className="grid gap-3 sm:grid-cols-[10rem_minmax(0,1fr)]">
+      <div className="grid content-start gap-2">
+        {src
+          ? <img src={toAdmin(src)} alt="" className="aspect-[4/3] w-full rounded-md border border-slate-200 bg-slate-100 object-contain" />
+          : <span className="grid aspect-[4/3] w-full place-items-center rounded-md border border-dashed border-slate-300 bg-slate-50 text-xs text-slate-500">No image yet</span>}
+        <button type="button" onClick={() => setPicking(true)} className="rounded-md border border-slate-200 bg-white px-3 py-1 text-xs font-semibold hover:border-slate-300">{src ? "Change image" : "Choose image"}</button>
+      </div>
+      <div className="grid content-start gap-2">
+        <label htmlFor={id} className="text-xs font-semibold">Alt text</label>
+        <input id={id} value={b.alt} maxLength={300} onChange={(e) => set({ ...b, alt: e.target.value })} className={inputCls} />
+        <label htmlFor={`${id}-caption`} className="text-xs font-semibold">Caption (optional)</label>
+        <input id={`${id}-caption`} value={b.caption} maxLength={300} onChange={(e) => set({ ...b, caption: e.target.value })} className={inputCls} />
+        <label htmlFor={`${id}-position`} className="text-xs font-semibold">Position</label>
+        <select id={`${id}-position`} value={b.position} onChange={(e) => set({ ...b, position: e.target.value as ImageBlock["position"] })} className={`${inputCls} w-44`}>
+          <option value="center">Centre</option><option value="left">Left, text beside it</option><option value="right">Right, text beside it</option><option value="full">Full width</option>
+        </select>
+      </div>
+      {picking && <MediaPicker onPick={pick} onClose={() => setPicking(false)} />}
+    </div>
+  );
+}
+
+function ParagraphFields({ b, id, set }: { b: ParagraphBlock; id: string; set: (b: Block) => void }) {
+  const [picking, setPicking] = useState(false);
+  const insert = useRef<((m: MediaItem) => void) | null>(null);
+  return (
+    <>
+      <Suspense fallback={<p className="text-sm text-slate-500">Loading the editor…</p>}>
+        <RichTextEditor id={id} value={b.html} onChange={(html) => set({ ...b, html })} onPickImage={(put) => { insert.current = put; setPicking(true); }} />
+      </Suspense>
+      {picking && <MediaPicker onClose={() => setPicking(false)} onPick={(m) => { setPicking(false); insert.current?.(m); }} />}
+    </>
+  );
+}
 
 function BlockFields({ b, id, set }: { b: Block; id: string; set: (b: Block) => void }) {
   if (b.type === "heading") {
@@ -29,13 +79,8 @@ function BlockFields({ b, id, set }: { b: Block; id: string; set: (b: Block) => 
       </div>
     );
   }
-  if (b.type === "paragraph") {
-    return (
-      <Suspense fallback={<p className="text-sm text-slate-500">Loading the editor…</p>}>
-        <RichTextEditor id={id} value={b.html} onChange={(html) => set({ ...b, html })} />
-      </Suspense>
-    );
-  }
+  if (b.type === "paragraph") return <ParagraphFields b={b} id={id} set={set} />;
+  if (b.type === "image") return <ImageFields b={b} id={id} set={set} />;
   if (b.type === "list") {
     return (
       <div className="grid gap-2">

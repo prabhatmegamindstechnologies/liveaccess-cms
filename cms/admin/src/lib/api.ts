@@ -64,7 +64,7 @@ export function refreshSession() {
 /** For when the user comes back to the tab. There's no timer: it would keep idle sessions alive past their limit. */
 export const refreshIfExpiring = () => { if (expiring()) refreshSession().catch(() => {}); };
 
-type Options = { method?: string; json?: unknown; keepalive?: boolean; signal?: AbortSignal };
+type Options = { method?: string; json?: unknown; form?: FormData; keepalive?: boolean; signal?: AbortSignal };
 
 function send(path: string, opts: Options) {
   const headers: Record<string, string> = {};
@@ -74,7 +74,7 @@ function send(path: string, opts: Options) {
   return fetch(API_BASE + path, {
     method: opts.method ?? "GET",
     headers,
-    body: opts.json === undefined ? undefined : JSON.stringify(opts.json),
+    body: opts.form ?? (opts.json === undefined ? undefined : JSON.stringify(opts.json)),
     credentials: "same-origin",
     keepalive: opts.keepalive,
     signal: opts.signal

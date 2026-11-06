@@ -1,6 +1,6 @@
 // Process areas: read an area from its page, render an area into an existing area page's markup (only the area's own
 // places change; the guides band is built from the area's guides), and check areas sent by the admin.
-import type { Block } from "./blocks.ts";
+import type { Block, MediaSrc } from "./blocks.ts";
 import { articleBody, validateGuide, type GuideSeo } from "./guides.ts";
 
 export type Area = { slug: string; title: string; summary: string; blocks: Block[]; seo: GuideSeo };
@@ -57,7 +57,7 @@ ${cards}        </div>
  * Puts an area into an area page's markup (`template` = any existing area page) with a guides band for `guides`.
  * Throws if the template isn't in the expected form. `doc` is any Document, used to sanitise inline HTML.
  */
-export function renderAreaPage(template: string, a: Area, guides: AreaGuide[], doc?: Document): string {
+export function renderAreaPage(template: string, a: Area, guides: AreaGuide[], doc?: Document, mediaSrc?: MediaSrc): string {
   const d = doc ?? (globalThis as { document?: Document }).document;
   if (!d) throw new Error("renderAreaPage needs a Document.");
   const url = areaUrl(a.slug);
@@ -81,7 +81,7 @@ export function renderAreaPage(template: string, a: Area, guides: AreaGuide[], d
   swap(/(<a href="process-areas\.html">Process areas<\/a><span aria-hidden="true">\/<\/span><span>)[^<]*(<\/span><\/nav>)/, (_m, x, y) => `${x}${esc(a.title)}${y}`, "crumbs");
   swap(/<h1>[^<]*<\/h1>/, () => `<h1>${esc(a.title)}</h1>`, "h1");
   swap(/(<p class="lede">)[^<]*(<\/p>\n\s*<\/div>\n\s*<\/section>\n\s*<section class="band">)/, (_m, x, y) => `${x}${esc(a.summary)}${y}`, "lede");
-  swap(/(<article class="article">\n([ \t]*))[\s\S]*?(\n[ \t]*<\/article>)/, (_m, x, indent, y) => `${x}${articleBody(a.blocks, d, indent!, "area")}${y}`, "article");
+  swap(/(<article class="article">\n([ \t]*))[\s\S]*?(\n[ \t]*<\/article>)/, (_m, x, indent, y) => `${x}${articleBody(a.blocks, d, indent!, "area", mediaSrc)}${y}`, "article");
 
   // The guides band sits between the article band and the CTA band; it's rebuilt (or left out) every time.
   swap(/(<\/article>\n[ \t]*<\/div>\n[ \t]*<\/section>\n\n)(?:    <section class="band alt">[\s\S]*?<\/section>\n\n)?(    <section class="cta-band dark">)/,

@@ -12,7 +12,7 @@ const ROUTINE = ["login", "logout"];
 // Editors see these on the Dashboard too, so only add actions about pages, guides and areas.
 export const CONTENT_ACTIONS = ["page_edited", "page_restored", "guide_created", "guide_edited", "guide_deleted", "area_created", "area_edited", "area_deleted", "area_renamed"];
 const GROUPS: Record<string, string[]> = {
-  content: CONTENT_ACTIONS,
+  content: [...CONTENT_ACTIONS, "media_uploaded", "media_edited", "media_replaced", "media_deleted"],
   website: ["menus_edited", "site_settings_edited", "seo_redirects_edited", "seo_robots_edited", "seo_llms_edited", "seo_defaults_edited"],
   users: ["user_created", "user_edited", "user_password_reset", "user_unlocked", "password_changed", "password_change_failed", "own_password_failed"],
   publishing: ["preview_built"],

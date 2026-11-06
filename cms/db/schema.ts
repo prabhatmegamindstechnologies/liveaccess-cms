@@ -104,8 +104,9 @@ export const media = pgTable("media", {
   bytes: integer("bytes").notNull(),
   altText: text("alt_text").notNull().default(""),
   createdBy: integer("created_by").references(() => users.id, { onDelete: "set null" }),
-  createdAt: createdAt()
-});
+  createdAt: createdAt(),
+  updatedAt: updatedAt()
+}, (t) => [uniqueIndex("media_storage_key_unique").on(t.storageKey)]);
 
 export const menus = pgTable("menus", {
   id: serial("id").primaryKey(),

@@ -1,10 +1,11 @@
 export { sanitizeInline, normalizeSpace, sanitizeRich, cleanParagraph, isRichParagraph, RICH_FONTS, RICH_SIZES } from "./sanitize.ts";
-export { importBlocks, blockHtml, type Block } from "./blocks.ts";
+export { importBlocks, blockHtml, type Block, type MediaSrc } from "./blocks.ts";
 export * from "./fields.ts";
 export * from "./menus.ts";
 export * from "./seo.ts";
-export { safeHttpsUrl } from "./links.ts";
+export { hasHiddenChars, safeHttpsUrl } from "./links.ts";
 export * from "./site-settings.ts";
 export * from "./guides.ts";
 export * from "./areas.ts";
 export * from "./publish.ts";
+export * from "./media.ts";

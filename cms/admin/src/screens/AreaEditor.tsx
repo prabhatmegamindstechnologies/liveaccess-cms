@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { renderAreaPage, slugify, splitScripts, validateArea, type Area } from "@liveaccess/shared";
 import { api, ApiError } from "../lib/api.ts";
+import { mediaSrc, rememberMedia } from "../lib/media.ts";
 import { previewDoc } from "../lib/preview.ts";
 import { SPLIT_FIELDS, SPLIT_GRID, SPLIT_PAGE } from "../lib/layout.ts";
 import { Breadcrumb, Chip } from "../components/ui.tsx";
@@ -12,7 +13,7 @@ import { LivePreview } from "../components/LivePreview.tsx";
 
 type Meta = { id: number; status: "draft" | "published"; live: boolean; hasChanges: boolean; version: number; updatedAt: string; updatedBy: string | null };
 type AreaGuide = { id: number; slug: string; title: string; summary: string; status: string; live: boolean };
-type Loaded = { area: Area & Meta; guides: AreaGuide[]; template: string; problems: Errors };
+type Loaded = { area: Area & Meta; guides: AreaGuide[]; template: string; problems: Errors; mediaFiles: Record<string, string> };
 type Tab = "content" | "seo";
 type Status = { kind: "idle" | "saving" | "saved" | "error" | "conflict"; text?: string };
 const pick = (a: Area): Area => ({ slug: a.slug, title: a.title, summary: a.summary, blocks: a.blocks, seo: a.seo });
@@ -35,6 +36,7 @@ export function AreaEditor() {
   useEffect(() => {
     api<Loaded>(`/areas/${id}`).then((d) => {
       const a = pick(d.area);
+      rememberMedia(d.mediaFiles);
       setData(d); setMeta(d.area); setArea(a); setPreview(a); setSaved(JSON.stringify(a));
     }).catch((e) => setLoadError(e.message));
   }, [id]);
@@ -59,7 +61,7 @@ export function AreaEditor() {
     try {
       // Only live guides are on the live area page.
       const guides = data.guides.filter((g) => g.live);
-      return previewDoc(splitScripts(renderAreaPage(data.template, { ...preview, slug: preview.slug || "draft" }, guides, inert)).html);
+      return previewDoc(splitScripts(renderAreaPage(data.template, { ...preview, slug: preview.slug || "draft" }, guides, inert, mediaSrc)).html);
     } catch {
       return "";
     }

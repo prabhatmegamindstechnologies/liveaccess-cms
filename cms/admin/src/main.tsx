@@ -20,10 +20,10 @@ import { PublishCentre } from "./screens/PublishCentre.tsx";
 import { UsersList } from "./screens/UsersList.tsx";
 import { AuditLog } from "./screens/AuditLog.tsx";
 import { ChangePassword } from "./screens/ChangePassword.tsx";
+import { MediaLibrary } from "./screens/MediaLibrary.tsx";
 
 // Sidebar sections that are not built yet.
 const SOON: { path: string; title: string; about: string }[] = [
-  { path: "/media", title: "Media library", about: "Upload images, add alt text and reuse them across the site." },
   { path: "/inbox", title: "Contact inbox", about: "Messages sent from the website contact form." }
 ];
 
@@ -59,6 +59,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/guides/:id" element={<GuideEditor />} />
             <Route path="/areas" element={<ArticlesList key="area" kind="area" />} />
             <Route path="/areas/:id" element={<AreaEditor />} />
+            <Route path="/media" element={<MediaLibrary />} />
             <Route path="/publish" element={<PublishCentre />} />
             <Route path="/users" element={<SuperAdminOnly><UsersList /></SuperAdminOnly>} />
             <Route path="/audit" element={<SuperAdminOnly><AuditLog /></SuperAdminOnly>} />

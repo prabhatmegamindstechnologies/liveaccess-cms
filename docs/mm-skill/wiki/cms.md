@@ -76,6 +76,21 @@ https://claude.ai/artifact/UZJy25p3EXk3SEdQDXvF6U · Prototype: https://claude.a
 - Roles: saving Menus, SEO & redirects and Site settings is Super Admin only; Editors get them read-only (`canEdit`).
 - Saves are rate limited per user (`api/save-limit.ts`, in memory: pages 120/min, menus, SEO and settings 30/min).
 
+## Media library (2026-11-06, Prabhat; task `docs/mm-skill/tasks/2026-11-06-cms-media-library.md`)
+- `media` API: `GET /media?q&page` (48 a page, with `usedIn`), `POST /media` (form: `file`, `alt`), `PATCH /media/:id` `{ altText }`, `POST /media/:id/replace` (form: `file`), `DELETE /media/:id`
+  (409 naming the pages while in use), public `GET /media/files/:key`. Anyone signed in can do all of it. 30 changes a minute per user.
+- Uploads: `api/media/process.ts` re-encodes with `sharp`: JPG, PNG or WebP by real format, 10 MB and 50 megapixels at most, rotation applied, metadata removed, max 2400 px wide, saved as WebP under a random name.
+- Files sit behind `api/media/storage.ts` (`put`, `get`, `remove`). Only `localDriver` exists, in `MEDIA_ROOT` (default `.media/`, git-ignored). **It can't work on Vercel: uploads there need a Blob driver.**
+- Content stores `images/cms/<key>.webp`. That address only exists on the site after a build, so in the admin it goes through `toAdmin`/`fromAdmin` (`admin/src/lib/media.ts`). Anything shown
+  uses `toAdmin`; anything saved from a DOM (page editor, Paragraph editor) must go through `fromAdmin`, or the API address gets stored.
+- `/media/files/` is public because `<img>` can't send a token: anyone with the exact link can see an image that isn't published. Names can't be guessed or listed.
+- Usage (`api/media/usage.ts`) scans draft and live copies of pages and articles. Page revisions aren't scanned, so restoring an old version can bring back a deleted image; the site build warns about it.
+- Replace keeps the key, so every use changes at once. Alt text is copied when an image is chosen; editing it in the library doesn't change places already using it.
+- `build-site.ts` copies only the files the built site uses.
+- `sanitizeRich` allows `img` only with an exact library address, and keeps only `src` and `alt`. Jodit's own image plugin stays off: `laImage` in `RichTextEditor.tsx` opens the library.
+- "Change image" keeps the width on the tag and only adjusts its height: a page's `width` attribute sizes the layout.
+- Dashboard activity stays pages, guides and areas (`CONTENT_ACTIONS`); media actions show under Content in the Audit log only.
+
 ## Menus (`packages/shared/src/menus.ts`)
 - `readMenus(html)` / `applyMenus(html, menus, pageFile)` work on text, only inside `<header class="site-header">` and
   `<footer class="site-footer">`; unchanged menus give back the page byte-for-byte (tested on all 29 pages). They throw

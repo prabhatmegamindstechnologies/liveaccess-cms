@@ -38,7 +38,7 @@ export function SeoPanel({ initial, url, onChange }: { initial: Seo; url: string
           <input id="seo-noindex" type="checkbox" checked={seo.noindex} onChange={(e) => update({ noindex: e.target.checked })} />
           Hide this page from search engines (noindex)
         </label>
-        <p className="text-xs text-slate-500">Share image comes with the media library (Day 3). These values are written into the page head when you publish.</p>
+        <p className="text-xs text-slate-500">These values are written into the page head when you publish.</p>
       </div>
       <div className="grid content-start gap-4">
         <div className="grid gap-2 rounded-xl border border-slate-200 bg-white p-4">

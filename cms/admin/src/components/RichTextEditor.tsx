@@ -17,9 +17,10 @@ import "jodit/esm/plugins/table-keyboard-navigation/table-keyboard-navigation.js
 import { ColorPickerWidget } from "jodit/esm/modules/widget/index.js";
 import "jodit/es2021/jodit.min.css";
 import { cleanParagraph, RICH_FONTS, RICH_SIZES, sanitizeRich } from "@liveaccess/shared";
+import { fromAdmin, toAdmin, type MediaItem } from "../lib/media.ts";
 
 type Control = { args?: unknown[] };
-type Props = { id: string; value: string; onChange: (html: string) => void };
+type Props = { id: string; value: string; onChange: (html: string) => void; onPickImage: (insert: (m: MediaItem) => void) => void };
 
 const BRAND_COLOURS = ["#C2410C", "#1E3A5F", "#12925A", "#FFF1EA", "#EFF4FF", "#ECFDF3"];
 const EMOJI = ["✅", "⚠️", "❌", "ℹ️", "🔧", "⚙️", "🔥", "💧", "📌", "📞"];
@@ -30,6 +31,7 @@ const line = (d: string, stroke = "#334155", fill = "none", width = 2) => `<path
 const icon = (paths: string) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${paths}</svg>`;
 Jodit.modules.Icon.set("la-font-colour", icon(line("m6 16 6-12 6 12M8 12h8") + line("M4 21h16", "#C2410C", "none", 3)));
 Jodit.modules.Icon.set("la-emoji", icon(line("M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zM9 10h.01M15 10h.01M8.5 15a4.5 4.5 0 0 0 7 0")));
+Jodit.modules.Icon.set("la-image", icon(line("M4 5h16v14H4zM4 16l5-5 4 4 2-2 5 5M15 9.5v.01")));
 
 // Never the admin page's own document: parsing HTML there can run it (an <img onerror>, for example).
 const inert = document.implementation.createHTMLDocument("");
@@ -74,6 +76,8 @@ const CONFIG = {
     colourButton("laFontColour", "la-font-colour", "Font colour", "forecolor"),
     colourButton("laBackground", "brush", "Background colour", "background"),
     "|", "left", "center", "right", "ul", "ol", "|", "table", "link",
+    // Jodit's own image plugin stays off: it would take any address. This one opens the Media library.
+    { name: "laImage", icon: "la-image", tooltip: "Image from the Media library", exec: (editor: Jodit) => { editor.e.fire("laPickImage"); } },
     {
       name: "laEmoji", icon: "la-emoji", tooltip: "Emoji", list: Object.fromEntries(EMOJI.map((e) => [e, e])),
       exec: (editor: Jodit, _: unknown, { control }: { control: Control }) => {
@@ -85,7 +89,7 @@ const CONFIG = {
   ]
 };
 
-export default function RichTextEditor({ id, value, onChange }: Props) {
+export default function RichTextEditor({ id, value, onChange, onPickImage }: Props) {
   const host = useRef<HTMLTextAreaElement>(null);
   const editor = useRef<Jodit | null>(null);
   const stopHolding = useRef<(() => void) | null>(null);
@@ -94,10 +98,14 @@ export default function RichTextEditor({ id, value, onChange }: Props) {
   const loaded = useRef({ reported: "", value });
   const send = useRef(onChange);
   send.current = onChange;
+  const pickImage = useRef(onPickImage);
+  pickImage.current = onPickImage;
 
+  // The editor shows library images through the API; the stored text keeps their site address.
+  const read = (e: Jodit) => cleanParagraph(fromAdmin(e.value), inert);
   const load = (e: Jodit, html: string) => {
-    e.value = cleanParagraph(html, inert);
-    loaded.current = { reported: cleanParagraph(e.value, inert), value: html };
+    e.value = toAdmin(cleanParagraph(html, inert));
+    loaded.current = { reported: read(e), value: html };
   };
 
   useEffect(() => {
@@ -105,7 +113,7 @@ export default function RichTextEditor({ id, value, onChange }: Props) {
     e.editor.setAttribute("aria-label", "Paragraph text");
     // Pasted or dropped HTML lands in the live admin page, where a <base> tag could reroute API calls. The save filter is too late
     // for that, so pastes are cleaned first and drops are refused.
-    e.e.on("beforePasteInsert", (html: unknown) => (typeof html === "string" ? sanitizeRich(html, inert) : html));
+    e.e.on("beforePasteInsert", (html: unknown) => (typeof html === "string" ? toAdmin(sanitizeRich(fromAdmin(html), inert)) : html));
     e.editor.addEventListener("drop", (ev) => { ev.preventDefault(); ev.stopPropagation(); }, true);
     // The colour popup's hex box and picker take focus, and the text selection with it. Without this the colour lands in the wrong place.
     // It's held from the moment focus enters the popup, because Jodit moves the caret again before it runs the command.
@@ -127,9 +135,21 @@ export default function RichTextEditor({ id, value, onChange }: Props) {
       held = null;
     });
     stopHolding.current = () => document.removeEventListener("focusin", hold);
+    // The library opens in its own window, so the caret is put back before the image goes in.
+    e.e.on("laPickImage", () => {
+      const at = selected;
+      pickImage.current((m) => {
+        if (at) e.s.selectRange(at);
+        else e.s.focus();
+        const img = e.createInside.element("img");
+        img.setAttribute("src", toAdmin(m.src));
+        img.setAttribute("alt", m.altText);
+        e.s.insertNode(img);
+      });
+    });
     load(e, stored.current);
     e.e.on("change", () => {
-      const now = cleanParagraph(e.value, inert);
+      const now = read(e);
       const next = now === loaded.current.reported ? loaded.current.value : now;
       if (next === stored.current) return;
       stored.current = next;

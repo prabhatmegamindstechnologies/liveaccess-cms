@@ -170,6 +170,14 @@ export function setImageAlt(f: Field, alt: string) {
   if (f.type === "img") f.el.setAttribute("alt", alt);
 }
 
+/** Puts another picture in an image's place. The page chose the tag's width, so that stays; a height follows the new shape. */
+export function setImageSrc(f: Field, src: string, alt: string, width: number | null, height: number | null) {
+  writeField(f, src);
+  setImageAlt(f, alt);
+  const shown = Number(f.el.getAttribute("width"));
+  if (shown && f.el.hasAttribute("height") && width && height) f.el.setAttribute("height", String(Math.round(shown * height / width)));
+}
+
 /* ---------- repeating items ---------- */
 
 const sameKind = (a: Element | null | undefined, b: Element) => !!a && a.tagName === b.tagName && a.className === b.className;
