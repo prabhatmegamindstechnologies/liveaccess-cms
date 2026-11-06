@@ -14,7 +14,7 @@ export function publishRoutes(db: Db, cfg: PreviewConfig, limit: SaveLimit = { m
   let running = false;
   let last: BuildResult | null = null;
 
-  app.use("*", requireUser(db));
+  app.use("*", requireUser());
   app.use("*", saveLimit(limit));
 
   app.get("/preview", (c) => c.json({ running, last, url: cfg.url }));

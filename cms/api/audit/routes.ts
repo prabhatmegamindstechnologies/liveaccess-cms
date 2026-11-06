@@ -3,7 +3,7 @@ import { Hono } from "hono";
 import { and, asc, count, desc, eq, gte, inArray, lt, notInArray, type SQL } from "drizzle-orm";
 import type { Db } from "../../db/client.ts";
 import { articles, auditLog, pages, users } from "../../db/schema.ts";
-import { requireSuperAdmin, requireUser, type AuthVars } from "../auth/require-user.ts";
+import { requireFreshUser, requireSuperAdmin, type FreshAuthVars } from "../auth/require-user.ts";
 
 const PAGE_SIZE = 50;
 
@@ -63,8 +63,8 @@ export async function itemsFor(db: Db, rows: Row[]) {
 }
 
 export function auditRoutes(db: Db) {
-  const app = new Hono<{ Variables: AuthVars }>();
-  app.use("*", requireUser(db));
+  const app = new Hono<{ Variables: FreshAuthVars }>();
+  app.use("*", requireFreshUser(db));
   app.use("*", requireSuperAdmin);
 
   app.get("/", async (c) => {

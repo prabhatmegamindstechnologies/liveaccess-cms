@@ -314,20 +314,18 @@ describe("publish API", () => {
   async function signIn(a = app()) {
     const { password } = await makeUser(db, { email: "editor@example.com", role: "editor" });
     const res = await a.request(`${api}/auth/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email: "editor@example.com", password }) });
-    const cookie = (res.headers.get("set-cookie") ?? "").split(";")[0]!;
-    const { csrfToken } = await res.json();
+    const authorization = `Bearer ${(await res.json()).accessToken}`;
     return {
-      get: () => a.request(`${api}/publish/preview`, { headers: { cookie } }),
-      post: (csrf: string | null = csrfToken) => a.request(`${api}/publish/preview`, { method: "POST", headers: { cookie, ...(csrf ? { "x-csrf-token": csrf } : {}) } })
+      get: () => a.request(`${api}/publish/preview`, { headers: { authorization } }),
+      post: () => a.request(`${api}/publish/preview`, { method: "POST", headers: { authorization } })
     };
   }
 
   beforeEach(() => { shared = app(); });
 
-  it("needs a signed-in user and the CSRF token", async () => {
+  it("needs a signed-in user", async () => {
     expect((await shared.request(`${api}/publish/preview`)).status).toBe(401);
-    const { post } = await signIn(shared);
-    expect((await post(null)).status).toBe(403);
+    expect((await shared.request(`${api}/publish/preview`, { method: "POST" })).status).toBe(401);
     expect(existsSync(out("index.html"))).toBe(false);
   });
 

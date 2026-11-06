@@ -27,11 +27,10 @@ async function signIn(email = "admin@example.com", name = "Test User") {
   const { password } = await makeUser(db, { email, role: email.startsWith("admin") ? "super_admin" : "editor" });
   if (name !== "Test User") await db.execute(sql`update users set name = ${name} where email = ${email}`);
   const res = await app().request(`${api}/auth/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email, password }) });
-  const cookie = (res.headers.get("set-cookie") ?? "").split(";")[0]!;
-  const { csrfToken } = await res.json();
-  const get = (path: string) => app().request(`${api}${path}`, { headers: { cookie } });
-  const send = (method: string, path: string, body: unknown, csrf: string | null = csrfToken) =>
-    app().request(`${api}${path}`, { method, headers: { cookie, "content-type": "application/json", ...(csrf ? { "x-csrf-token": csrf } : {}) }, body: JSON.stringify(body) });
+  const authorization = `Bearer ${(await res.json()).accessToken}`;
+  const get = (path: string) => app().request(`${api}${path}`, { headers: { authorization } });
+  const send = (method: string, path: string, body: unknown) =>
+    app().request(`${api}${path}`, { method, headers: { authorization, "content-type": "application/json" }, body: JSON.stringify(body) });
   return { get, send };
 }
 
@@ -89,11 +88,6 @@ describe("pages API", () => {
     expect(body.version).toBe(2);
   });
 
-  it("needs the CSRF token to save", async () => {
-    const { send } = await signIn();
-    expect((await send("PUT", "/pages/about", { baseVersion: 1, html: (await aboutPage()).html }, null)).status).toBe(403);
-  });
-
   it.each([
     ["an added script", (h: string) => h.replace("</body>", "<script>alert(1)</script></body>"), /Scripts/],
     ["a removed Google Analytics tag", (h: string) => h.replace(/<script[^>]*googletagmanager[^>]*><\/script>/, ""), /Scripts/],
@@ -147,9 +141,8 @@ describe("pages API", () => {
     const limited = createApp({ db, adminPath: "la-studio", secureCookies: true, siteRoot: env.siteRoot, pageSaveLimit: { max: 2, windowMs: 60_000 } });
     const { password } = await makeUser(db, { email: "fast@example.com" });
     const login = await limited.request(`${api}/auth/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email: "fast@example.com", password }) });
-    const cookie = (login.headers.get("set-cookie") ?? "").split(";")[0]!;
-    const { csrfToken } = await login.json();
-    const put = (v: number) => limited.request(`${api}/pages/about`, { method: "PUT", headers: { cookie, "content-type": "application/json", "x-csrf-token": csrfToken }, body: JSON.stringify({ baseVersion: v, seo: { title: "t", description: "d", canonical: "", noindex: false } }) });
+    const authorization = `Bearer ${(await login.json()).accessToken}`;
+    const put = (v: number) => limited.request(`${api}/pages/about`, { method: "PUT", headers: { authorization, "content-type": "application/json" }, body: JSON.stringify({ baseVersion: v, seo: { title: "t", description: "d", canonical: "", noindex: false } }) });
     expect((await put(1)).status).toBe(200);
     expect((await put(2)).status).toBe(200);
     expect((await put(3)).status).toBe(429);
@@ -198,8 +191,8 @@ describe("pages API", () => {
 });
 
 describe("preview assets", () => {
-  it("serves the site's CSS and images to signed-in users", async () => {
-    const { get } = await signIn();
+  it("serves the site's CSS and images without a token: <link> and <img> can't send one", async () => {
+    const get = (path: string) => app().request(`${api}${path}`);
     const css = await get("/preview-assets/common.css");
     expect(css.status).toBe(200);
     expect(css.headers.get("content-type")).toMatch(/text\/css/);
@@ -211,7 +204,6 @@ describe("preview assets", () => {
     for (const p of ["/preview-assets/../package.json", "/preview-assets/%2e%2e/.env", "/preview-assets/.env", "/preview-assets/cms/env.ts", "/preview-assets/about.html", "/preview-assets/..%5Cpackage.json"]) {
       expect((await get(p)).status, p).toBe(404);
     }
-    expect((await app().request(`${api}/preview-assets/common.css`)).status).toBe(401);
   });
 
   it("returns 404 (not 500) for a malformed path and sandboxes SVG", async () => {
@@ -227,7 +219,7 @@ describe("preview assets", () => {
     const prod = createApp({ db, adminPath: "la-studio", secureCookies: true });
     const { password } = await makeUser(db, { email: "p@example.com" });
     const login = await prod.request(`${api}/auth/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email: "p@example.com", password }) });
-    const cookie = (login.headers.get("set-cookie") ?? "").split(";")[0]!;
-    expect((await prod.request(`${api}/preview-assets/common.css`, { headers: { cookie } })).status).toBe(404);
+    const authorization = `Bearer ${(await login.json()).accessToken}`;
+    expect((await prod.request(`${api}/preview-assets/common.css`, { headers: { authorization } })).status).toBe(404);
   });
 });

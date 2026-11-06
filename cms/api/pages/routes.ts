@@ -28,7 +28,7 @@ export type { SaveLimit };
 
 export function pageRoutes(db: Db, limit: SaveLimit = { max: 120, windowMs: 60_000 }) {
   const app = new Hono<{ Variables: AuthVars }>();
-  app.use("*", requireUser(db));
+  app.use("*", requireUser());
   // Auto-save sends at most one save every 2 s per tab.
   app.use("*", saveLimit(limit));
 

@@ -68,7 +68,7 @@ async function siteHtmlFiles(root: string | undefined) {
 
 export function seoRoutes(db: Db, adminPath: string, siteFilesRoot?: string, limit: SaveLimit = { max: 30, windowMs: 60_000 }) {
   const app = new Hono<{ Variables: AuthVars }>();
-  app.use("*", requireUser(db));
+  app.use("*", requireUser());
   app.use("*", saveLimit(limit));
 
   app.get("/", async (c) => {

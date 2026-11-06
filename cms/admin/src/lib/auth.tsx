@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
-import { api, ApiError, setCsrfToken } from "./api.ts";
+import { api, clearTokens, refreshIfExpiring, refreshSession, setSignedOutHandler, setTokens, type SignedIn } from "./api.ts";
 
 export type User = { id: number; name: string; email: string; role: "super_admin" | "editor"; mustChangePassword: boolean };
 type AuthState = { user: User | null; loading: boolean; login: (email: string, password: string) => Promise<void>; logout: () => Promise<void>; updateUser: (u: User) => void };
@@ -11,21 +11,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api<{ user: User; csrfToken: string }>("/auth/me")
-      .then((r) => { setCsrfToken(r.csrfToken); setUser(r.user); })
-      .catch((e) => { if (!(e instanceof ApiError && e.status === 401)) console.error(e); })
+    setSignedOutHandler(() => setUser(null));
+    refreshSession()
+      .then((s) => { if (s) setUser(s.user); })
+      .catch((e) => console.error(e))
       .finally(() => setLoading(false));
+
+    const onReturn = () => { if (document.visibilityState === "visible") refreshIfExpiring(); };
+    document.addEventListener("visibilitychange", onReturn);
+    window.addEventListener("focus", onReturn);
+    return () => {
+      document.removeEventListener("visibilitychange", onReturn);
+      window.removeEventListener("focus", onReturn);
+    };
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    const r = await api<{ user: User; csrfToken: string }>("/auth/login", { method: "POST", json: { email, password } });
-    setCsrfToken(r.csrfToken);
-    setUser(r.user);
+    const s = await api<SignedIn>("/auth/login", { method: "POST", json: { email, password } });
+    setTokens(s);
+    setUser(s.user);
   }, []);
 
   const logout = useCallback(async () => {
     await api("/auth/logout", { method: "POST" }).catch(() => {});
-    setCsrfToken("");
+    clearTokens();
     setUser(null);
   }, []);
 

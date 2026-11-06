@@ -37,7 +37,7 @@ async function seed(db: Db): Promise<SiteSettings> {
 
 export function settingsRoutes(db: Db, limit: SaveLimit = { max: 30, windowMs: 60_000 }) {
   const app = new Hono<{ Variables: AuthVars }>();
-  app.use("*", requireUser(db));
+  app.use("*", requireUser());
   app.use("*", saveLimit(limit));
 
   app.get("/", async (c) => {

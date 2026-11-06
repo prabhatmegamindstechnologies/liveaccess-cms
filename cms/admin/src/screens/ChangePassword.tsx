@@ -1,7 +1,7 @@
 // Change your own password: from the link by your name, or as the only screen until a temporary password is replaced.
 import { useState, type FormEvent } from "react";
-import { api, ApiError } from "../lib/api.ts";
-import { useAuth, type User } from "../lib/auth.tsx";
+import { api, ApiError, setTokens, type SignedIn } from "../lib/api.ts";
+import { useAuth } from "../lib/auth.tsx";
 import { Breadcrumb } from "../components/ui.tsx";
 import { FieldError, inputCls, saveBtn, type Errors } from "../components/form.tsx";
 
@@ -27,7 +27,8 @@ export function ChangePassword({ forced = false }: { forced?: boolean }) {
     setErrors({});
     setBusy(true);
     try {
-      const r = await api<{ user: User }>("/auth/change-password", { method: "POST", json: { currentPassword: current, newPassword: next } });
+      const r = await api<SignedIn>("/auth/change-password", { method: "POST", json: { currentPassword: current, newPassword: next } });
+      setTokens(r);
       updateUser(r.user);
       setCurrent(""); setNext(""); setRepeat("");
       setDone(true);

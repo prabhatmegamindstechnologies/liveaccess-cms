@@ -1,10 +1,9 @@
 // Serves the current site's CSS, fonts and images to the admin preview during local development.
 // In production the admin runs on the same domain as the site, so the preview loads them from "/".
+// Open to anyone who can reach it: <link> and <img> can't send a Bearer token, and these are the public site's own files.
 import { readFile } from "node:fs/promises";
 import { extname, resolve, sep } from "node:path";
 import { Hono } from "hono";
-import type { Db } from "../db/client.ts";
-import { requireUser } from "./auth/require-user.ts";
 
 const TYPES: Record<string, string> = {
   ".css": "text/css; charset=utf-8", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp",
@@ -13,10 +12,9 @@ const TYPES: Record<string, string> = {
 // Only files in the site root or images/ (no subfolders like cms/, node_modules/).
 const SAFE_PATH = /^(images\/)?[A-Za-z0-9][A-Za-z0-9._-]*$/;
 
-export function previewAssets(db: Db, siteRoot: string) {
+export function previewAssets(siteRoot: string) {
   const app = new Hono();
   const root = resolve(siteRoot);
-  app.use("*", requireUser(db));
   app.get("/*", async (c) => {
     let rel: string;
     try {

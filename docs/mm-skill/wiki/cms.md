@@ -19,8 +19,24 @@ https://claude.ai/artifact/UZJy25p3EXk3SEdQDXvF6U · Prototype: https://claude.a
 - Root additions: `package.json`, `pnpm-workspace.yaml`, `pnpm-lock.yaml`, `tsconfig.base.json`, `docker-compose.yml`,
   `.env.example`, `.nvmrc`.
 
-## API (all under `/<ADMIN_PATH>/api`, signed-in; changes need the `x-csrf-token` header)
-- `auth/login`, `auth/logout`, `auth/me` — server-side sessions, cookie `la_session` (path `/<ADMIN_PATH>`).
+## Sign-in (JWT, 2026-11-06, Prabhat; task `docs/mm-skill/tasks/2026-11-06-cms-jwt-login.md`)
+- `auth/login` and `auth/refresh` return `{ user, accessToken, expiresIn, csrfToken }`. The access token is an HS256 JWT (`api/auth/token.ts`) that lasts
+  15 minutes, sent as `Authorization: Bearer`. The admin keeps it in a variable in `admin/src/lib/api.ts`, never in browser storage.
+- The refresh token is the `sessions` row: cookie `la_refresh`, `httpOnly`, `SameSite=Strict`, path `/<ADMIN_PATH>/api/auth` only. It stays the same for the
+  whole session, so two tabs can refresh together. Ending a session stops refreshes, so the code that deletes `sessions` rows needs no JWT knowledge.
+- `requireUser()` trusts the token, so **a removed or demoted user keeps access on those routes for up to 15 minutes** (accepted by Prabhat).
+  `requireFreshUser(db)` also checks the database: use it for anything that must take effect at once, or needs the full user row. Today: `/users`, `/audit`, `auth/change-password`.
+- A demoted Super Admin can still save Menus, SEO and Site settings until the token expires, because those use `requireUser()`.
+- CSRF: Bearer routes don't need it. `auth/logout` still needs `x-csrf-token`, because it runs on the cookie. `auth/refresh` relies on `SameSite` and the cross-site check in `app.ts`.
+- The admin renews a token that expires within a minute before a call, when the user returns to the tab, and once after a 401. There's no timer: it would keep idle
+  sessions alive past the 8-hour limit.
+- `<link>` and `<img>` can't send a Bearer header, so dev-only `preview-assets` is open. It's mounted only under the `local` rule in `api/server.ts`. A file that
+  isn't public must never be served through it.
+- **`JWT_SECRET`** (32+ characters, different per environment) is required. `api/server.ts` refuses to start without it; the Vercel entry (Day 6) must call `env.jwtSecret()`
+  at startup too. Changing it invalidates access tokens only: the admin gets a new one through the refresh cookie.
+
+## API (all under `/<ADMIN_PATH>/api`, signed-in with a Bearer token)
+- `auth/login`, `auth/refresh`, `auth/logout` — see Sign-in above.
 - `pages` (Day 2) — list, `GET/PUT /pages/:key` `{ baseVersion, html?, seo? }` → draft in `pages.html`; 409 "changed by X"
   on an old version, 422 when the HTML breaks the layout lock (`api/pages/guard.ts`); `/:key/revisions`, restore.
 - `menus` (2026-11-03) — `GET /menus` → draft header/footer menus, version, and the site's pages for the link picker;
@@ -142,12 +158,12 @@ https://claude.ai/artifact/UZJy25p3EXk3SEdQDXvF6U · Prototype: https://claude.a
 - **pnpm** (11.6) uses `saveExact` and `minimumReleaseAge: 10080` (7 days); esbuild install scripts are blocked on
   purpose (`allowBuilds: esbuild: false`) and tsx / drizzle-kit work without them.
 - **linkedom** overflows on extremely deep nesting; `sanitizeInline` strips tags when nesting > 200 before parsing.
-- Session cookie is `Secure` by default; local dev sets `CMS_INSECURE_COOKIES=1` in `.env`. Proxy headers are trusted
+- Refresh cookie is `Secure` by default; local dev sets `CMS_INSECURE_COOKIES=1` in `.env`, which also turns on the admin preview's site files. Proxy headers are trusted
   only when `VERCEL=1` or `TRUST_PROXY=1`.
 
 ## Run locally
 ```
-cp .env.example .env
+cp .env.example .env          # then set JWT_SECRET (the command is in the file)
 docker compose up -d          # PostgreSQL 16 on 127.0.0.1:5433 (dbs: liveaccess, liveaccess_test)
 pnpm install
 pnpm db:migrate

@@ -26,8 +26,8 @@ beforeEach(async () => {
 async function signIn(email = "admin@example.com", role: "super_admin" | "editor" = "super_admin") {
   const { password, user } = await makeUser(db, { email, role });
   const res = await app().request(`${api}/auth/login`, { method: "POST", headers: json, body: JSON.stringify({ email, password }) });
-  const cookie = (res.headers.get("set-cookie") ?? "").split(";")[0]!;
-  const get = (path = "/dashboard") => app().request(`${api}${path}`, { headers: { cookie } });
+  const authorization = `Bearer ${(await res.json()).accessToken}`;
+  const get = (path = "/dashboard") => app().request(`${api}${path}`, { headers: { authorization } });
   return { get, read: async (path = "/dashboard") => (await get(path)).json(), id: user.id };
 }
 const slug = (s: string) => db.select().from(articles).where(eq(articles.slug, s)).then((r) => r[0]!);
@@ -39,9 +39,11 @@ describe("who can open it", () => {
   });
 
   it("waits for a forced password change", async () => {
-    const editor = await signIn("editor@example.com", "editor");
-    await db.update(users).set({ mustChangePassword: true }).where(eq(users.id, editor.id));
-    expect((await editor.get()).status).toBe(403);
+    const { user, password } = await makeUser(db, { email: "editor@example.com", role: "editor" });
+    await db.update(users).set({ mustChangePassword: true }).where(eq(users.id, user.id));
+    const res = await app().request(`${api}/auth/login`, { method: "POST", headers: json, body: JSON.stringify({ email: "editor@example.com", password }) });
+    const authorization = `Bearer ${(await res.json()).accessToken}`;
+    expect((await app().request(`${api}/dashboard`, { headers: { authorization } })).status).toBe(403);
   });
 });
 

@@ -28,11 +28,10 @@ async function signIn(email = "editor@example.com", name = "Test User", role: "s
   const { password } = await makeUser(db, { email, role });
   if (name !== "Test User") await db.execute(sql`update users set name = ${name} where email = ${email}`);
   const res = await app().request(`${api}/auth/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email, password }) });
-  const cookie = (res.headers.get("set-cookie") ?? "").split(";")[0]!;
-  const { csrfToken } = await res.json();
-  const get = async () => (await app().request(`${api}/seo`, { headers: { cookie } })).json();
-  const put = (part: string, body: unknown, csrf: string | null = csrfToken) =>
-    app().request(`${api}/seo/${part}`, { method: "PUT", headers: { cookie, "content-type": "application/json", ...(csrf ? { "x-csrf-token": csrf } : {}) }, body: JSON.stringify(body) });
+  const authorization = `Bearer ${(await res.json()).accessToken}`;
+  const get = async () => (await app().request(`${api}/seo`, { headers: { authorization } })).json();
+  const put = (part: string, body: unknown) =>
+    app().request(`${api}/seo/${part}`, { method: "PUT", headers: { authorization, "content-type": "application/json" }, body: JSON.stringify(body) });
   return { get, put };
 }
 
@@ -43,11 +42,8 @@ const content = async () => {
 };
 
 describe("SEO API", () => {
-  it("needs a signed-in user and the CSRF token", async () => {
+  it("needs a signed-in user", async () => {
     expect((await app().request(`${api}/seo`)).status).toBe(401);
-    const { get, put } = await signIn();
-    const s = await get();
-    expect((await put("robots", { baseVersion: s.robots.version, value: s.robots.value }, null)).status).toBe(403);
   });
 
   it("starts from today's files and the home page, and generates the sitemap", async () => {

@@ -1,4 +1,4 @@
-// Sign-in, current user and sign-out, mounted at /<ADMIN_PATH>/api/auth.
+// Sign-in, token refresh and sign-out, mounted at /<ADMIN_PATH>/api/auth.
 import { createHash } from "node:crypto";
 import { Hono } from "hono";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
@@ -8,9 +8,10 @@ import { sessions, users } from "../../db/schema.ts";
 import { audit } from "../audit.ts";
 import { clientIp } from "../client-ip.ts";
 import { saveLimit } from "../save-limit.ts";
-import { requireUser, sameToken } from "./require-user.ts";
+import { requireFreshUser, sameToken } from "./require-user.ts";
 import { assertPasswordRules, dummyPasswordHash, hashPassword, verifyPassword } from "./password.ts";
-import { createSession, deleteSession, readSession, SESSION_COOKIE, SESSION_IDLE_MS } from "./session.ts";
+import { createSession, deleteSession, readSession, REFRESH_COOKIE, SESSION_IDLE_MS } from "./session.ts";
+import { ACCESS_TOKEN_SECONDS, signAccessToken } from "./token.ts";
 
 const MAX_FAILED = 5;
 const LOCK_MS = 15 * 60 * 1000;
@@ -23,9 +24,13 @@ export const publicUser = (u: typeof users.$inferSelect) => ({ id: u.id, name: u
 // Audit entries for unknown emails keep only a short hash: people sometimes type their password into the email box.
 const emailFingerprint = (email: string) => createHash("sha256").update(email).digest("hex").slice(0, 16);
 
+const signedIn = async (user: typeof users.$inferSelect, sessionId: number) =>
+  ({ user: publicUser(user), accessToken: await signAccessToken(user, sessionId), expiresIn: ACCESS_TOKEN_SECONDS });
+
 export function authRoutes({ db, adminPath, secureCookies, trustProxy = false }: AuthConfig) {
   const app = new Hono();
-  const cookieOpts = { httpOnly: true, secure: secureCookies, sameSite: "Strict" as const, path: `/${adminPath}` };
+  // Only these routes ever see the refresh token.
+  const cookieOpts = { httpOnly: true, secure: secureCookies, sameSite: "Strict" as const, path: `/${adminPath}/api/auth` };
 
   app.post("/login", async (c) => {
     if (!(c.req.header("content-type") ?? "").toLowerCase().startsWith("application/json")) return c.json({ error: "Send JSON." }, 415);
@@ -71,20 +76,23 @@ export function authRoutes({ db, adminPath, secureCookies, trustProxy = false }:
     }
 
     await db.update(users).set({ failedLogins: 0, lockedUntil: null, lastLoginAt: new Date() }).where(eq(users.id, user.id));
-    const { token, csrfToken } = await createSession(db, user.id, { ip, userAgent: c.req.header("user-agent") });
-    setCookie(c, SESSION_COOKIE, token, { ...cookieOpts, maxAge: SESSION_IDLE_MS / 1000 });
+    const { id, token, csrfToken } = await createSession(db, user.id, { ip, userAgent: c.req.header("user-agent") });
+    setCookie(c, REFRESH_COOKIE, token, { ...cookieOpts, maxAge: SESSION_IDLE_MS / 1000 });
     await audit(db, { userId: user.id, action: "login", entityType: "user", entityId: user.id, ip });
-    return c.json({ user: publicUser(user), csrfToken });
+    return c.json({ ...(await signedIn(user, id)), csrfToken });
   });
 
-  app.get("/me", async (c) => {
-    const s = await readSession(db, getCookie(c, SESSION_COOKIE));
+  // The cookie is SameSite=Strict and the app refuses cross-site changes, so only the admin app can get here.
+  app.post("/refresh", async (c) => {
+    const token = getCookie(c, REFRESH_COOKIE);
+    const s = await readSession(db, token);
     if (!s) return c.json({ error: "Not signed in." }, 401);
-    return c.json({ user: publicUser(s.user), csrfToken: s.session.csrfToken });
+    setCookie(c, REFRESH_COOKIE, token!, { ...cookieOpts, maxAge: SESSION_IDLE_MS / 1000 });
+    return c.json({ ...(await signedIn(s.user, s.session.id)), csrfToken: s.session.csrfToken });
   });
 
   // A stolen session can't be used to guess the current password for long.
-  app.post("/change-password", requireUser(db, { duringPasswordChange: true }), saveLimit({ max: 5, windowMs: 60_000 }), async (c) => {
+  app.post("/change-password", requireFreshUser(db, { duringPasswordChange: true }), saveLimit({ max: 5, windowMs: 60_000 }), async (c) => {
     const body = await c.req.json().catch(() => null);
     const current = typeof body?.currentPassword === "string" ? body.currentPassword : "";
     const next = typeof body?.newPassword === "string" ? body.newPassword : "";
@@ -114,15 +122,16 @@ export function authRoutes({ db, adminPath, secureCookies, trustProxy = false }:
       return row;
     });
     if (!saved) return c.json({ error: "Your password was changed by someone else just now. Sign in again." }, 409);
-    return c.json({ user: publicUser(saved) });
+    // The old token still says a new password is needed.
+    return c.json(await signedIn(saved, c.get("session").id));
   });
 
   app.post("/logout", async (c) => {
-    const s = await readSession(db, getCookie(c, SESSION_COOKIE));
+    const s = await readSession(db, getCookie(c, REFRESH_COOKIE));
     if (!s) return c.json({ error: "Not signed in." }, 401);
     if (!sameToken(c.req.header("x-csrf-token"), s.session.csrfToken)) return c.json({ error: "Missing or wrong CSRF token." }, 403);
     await deleteSession(db, s.session.id);
-    deleteCookie(c, SESSION_COOKIE, cookieOpts);
+    deleteCookie(c, REFRESH_COOKIE, cookieOpts);
     await audit(db, { userId: s.user.id, action: "logout", entityType: "user", entityId: s.user.id, ip: clientIp(c, trustProxy) });
     return c.body(null, 204);
   });

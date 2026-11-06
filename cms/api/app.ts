@@ -49,7 +49,7 @@ export function createApp(cfg: AppConfig) {
     return tooLarge(c, next);
   });
 
-  // Refuse changes started by another site (backs up the SameSite cookie and the CSRF token).
+  // Refuse changes started by another site (backs up the SameSite refresh cookie and the sign-out CSRF token).
   app.use("*", async (c, next) => {
     if (CHANGES.has(c.req.method)) {
       if (c.req.header("sec-fetch-site") === "cross-site") return c.json({ error: "Cross-site request refused." }, 403);
@@ -75,7 +75,7 @@ export function createApp(cfg: AppConfig) {
   app.route(`${base}/dashboard`, dashboardRoutes(cfg.db));
   app.route(`${base}/guides`, articleRoutes("guide", cfg.db, cfg.siteFilesRoot));
   app.route(`${base}/areas`, articleRoutes("area", cfg.db, cfg.siteFilesRoot, { max: 30, windowMs: 60_000 }));
-  if (cfg.siteRoot) app.route(`${base}/preview-assets`, previewAssets(cfg.db, cfg.siteRoot));
+  if (cfg.siteRoot) app.route(`${base}/preview-assets`, previewAssets(cfg.siteRoot));
   if (cfg.preview) app.route(`${base}/publish`, publishRoutes(cfg.db, cfg.preview));
   app.get(`${base}/health`, (c) => c.json({ ok: true }));
 

@@ -63,7 +63,7 @@ async function template(root: string | undefined, kind: Kind, slug: string | und
 export function articleRoutes(kind: Kind, db: Db, siteFilesRoot?: string, limit: SaveLimit = { max: 120, windowMs: 60_000 }) {
   const app = new Hono<{ Variables: AuthVars }>();
   const one = kind, many = `${kind}s`, Noun = kind === "guide" ? "Guide" : "Area", noun = kind === "guide" ? "guide" : "area";
-  app.use("*", requireUser(db));
+  app.use("*", requireUser());
   // Guides auto-save (at most one save every 2 s per tab); areas save on a button.
   app.use("*", saveLimit(limit));
 

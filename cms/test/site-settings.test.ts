@@ -25,11 +25,10 @@ async function signIn(email: string, role: "super_admin" | "editor", name = "Tes
   const { password } = await makeUser(db, { email, role });
   if (name !== "Test User") await db.execute(sql`update users set name = ${name} where email = ${email}`);
   const res = await app().request(`${api}/auth/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email, password }) });
-  const cookie = (res.headers.get("set-cookie") ?? "").split(";")[0]!;
-  const { csrfToken } = await res.json();
-  const get = async () => (await app().request(`${api}/settings`, { headers: { cookie } })).json();
-  const put = (body: unknown, csrf: string | null = csrfToken) =>
-    app().request(`${api}/settings`, { method: "PUT", headers: { cookie, "content-type": "application/json", ...(csrf ? { "x-csrf-token": csrf } : {}) }, body: JSON.stringify(body) });
+  const authorization = `Bearer ${(await res.json()).accessToken}`;
+  const get = async () => (await app().request(`${api}/settings`, { headers: { authorization } })).json();
+  const put = (body: unknown) =>
+    app().request(`${api}/settings`, { method: "PUT", headers: { authorization, "content-type": "application/json" }, body: JSON.stringify(body) });
   return { get, put };
 }
 const admin = () => signIn("admin@example.com", "super_admin", "Asha Rao");

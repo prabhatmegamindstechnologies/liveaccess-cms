@@ -25,10 +25,9 @@ async function signIn(email = "editor@example.com", name = "Test User") {
   const { password } = await makeUser(db, { email, role: "editor" });
   if (name !== "Test User") await db.execute(sql`update users set name = ${name} where email = ${email}`);
   const res = await app().request(`${api}/auth/login`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ email, password }) });
-  const cookie = (res.headers.get("set-cookie") ?? "").split(";")[0]!;
-  const { csrfToken } = await res.json();
-  const req = (method: string, path: string, body?: unknown, csrf: string | null = csrfToken) =>
-    app().request(`${api}/guides${path}`, { method, headers: { cookie, "content-type": "application/json", ...(csrf && method !== "GET" ? { "x-csrf-token": csrf } : {}) }, body: body === undefined ? undefined : JSON.stringify(body) });
+  const authorization = `Bearer ${(await res.json()).accessToken}`;
+  const req = (method: string, path: string, body?: unknown) =>
+    app().request(`${api}/guides${path}`, { method, headers: { authorization, "content-type": "application/json" }, body: body === undefined ? undefined : JSON.stringify(body) });
   const json = async (method: string, path: string, body?: unknown) => (await req(method, path, body)).json();
   return { req, json };
 }
@@ -38,10 +37,8 @@ const pageHtml = async () => JSON.stringify(await db.select({ h: pages.html, l: 
 const fields = (g: Record<string, unknown>) => ({ slug: g.slug, title: g.title, summary: g.summary, areaSlug: g.areaSlug, publishedDate: g.publishedDate, blocks: g.blocks, seo: g.seo });
 
 describe("guides API", () => {
-  it("needs a signed-in user and the CSRF token", async () => {
+  it("needs a signed-in user", async () => {
     expect((await app().request(`${api}/guides`)).status).toBe(401);
-    const { req } = await signIn();
-    expect((await req("POST", "", { title: "x" }, null)).status).toBe(403);
   });
 
   it("lists the 6 imported guides as live without unpublished changes", async () => {

@@ -15,7 +15,7 @@ type Waiting = { kind: "page" | "guide" | "area"; title: string; link: string; s
 
 export function dashboardRoutes(db: Db) {
   const app = new Hono<{ Variables: AuthVars }>();
-  app.use("*", requireUser(db));
+  app.use("*", requireUser());
 
   app.get("/", async (c) => {
     const [pageRows, articleRows, log, [messages], [job]] = await Promise.all([

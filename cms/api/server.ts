@@ -7,14 +7,15 @@ import { PREVIEW_DIR } from "../publish/build-site.ts";
 import { createApp } from "./app.ts";
 import { previewSite } from "./preview-server.ts";
 
+env.jwtSecret(); // Refuse to start without it, rather than fail at the first sign-in.
 const { db } = createDb(env.databaseUrl());
-// siteRoot enables the preview-asset route: local development only, never in production.
 const dev = process.env.NODE_ENV !== "production";
-// The site build also needs the "this is my own computer" setting, so a host that forgets NODE_ENV doesn't get it.
+// siteRoot (the preview-asset route, which is open) and the site build need the "this is my own computer" setting, so a host
+// that forgets NODE_ENV doesn't get them.
 const local = dev && !env.secureCookies && !process.env.VERCEL;
 const previewUrl = `http://localhost:${env.previewPort}/`;
 const app = createApp({
-  db, adminPath: env.adminPath, secureCookies: env.secureCookies, trustProxy: env.trustProxy, siteRoot: dev ? env.siteRoot : undefined, siteFilesRoot: env.siteRoot,
+  db, adminPath: env.adminPath, secureCookies: env.secureCookies, trustProxy: env.trustProxy, siteRoot: local ? env.siteRoot : undefined, siteFilesRoot: env.siteRoot,
   preview: local ? { siteRoot: env.siteRoot, previewRoot: repoRoot, url: previewUrl } : undefined
 });
 

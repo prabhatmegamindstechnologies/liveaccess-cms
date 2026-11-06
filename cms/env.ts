@@ -20,6 +20,11 @@ if (!/^[a-z0-9-]{3,40}$/.test(adminPath) || adminPath === "admin") {
 export const env = {
   databaseUrl: () => required("DATABASE_URL"),
   testDatabaseUrl: () => required("TEST_DATABASE_URL"),
+  jwtSecret: () => {
+    const secret = required("JWT_SECRET");
+    if (secret.length < 32) throw new Error("JWT_SECRET must be at least 32 characters.");
+    return secret;
+  },
   adminPath,
   port: Number(process.env.PORT ?? 8787),
   previewPort: Number(process.env.PREVIEW_PORT ?? 4000),

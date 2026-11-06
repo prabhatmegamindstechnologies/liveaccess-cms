@@ -7,7 +7,7 @@ import { sessions, users } from "../../db/schema.ts";
 import { audit } from "../audit.ts";
 import { clientIp } from "../client-ip.ts";
 import { assertPasswordRules, hashPassword, temporaryPassword, verifyPassword } from "../auth/password.ts";
-import { requireSuperAdmin, requireUser, type AuthVars } from "../auth/require-user.ts";
+import { requireFreshUser, requireSuperAdmin, type FreshAuthVars } from "../auth/require-user.ts";
 import { saveLimit, type SaveLimit } from "../save-limit.ts";
 import type { Context } from "hono";
 
@@ -101,8 +101,8 @@ function parse(input: unknown, isNew: boolean) {
 }
 
 export function userRoutes(db: Db, trustProxy = false, limit: SaveLimit = { max: 30, windowMs: 60_000 }) {
-  const app = new Hono<{ Variables: AuthVars }>();
-  app.use("*", requireUser(db));
+  const app = new Hono<{ Variables: FreshAuthVars }>();
+  app.use("*", requireFreshUser(db));
   app.use("*", requireSuperAdmin);
   app.use("*", saveLimit(limit));
 
@@ -111,7 +111,7 @@ export function userRoutes(db: Db, trustProxy = false, limit: SaveLimit = { max:
    * Changes that give someone Super Admin access need the caller's own password, so a stolen session alone can't create
    * lasting access. Answers with the response to send when that fails, or null when it's fine.
    */
-  async function refuseOwnPassword(c: Context<{ Variables: AuthVars }>, input: unknown) {
+  async function refuseOwnPassword(c: Context<{ Variables: FreshAuthVars }>, input: unknown) {
     const given = (input as { currentPassword?: unknown } | null)?.currentPassword;
     if (given === undefined) {
       const msg = "Enter your own password to confirm this.";

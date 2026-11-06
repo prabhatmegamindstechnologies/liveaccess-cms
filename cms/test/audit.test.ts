@@ -27,8 +27,8 @@ beforeEach(async () => {
 async function signIn(email = "admin@example.com", role: "super_admin" | "editor" = "super_admin") {
   const { password, user } = await makeUser(db, { email, role });
   const res = await app().request(`${api}/auth/login`, { method: "POST", headers: json, body: JSON.stringify({ email, password }) });
-  const cookie = (res.headers.get("set-cookie") ?? "").split(";")[0]!;
-  const get = (query = "") => app().request(`${api}/audit${query}`, { headers: { cookie } });
+  const authorization = `Bearer ${(await res.json()).accessToken}`;
+  const get = (query = "") => app().request(`${api}/audit${query}`, { headers: { authorization } });
   return { get, list: async (query = "") => (await get(query)).json(), id: user.id };
 }
 type Entry = { action: string; who: { name: string } | null; item: { title: string; link: string | null } | null; detail: Record<string, unknown>; ip: string | null };

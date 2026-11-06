@@ -27,9 +27,12 @@ async function login(email: string, password: string) {
   const res = await app.request(`${api}/auth/login`, { method: "POST", headers: json, body: JSON.stringify({ email, password }) });
   const cookie = (res.headers.get("set-cookie") ?? "").split(";")[0]!;
   const body = await res.json();
-  const call = (method: string, path: string, data?: unknown, csrf: string | null = body.csrfToken) =>
-    app.request(`${api}${path}`, { method, headers: { cookie, ...json, ...(csrf ? { "x-csrf-token": csrf } : {}) }, body: data === undefined ? undefined : JSON.stringify(data) });
-  return { res, body, call, id: body.user?.id as number };
+  let authorization = `Bearer ${body.accessToken}`;
+  const call = (method: string, path: string, data?: unknown) =>
+    app.request(`${api}${path}`, { method, headers: { authorization, ...json }, body: data === undefined ? undefined : JSON.stringify(data) });
+  const refresh = () => app.request(`${api}/auth/refresh`, { method: "POST", headers: { cookie } });
+  const useToken = (token: string) => { authorization = `Bearer ${token}`; };
+  return { res, body, call, refresh, useToken, id: body.user?.id as number };
 }
 async function signIn(email = "admin@example.com", role: "super_admin" | "editor" = "super_admin") {
   const { password } = await makeUser(db, { email, role });
@@ -54,10 +57,6 @@ describe("who can use the users API", () => {
     expect(await db.select().from(users).where(eq(users.email, "x@example.com"))).toEqual([]);
   });
 
-  it("needs the CSRF token for changes", async () => {
-    const admin = await signIn();
-    expect((await admin.call("POST", "/users", { name: "X", email: "x@example.com", role: "editor" }, null)).status).toBe(403);
-  });
 });
 
 describe("GET /users", () => {
@@ -135,11 +134,13 @@ describe("the first sign-in with a temporary password", () => {
     const blocked = await user.call("GET", "/pages");
     expect(blocked.status).toBe(403);
     expect((await blocked.json()).passwordChangeRequired).toBe(true);
-    expect((await user.call("GET", "/auth/me")).status).toBe(200);
+    expect((await user.refresh()).status).toBe(200);
 
     const changed = await user.call("POST", "/auth/change-password", { currentPassword: body.temporaryPassword, newPassword: "my-own-long-password" });
     expect(changed.status).toBe(200);
-    expect((await changed.json()).user.mustChangePassword).toBe(false);
+    const signedIn = await changed.json();
+    expect(signedIn.user.mustChangePassword).toBe(false);
+    user.useToken(signedIn.accessToken);
     expect((await user.call("GET", "/pages")).status).toBe(200);
     expect((await login("new@example.com", body.temporaryPassword)).res.status).toBe(401);
     expect((await login("new@example.com", "my-own-long-password")).res.status).toBe(200);
@@ -148,11 +149,6 @@ describe("the first sign-in with a temporary password", () => {
 
 describe("POST /auth/change-password", () => {
   const next = "another-long-password";
-
-  it("needs the CSRF token", async () => {
-    const admin = await signIn();
-    expect((await admin.call("POST", "/auth/change-password", { currentPassword: "correct-horse-battery", newPassword: next }, null)).status).toBe(403);
-  });
 
   it("needs the right current password", async () => {
     const admin = await signIn();
@@ -181,8 +177,8 @@ describe("POST /auth/change-password", () => {
     const admin = await signIn();
     const other = await login("admin@example.com", "correct-horse-battery");
     await admin.call("POST", "/auth/change-password", { currentPassword: "correct-horse-battery", newPassword: next });
-    expect((await admin.call("GET", "/auth/me")).status).toBe(200);
-    expect((await other.call("GET", "/auth/me")).status).toBe(401);
+    expect((await admin.refresh()).status).toBe(200);
+    expect((await other.refresh()).status).toBe(401);
   });
 
   it("is logged without the passwords", async () => {
@@ -217,12 +213,12 @@ describe("PATCH /users/:id", () => {
     expect((await admin.call("PATCH", "/users/abc", { name: "X" })).status).toBe(404);
   });
 
-  it("signs out a disabled user at once, and they can't sign in until enabled", async () => {
+  it("ends a disabled user's session at once, and they can't sign in until enabled", async () => {
     const admin = await signIn();
     const editor = await signIn("editor@example.com", "editor");
     expect((await admin.call("PATCH", `/users/${editor.id}`, { status: "disabled" })).status).toBe(200);
     expect(await sessionsOf(editor.id)).toBe(0);
-    expect((await editor.call("GET", "/pages")).status).toBe(401);
+    expect((await editor.refresh()).status).toBe(401);
     expect((await login("editor@example.com", "correct-horse-battery")).res.status).toBe(401);
     expect((await admin.call("PATCH", `/users/${editor.id}`, { status: "active" })).status).toBe(200);
     expect((await login("editor@example.com", "correct-horse-battery")).res.status).toBe(200);
@@ -469,9 +465,9 @@ describe("sessions have a hard limit", () => {
     const admin = await signIn();
     const day = 86_400_000;
     await db.update(sessions).set({ createdAt: new Date(Date.now() - 6.9 * day) }).where(eq(sessions.userId, admin.id));
-    expect((await admin.call("GET", "/auth/me")).status).toBe(200);
+    expect((await admin.refresh()).status).toBe(200);
     await db.update(sessions).set({ createdAt: new Date(Date.now() - 7.1 * day) }).where(eq(sessions.userId, admin.id));
-    expect((await admin.call("GET", "/auth/me")).status).toBe(401);
+    expect((await admin.refresh()).status).toBe(401);
     expect((await admin.call("GET", "/users")).status).toBe(401);
   });
 });
