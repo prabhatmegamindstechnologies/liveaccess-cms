@@ -1,0 +1,4 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "pnpm build:admin && if [ \"$VERCEL_ENV\" = \"production\" ]; then pnpm db:migrate; fi"
+}
