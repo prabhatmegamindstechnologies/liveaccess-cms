@@ -5,7 +5,7 @@ import { cp, copyFile, mkdir, readFile, readdir, rename, rm, writeFile } from "n
 import { extname, join, resolve, sep } from "node:path";
 import { parseHTML } from "linkedom";
 import {
-  applyConsentJs, applyListing, applyMenus, applyPageSeo, applySeoDefaults, applySiteSettings, buildSitemap, guideCardsFromPage, MEDIA_DIR, mediaKeysIn, redirectsHtaccess,
+  applyConsentJs, applyListing, applyMenus, applyPageSeo, applySeoDefaults, applySiteSettings, buildSitemap, guideCardsFromPage, MEDIA_DIR, mediaKeysIn, plainText, redirectsHtaccess,
   renderAreaPage, renderGuidePage, validateArea, validateGuide,
   type AreaGuide, type Block, type Guide, type ListingItem, type Menus, type SeoDefaults, type SiteSettings
 } from "@liveaccess/shared";
@@ -194,9 +194,12 @@ async function build(db: Db, root: string, work: string, storage: MediaStorage):
   }
 
   /* Listing pages: they're stored pages, so they only learn here what was really built. */
-  const listing = (r: Row, g: Guide, note: string): ListingItem => ({
-    slug: g.slug, title: g.title, note, summary: g.summary, summaryChanged: (r.published as Guide | null)?.summary !== g.summary
-  });
+  // An area's summary is its intro line (text-editor HTML); its card shows the plain words.
+  const listing = (r: Row, g: Guide, note: string, kind: Kind = "guide"): ListingItem => {
+    const words = (s: string | undefined) => (s === undefined || kind === "guide" ? s : plainText(s, doc()));
+    const summary = words(g.summary)!;
+    return { slug: g.slug, title: g.title, note, summary, summaryChanged: words((r.published as Guide | null)?.summary) !== summary };
+  };
   const relist = async (file: string, kind: Kind, items: ListingItem[]) => {
     if (!written.has(file)) return;
     try {
@@ -206,7 +209,7 @@ async function build(db: Db, root: string, work: string, storage: MediaStorage):
     }
   };
   await relist("guides.html", "guide", guides.map((g) => listing(g.row, g.guide, areaNames.get(g.guide.areaSlug) ?? "")));
-  await relist("process-areas.html", "area", areas.filter((a) => written.has(`area-${a.area.slug}.html`)).map((a) => listing(a.row, a.area, "Process area")));
+  await relist("process-areas.html", "area", areas.filter((a) => written.has(`area-${a.area.slug}.html`)).map((a) => listing(a.row, a.area, "Process area", "area")));
 
   /* Site files */
   const entries = [

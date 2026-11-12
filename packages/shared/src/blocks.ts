@@ -1,5 +1,5 @@
 // Guide and process-area blocks: read from the current article markup, and render back to the same markup.
-import { isRichParagraph, normalizeSpace, sanitizeInline, sanitizeRich } from "./sanitize.ts";
+import { isRichParagraph, normalizeSpace, sanitizeInline, sanitizeRich, sanitizeText } from "./sanitize.ts";
 
 export type Block =
   | { type: "heading"; level: 2 | 3; text: string }
@@ -43,6 +43,8 @@ export type MediaSrc = (id: number) => string | null;
 /** Renders one block with the site's existing classes. `mediaSrc` resolves image blocks. */
 export function blockHtml(b: Block, doc: Document, mediaSrc: MediaSrc = () => null): string {
   const inline = (s: string) => sanitizeInline(s, doc);
+  // List items and note text come from the text editor (fonts, sizes, colours); headings and titles stay plain.
+  const text = (s: string) => sanitizeText(s, doc);
   switch (b.type) {
     case "heading":
       return b.level === 3 ? `<h3>${esc(b.text)}</h3>` : `<h2>${esc(b.text)}</h2>`;
@@ -50,12 +52,12 @@ export function blockHtml(b: Block, doc: Document, mediaSrc: MediaSrc = () => nu
       return isRichParagraph(b.html) ? sanitizeRich(b.html, doc) : `<p>${inline(b.html)}</p>`;
     case "list": {
       const t = b.style === "number" ? "ol" : "ul";
-      return `<${t}>${b.items.filter((x) => x.trim()).map((x) => `<li>${inline(x)}</li>`).join("")}</${t}>`;
+      return `<${t}>${b.items.filter((x) => x.trim()).map((x) => `<li>${text(x)}</li>`).join("")}</${t}>`;
     }
     case "callout":
       return b.variant === "disclaimer"
-        ? `<p class="article-note">${inline(b.text)}</p>`
-        : `<div class="note note-safety" role="note"><strong>${esc(b.title)}</strong> ${inline(b.text)}</div>`;
+        ? `<p class="article-note">${text(b.text)}</p>`
+        : `<div class="note note-safety" role="note"><strong>${esc(b.title)}</strong> ${text(b.text)}</div>`;
     case "quote":
       return `<blockquote class="cms-quote">${esc(b.text)}${b.cite ? `<cite>${esc(b.cite)}</cite>` : ""}</blockquote>`;
     case "table": {

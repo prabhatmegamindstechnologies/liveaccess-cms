@@ -25,7 +25,7 @@ describe("renderAreaPage", () => {
   it("adds, changes and removes the guides band and writes new data escaped", () => {
     const withGuides = page("area-evaporation.html");
     const without = page("area-ingredients.html");
-    const a: Area = { ...data("area-ingredients.html"), slug: "dairy-desserts", title: `Dairy & "desserts"`, summary: "Puddings <and> custards.", seo: { title: "", description: "", noindex: false } };
+    const a: Area = { ...data("area-ingredients.html"), slug: "dairy-desserts", title: `Dairy & "desserts"`, summary: "Puddings &lt;and&gt; custards.<script>x</script>", seo: { title: "", description: "", noindex: false } };
     const guides = [{ slug: "pump-check", title: "Pump <check>", summary: "First sentence. Second sentence." }];
 
     const added = renderAreaPage(without, a, guides, doc);

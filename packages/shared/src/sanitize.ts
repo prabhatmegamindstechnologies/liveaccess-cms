@@ -38,10 +38,24 @@ export function sanitizeInline(html: string, doc: Document): string {
   if (tagDepth(html) > 200) return escText(html.replace(/<[^<>]*>/g, ""));
   const box = doc.createElement("div");
   box.innerHTML = html;
-  return walk(box, 0);
+  return walk(box, 0, false);
 }
 
-function walk(node: Node, depth: number): string {
+/**
+ * Inline text with the editor's text styles: everything `sanitizeInline` keeps, plus underline, strikethrough and the set
+ * fonts, sizes and colours. No alignment and no block tags, so it fits inside any one element of a page. Text with none of
+ * the extras comes out exactly as `sanitizeInline` gives it.
+ */
+export function sanitizeText(html: string, doc: Document): string {
+  if (tagDepth(html) > 200) return escText(html.replace(/<[^<>]*>/g, ""));
+  const box = doc.createElement("div");
+  box.innerHTML = html;
+  return walk(box, 0, true);
+}
+
+const TEXT_STYLED = new Set(["SPAN", "STRONG", "B", "EM", "I", "U", "S", "SMALL"]);
+
+function walk(node: Node, depth: number, styled: boolean): string {
   // Deeper nesting keeps its text but loses its tags, so hostile input can't overflow the stack.
   if (depth > MAX_DEPTH) return escText(node.textContent ?? "");
   let out = "";
@@ -54,8 +68,8 @@ function walk(node: Node, depth: number): string {
     const el = n as Element;
     const tag = el.tagName.toUpperCase();
     if (DROP.has(tag)) return;
-    if (!INLINE.has(tag)) {
-      out += walk(el, depth + 1);
+    if (!INLINE.has(tag) && !(styled && (tag === "U" || tag === "S"))) {
+      out += walk(el, depth + 1, styled);
       return;
     }
     if (tag === "BR") {
@@ -72,13 +86,24 @@ function walk(node: Node, depth: number): string {
     }
     if ((tag === "SPAN" || tag === "SMALL") && el.getAttribute("class")) attrs += ` class="${escAttr(el.getAttribute("class")!)}"`;
     if (tag === "TIME" && el.getAttribute("datetime")) attrs += ` datetime="${escAttr(el.getAttribute("datetime")!)}"`;
+    if (styled && TEXT_STYLED.has(tag)) {
+      const style = richStyle(el.getAttribute("style") ?? "", false);
+      if (style) attrs += ` style="${escAttr(style)}"`;
+    }
     const t = tag.toLowerCase();
-    out += `<${t}${attrs}>${walk(el, depth + 1)}</${t}>`;
+    out += `<${t}${attrs}>${walk(el, depth + 1, styled)}</${t}>`;
   });
   return out;
 }
 
 export const normalizeSpace = (s: string) => s.replace(/\s+/g, " ").trim();
+
+/** The words of a text field, for places that can't show formatting (title, meta, JSON-LD, cards). */
+export function plainText(html: string, doc: Document): string {
+  const box = doc.createElement("div");
+  box.innerHTML = sanitizeText(html, doc);
+  return normalizeSpace(box.textContent ?? "");
+}
 
 /* ---------- rich paragraphs (guides and process areas only) ---------- */
 
@@ -105,8 +130,11 @@ function hexColour(value: string): string | null {
   return `#${m.slice(1).map((n) => Number(n).toString(16).padStart(2, "0")).join("").toUpperCase()}`;
 }
 
-/** Each property is read on its own and rewritten from the lists above, so nothing from the input is copied through. */
-function richStyle(style: string): string {
+/**
+ * Each property is read on its own and rewritten from the lists above, so nothing from the input is copied through.
+ * `align` = alignment allowed (rich paragraphs only). A value that comes back unchanged is already in the stored form.
+ */
+export function richStyle(style: string, align = true): string {
   const out = new Map<string, string>();
   for (const part of style.split(";")) {
     const i = part.indexOf(":");
@@ -121,7 +149,7 @@ function richStyle(style: string): string {
     } else if (prop === "font-family") {
       const name = (value.split(",")[0] ?? "").trim().replace(/^['"]|['"]$/g, "");
       if (Object.hasOwn(RICH_FONTS, name)) out.set(prop, RICH_FONTS[name]!);
-    } else if (prop === "text-align" && (value === "left" || value === "center" || value === "right")) {
+    } else if (align && prop === "text-align" && (value === "left" || value === "center" || value === "right")) {
       out.set(prop, value);
     }
   }

@@ -1,7 +1,7 @@
 // Edit one process area: fields and blocks on the left (saved with the Save button), the real area page on the right.
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import { renderAreaPage, slugify, splitScripts, validateArea, type Area } from "@liveaccess/shared";
+import { plainText, renderAreaPage, slugify, splitScripts, validateArea, type Area } from "@liveaccess/shared";
 import { api, ApiError } from "../lib/api.ts";
 import { mediaSrc, rememberMedia } from "../lib/media.ts";
 import { previewDoc } from "../lib/preview.ts";
@@ -9,6 +9,7 @@ import { SPLIT_FIELDS, SPLIT_GRID, SPLIT_PAGE } from "../lib/layout.ts";
 import { Breadcrumb, Chip } from "../components/ui.tsx";
 import { FieldError, inputCls, SavedPill, saveBtn, useUnsavedWarning, type Errors } from "../components/form.tsx";
 import { BlockEditor } from "../components/BlockEditor.tsx";
+import { RichField } from "../components/RichField.tsx";
 import { LivePreview } from "../components/LivePreview.tsx";
 
 type Meta = { id: number; status: "draft" | "published"; live: boolean; hasChanges: boolean; version: number; updatedAt: string; updatedBy: string | null };
@@ -167,8 +168,8 @@ export function AreaEditor() {
                 {!meta.live && <button type="button" onClick={() => update({ slug: slugify(area.title) })} className="shrink-0 rounded-md border border-slate-200 px-2.5 py-1.5 text-xs font-semibold hover:border-slate-300">From name</button>}
               </div>
             ), meta.live ? "This area is live, so its address is locked (links to it would break)." : "Lower-case letters, numbers and hyphens. Locked once the area is published.")}
-            {field("summary", "Intro line", <textarea id="a-summary" value={area.summary} maxLength={300} rows={3} onChange={(e) => update({ summary: e.target.value })} className={`${inputCls} resize-y`} />,
-              "Under the name on the page, and on the area's card on the Process areas page.")}
+            {field("summary", "Intro line", <RichField id="a-summary" label="Intro line" value={area.summary} onChange={(html) => update({ summary: html })} />,
+              "Under the name on the page, with its formatting. The area's card and search results show the words only. Up to 300 characters.")}
           </section>
 
           <section hidden={tab !== "content"} className="grid gap-3 rounded-xl border border-slate-200 bg-white p-5">
@@ -192,7 +193,7 @@ export function AreaEditor() {
           <section hidden={tab !== "seo"} className="grid gap-4 rounded-xl border border-slate-200 bg-white p-5">
             {field("seo.title", "Meta title", <input id="a-seo.title" value={area.seo.title} maxLength={200} placeholder={`${area.title}: process area | LiveAccess`} onChange={(e) => update({ seo: { ...area.seo, title: e.target.value } })} className={inputCls} />,
               `Shown in search results and the browser tab. Empty = "<name>: process area | LiveAccess". ${area.seo.title.length}/60 recommended.`)}
-            {field("seo.description", "Meta description", <textarea id="a-seo.description" value={area.seo.description} maxLength={500} rows={3} placeholder={area.summary} onChange={(e) => update({ seo: { ...area.seo, description: e.target.value } })} className={`${inputCls} resize-y`} />,
+            {field("seo.description", "Meta description", <textarea id="a-seo.description" value={area.seo.description} maxLength={500} rows={3} placeholder={plainText(area.summary, inert)} onChange={(e) => update({ seo: { ...area.seo, description: e.target.value } })} className={`${inputCls} resize-y`} />,
               `Empty = the intro line. ${area.seo.description.length}/155 recommended.`)}
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" checked={area.seo.noindex} onChange={(e) => update({ seo: { ...area.seo, noindex: e.target.checked } })} />

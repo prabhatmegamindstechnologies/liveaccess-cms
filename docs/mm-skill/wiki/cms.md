@@ -8,7 +8,8 @@ https://claude.ai/artifact/UZJy25p3EXk3SEdQDXvF6U · Prototype: https://claude.a
 - Custom admin panel; everything on Vercel later; must be movable to Azure/AWS (standard Node, PostgreSQL, storage adapter).
 - Same domain, admin path is `ADMIN_PATH` (default `la-studio`, never `admin`). API at `/<ADMIN_PATH>/api/*`.
 - Admin work must never affect the live site: two Vercel projects from one repo; the site is static and only changes on Publish.
-- Layout lock: pages are stored as their current HTML; editors change text, images and SEO only (inline-only HTML).
+- Layout lock: pages are stored as their current HTML; editors change text, images and SEO only (inline-only HTML, with the text
+  editor's styles since 2026-11-12).
 - Statuses: only Draft and Published (no review, no scheduling). Roles: Super Admin, Editor.
 - Pages stay in the repo root until go-live (Day 8), because `.github/workflows/deploy.yml` FTP-copies root files.
 
@@ -128,6 +129,24 @@ https://claude.ai/artifact/UZJy25p3EXk3SEdQDXvF6U · Prototype: https://claude.a
   buttons around Jodit's `ColorPickerWidget`, as its stock button has them on tabs. Emoji Picker is paid, so emoji is a custom dropdown. Update it when an advisory appears.
   Pasted HTML reaches the live page before any save, so it's cleaned on `beforePasteInsert`, drops are refused, and `admin/index.html` sets
   `base-uri 'self'; connect-src 'self'`. Add that as a header when the admin's hosting is set up.
+- **Text editor (2026-11-12):** `RichTextEditor` has two modes. `"rich"` is the Paragraph box. `"text"` is for one element's text:
+  undo/redo, font, size, B/I/U/S, font and background colour, link, emoji, symbols, remove formatting. No blocks, lists, tables,
+  alignment or images, and Enter makes a `<br>`. `RichField.tsx` shows the formatted text and opens the editor on click or focus,
+  one at a time (a page has 40+ fields). The editor sends its last state when it closes, because Jodit reports changes a moment late.
+  - Where: guide and area list items, Safety note text, Disclaimer text, the area **Intro line**, and every website page text field
+    except short labels (`PLAIN_LABELS` in `fields.ts`: button and link text, numbers, labels, form labels; `richField(f)` decides).
+    Plain boxes, by choice (Prabhat, 2026-11-12): area Name, guide Title and Summary, Heading blocks, the Safety note title.
+  - Rules: `sanitizeText` in `sanitize.ts` is the `sanitizeInline` set plus `u`, `s` and `style` through `richStyle(…, false)`
+    (no alignment). Without those extras it gives exactly `sanitizeInline`'s output, tested on every element of every page.
+  - The area `summary` is HTML from the editor. The `lede` shows it, while meta, og, JSON-LD and the Process areas card use
+    `plainText`. The guide `summary` stays plain text.
+  - Page guard (`api/pages/guard.ts`): also allows `u`/`s`, and a `style` on an inline text tag when `richStyle(value, false) === value`.
+    Styles on layout elements still can't change.
+  - Fields: text formatted from end to end (`<h1><span style>…</span></h1>`) has no text of its own. `buildFields` still makes the
+    outer element the field when the inside carries the editor's marks (`formattedOnly`). Without that, the field moved to the
+    inner span and lost its label after a reload. The site's own pages have none of these marks.
+  - Jodit shows "0px" in the size box for text with no element of its own: its select falls back to its list's first key ("0"). The size
+    control's `value` falls back to the editor's real size.
 - **Don't start a second Vite:** a failed `pnpm dev:admin` (port in use) still rewrites `.vite/deps`, and the running server then answers
   504 "Outdated Optimize Dep" and the admin goes blank. Stop every copy, then start one.
 

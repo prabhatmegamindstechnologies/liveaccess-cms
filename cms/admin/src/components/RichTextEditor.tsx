@@ -1,5 +1,7 @@
-// The Paragraph box on guides and process areas: Jodit, limited to the agreed tools. It's loaded on demand, because it's
-// larger than the rest of the admin. The server cleans every save with the same rules, so this list is only for convenience.
+// Jodit, limited to the agreed tools, in two modes. "rich": the Paragraph box on guides and process areas (blocks, tables,
+// images). "text": one line of text inside an element that's already there (list items, notes, page fields), so only
+// text styles and links, and Enter makes a line break. It's loaded on demand, because it's larger than the rest of the
+// admin. The server cleans every save with the same rules, so these lists are only for convenience.
 import { useEffect, useRef } from "react";
 import { Jodit } from "jodit";
 // Jodit's main module only loads its core plugins. These are the others the agreed tools need.
@@ -16,11 +18,23 @@ import "jodit/esm/plugins/tab/tab.js";
 import "jodit/esm/plugins/table-keyboard-navigation/table-keyboard-navigation.js";
 import { ColorPickerWidget } from "jodit/esm/modules/widget/index.js";
 import "jodit/es2021/jodit.min.css";
-import { cleanParagraph, RICH_FONTS, RICH_SIZES, sanitizeRich } from "@liveaccess/shared";
+import { cleanParagraph, normalizeSpace, RICH_FONTS, RICH_SIZES, sanitizeRich, sanitizeText } from "@liveaccess/shared";
 import { fromAdmin, toAdmin, type MediaItem } from "../lib/media.ts";
 
 type Control = { args?: unknown[] };
-type Props = { id: string; value: string; onChange: (html: string) => void; onPickImage: (insert: (m: MediaItem) => void) => void };
+export type EditorMode = "rich" | "text";
+type Props = {
+  id: string;
+  value: string;
+  onChange: (html: string) => void;
+  /** Rich mode only: opens the Media library. */
+  onPickImage?: (insert: (m: MediaItem) => void) => void;
+  mode?: EditorMode;
+  /** What a screen reader announces for the text box. */
+  label?: string;
+  /** Put the caret at the end of the text as soon as the editor opens. */
+  autoFocus?: boolean;
+};
 
 const BRAND_COLOURS = ["#C2410C", "#1E3A5F", "#12925A", "#FFF1EA", "#EFF4FF", "#ECFDF3"];
 const EMOJI = ["✅", "⚠️", "❌", "ℹ️", "🔧", "⚙️", "🔥", "💧", "📌", "📞"];
@@ -45,7 +59,26 @@ const colourButton = (name: string, iconName: string, tooltip: string, command: 
   }, "")
 });
 
-const CONFIG = {
+// With the caret in text that has no element of its own (a plain paragraph), Jodit finds no size and shows its list's
+// first key, which for a list of numbers is "0", so the box read "0px". Fall back to the size the text really has.
+type SizeValue = (editor: Jodit, button: unknown) => string | undefined;
+const stockSize = (Jodit.defaultOptions.controls as unknown as Record<string, { value: SizeValue }>).fontsize!.value;
+const sizeValue: SizeValue = (editor, button) => {
+  const own = stockSize(editor, button);
+  if (own && own !== "0" && own !== "NaN") return own;
+  const px = Math.round(parseFloat(editor.ew.getComputedStyle(editor.editor).fontSize));
+  return Number.isFinite(px) && px > 0 ? String(px) : undefined;
+};
+
+const emojiButton = {
+  name: "laEmoji", icon: "la-emoji", tooltip: "Emoji", list: Object.fromEntries(EMOJI.map((e) => [e, e])),
+  exec: (editor: Jodit, _: unknown, { control }: { control: Control }) => {
+    if (!control.args) return false;
+    editor.s.insertHTML(String(control.args[0]));
+  }
+};
+
+const BASE = {
   toolbarAdaptive: false,
   toolbarSticky: false,
   statusbar: false,
@@ -67,8 +100,12 @@ const CONFIG = {
   controls: {
     // "select" is Jodit's own selector, which shows the current value in the toolbar.
     font: { component: "select", list: Jodit.atom({ "": "Default", ...Object.fromEntries(Object.entries(RICH_FONTS).map(([name, css]) => [css, name])) }) },
-    fontsize: { component: "select", list: Jodit.atom(RICH_SIZES) }
-  },
+    fontsize: { component: "select", list: Jodit.atom(RICH_SIZES), value: sizeValue }
+  }
+};
+
+const CONFIG = {
+  ...BASE,
   // The core plugins we don't use. Source view, video, upload and the like are in plugins that are never imported above.
   disablePlugins: ["about", "format-block", "iframe", "image", "powered-by-jodit", "stat"],
   buttons: [
@@ -78,18 +115,35 @@ const CONFIG = {
     "|", "left", "center", "right", "ul", "ol", "|", "table", "link",
     // Jodit's own image plugin stays off: it would take any address. This one opens the Media library.
     { name: "laImage", icon: "la-image", tooltip: "Image from the Media library", exec: (editor: Jodit) => { editor.e.fire("laPickImage"); } },
-    {
-      name: "laEmoji", icon: "la-emoji", tooltip: "Emoji", list: Object.fromEntries(EMOJI.map((e) => [e, e])),
-      exec: (editor: Jodit, _: unknown, { control }: { control: Control }) => {
-        if (!control.args) return false;
-        editor.s.insertHTML(String(control.args[0]));
-      }
-    },
+    emojiButton,
     "symbols", "|", "eraser"
   ]
 };
 
-export default function RichTextEditor({ id, value, onChange, onPickImage }: Props) {
+// One line of text inside an element the page already has: no blocks, lists, tables, alignment or images.
+const TEXT_CONFIG = {
+  ...BASE,
+  enter: "br",
+  minHeight: 44,
+  height: "auto",
+  disablePlugins: ["about", "format-block", "iframe", "image", "powered-by-jodit", "stat", "table", "justify", "ordered-list", "indent", "hr"],
+  buttons: [
+    "undo", "redo", "|", "font", "fontsize", "|", "bold", "italic", "underline", "strikethrough", "|",
+    colourButton("laFontColour", "la-font-colour", "Font colour", "forecolor"),
+    colourButton("laBackground", "brush", "Background colour", "background"),
+    "|", "link", emojiButton, "symbols", "|", "eraser"
+  ]
+};
+
+/** The stored form of a text-mode field: inline HTML only, with no line break left at the end to hold the caret. */
+// A loop, not a regex: a regex for "line breaks at the end" retries at every <br> of a long run, which is quadratic.
+const cleanText = (html: string, doc: Document) => {
+  let out = normalizeSpace(sanitizeText(html, doc));
+  while (out.endsWith("<br>")) out = out.slice(0, -4).trimEnd();
+  return out;
+};
+
+export default function RichTextEditor({ id, value, onChange, onPickImage, mode = "rich", label = "Paragraph text", autoFocus = false }: Props) {
   const host = useRef<HTMLTextAreaElement>(null);
   const editor = useRef<Jodit | null>(null);
   const stopHolding = useRef<(() => void) | null>(null);
@@ -101,19 +155,21 @@ export default function RichTextEditor({ id, value, onChange, onPickImage }: Pro
   const pickImage = useRef(onPickImage);
   pickImage.current = onPickImage;
 
+  const text = mode === "text";
   // The editor shows library images through the API; the stored text keeps their site address.
-  const read = (e: Jodit) => cleanParagraph(fromAdmin(e.value), inert);
+  const clean = (html: string) => (text ? cleanText(html, inert) : cleanParagraph(html, inert));
+  const read = (e: Jodit) => clean(fromAdmin(e.value));
   const load = (e: Jodit, html: string) => {
-    e.value = toAdmin(cleanParagraph(html, inert));
+    e.value = toAdmin(clean(html));
     loaded.current = { reported: read(e), value: html };
   };
 
   useEffect(() => {
-    const e = Jodit.make(host.current!, CONFIG as never);
-    e.editor.setAttribute("aria-label", "Paragraph text");
+    const e = Jodit.make(host.current!, (text ? TEXT_CONFIG : CONFIG) as never);
+    e.editor.setAttribute("aria-label", label);
     // Pasted or dropped HTML lands in the live admin page, where a <base> tag could reroute API calls. The save filter is too late
     // for that, so pastes are cleaned first and drops are refused.
-    e.e.on("beforePasteInsert", (html: unknown) => (typeof html === "string" ? toAdmin(sanitizeRich(fromAdmin(html), inert)) : html));
+    e.e.on("beforePasteInsert", (html: unknown) => (typeof html === "string" ? toAdmin((text ? sanitizeText : sanitizeRich)(fromAdmin(html), inert)) : html));
     e.editor.addEventListener("drop", (ev) => { ev.preventDefault(); ev.stopPropagation(); }, true);
     // The colour popup's hex box and picker take focus, and the text selection with it. Without this the colour lands in the wrong place.
     // It's held from the moment focus enters the popup, because Jodit moves the caret again before it runs the command.
@@ -138,7 +194,7 @@ export default function RichTextEditor({ id, value, onChange, onPickImage }: Pro
     // The library opens in its own window, so the caret is put back before the image goes in.
     e.e.on("laPickImage", () => {
       const at = selected;
-      pickImage.current((m) => {
+      pickImage.current?.((m) => {
         if (at) e.s.selectRange(at);
         else e.s.focus();
         const img = e.createInside.element("img");
@@ -148,17 +204,25 @@ export default function RichTextEditor({ id, value, onChange, onPickImage }: Pro
       });
     });
     load(e, stored.current);
-    e.e.on("change", () => {
+    // Jodit's own autofocus runs before the text is loaded, and loading moves the caret, so the caret is placed here.
+    if (autoFocus) {
+      e.s.focus();
+      e.s.setCursorIn(e.editor, false);
+    }
+    const report = () => {
       const now = read(e);
       const next = now === loaded.current.reported ? loaded.current.value : now;
       if (next === stored.current) return;
       stored.current = next;
       send.current(next);
-    });
+    };
+    e.e.on("change", report);
     editor.current = e;
     return () => {
       editor.current = null;
       stopHolding.current?.();
+      // Jodit reports a change a moment after it happens. A field closed sooner (another one opened) would lose it.
+      report();
       e.destruct();
     };
   }, []);
@@ -170,5 +234,5 @@ export default function RichTextEditor({ id, value, onChange, onPickImage }: Pro
     load(editor.current, value);
   }, [value]);
 
-  return <textarea ref={host} id={id} defaultValue={value} aria-label="Paragraph text" />;
+  return <textarea ref={host} id={id} defaultValue={value} aria-label={label} />;
 }

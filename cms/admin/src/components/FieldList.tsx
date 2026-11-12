@@ -1,8 +1,9 @@
 // Fields read from the real page, grouped by section; repeating items get move / remove / add controls.
 import { useEffect, useState, type ReactNode } from "react";
-import type { Field } from "@liveaccess/shared";
+import { richField, type Field } from "@liveaccess/shared";
 import { fromAdmin } from "../lib/media.ts";
 import { PREVIEW_BASE } from "../lib/preview.ts";
+import { RichField } from "./RichField.tsx";
 
 type ItemOp = "up" | "down" | "remove" | "add";
 type Props = {
@@ -29,15 +30,6 @@ function itemLabel(fields: Field[], i: number) {
   return "Item";
 }
 
-function wrapSelection(id: string, tag: "strong" | "em", f: Field, onChange: Props["onChange"]) {
-  const ta = document.getElementById(id) as HTMLTextAreaElement | null;
-  if (!ta || ta.selectionStart === ta.selectionEnd) return;
-  const { selectionStart: s, selectionEnd: e, value } = ta;
-  ta.value = `${value.slice(0, s)}<${tag}>${value.slice(s, e)}</${tag}>${value.slice(e)}`;
-  onChange(f, ta.value);
-  ta.focus();
-}
-
 function FieldInput({ f, tick, onChange, onAlt, onImage, onFocusField }: { f: Field } & Omit<Props, "fields" | "onItem">) {
   const id = `fld-${f.id}`;
   if (f.type === "img") {
@@ -58,18 +50,20 @@ function FieldInput({ f, tick, onChange, onAlt, onImage, onFocusField }: { f: Fi
       </div>
     );
   }
+  if (richField(f)) {
+    return (
+      <div className="grid gap-1.5">
+        <span className="text-xs font-semibold">{f.label}</span>
+        <RichField key={`${tick}-${f.id}`} id={id} label={f.label} value={f.value} onOpen={() => onFocusField(f)} onChange={(html) => onChange(f, html)} />
+      </div>
+    );
+  }
   const long = f.value.length > 70 || /</.test(f.value);
   return (
     <div className="grid gap-1.5">
       <label htmlFor={id} className="text-xs font-semibold">{f.label}</label>
       {long ? (
         <>
-          {f.type === "text" && (
-            <span className="flex gap-1">
-              <button type="button" className="rounded border border-slate-200 px-2 text-xs font-bold" onMouseDown={(e) => e.preventDefault()} onClick={() => wrapSelection(id, "strong", f, onChange)} aria-label="Bold">B</button>
-              <button type="button" className="rounded border border-slate-200 px-2 text-xs italic" onMouseDown={(e) => e.preventDefault()} onClick={() => wrapSelection(id, "em", f, onChange)} aria-label="Highlight">I</button>
-            </span>
-          )}
           <textarea id={id} key={`${tick}-${f.id}`} defaultValue={f.value} rows={Math.min(8, Math.max(2, Math.ceil(f.value.length / 60)))}
             className={`${inputCls} resize-y`} onFocus={() => onFocusField(f)} onChange={(e) => onChange(f, e.target.value)} />
           {/</.test(f.value) && <span className="text-[11px] text-slate-500">Keep the tags: &lt;em&gt; = highlighted words, &lt;strong&gt; = bold, &lt;a&gt; = link.</span>}

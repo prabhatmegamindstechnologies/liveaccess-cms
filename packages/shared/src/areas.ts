@@ -2,7 +2,9 @@
 // places change; the guides band is built from the area's guides), and check areas sent by the admin.
 import type { Block, MediaSrc } from "./blocks.ts";
 import { articleBody, validateGuide, type GuideSeo } from "./guides.ts";
+import { plainText, sanitizeText } from "./sanitize.ts";
 
+/** `summary` is the intro line: text-editor HTML (`sanitizeText`). Places that can't show formatting use its plain text. */
 export type Area = { slug: string; title: string; summary: string; blocks: Block[]; seo: GuideSeo };
 /** A guide as shown on its area page: a card with the title and the first sentence of the summary. */
 export type AreaGuide = { slug: string; title: string; summary: string };
@@ -25,7 +27,8 @@ export function areaFromPage(html: string): Omit<Area, "blocks"> {
   return {
     slug: one(/<link rel="canonical" href="https:\/\/liveaccess\.ai\/area-([a-z0-9-]+)\.html"/),
     title: one(/<h1>([^<]*)<\/h1>/),
-    summary: one(/<p class="lede">([^<]*)<\/p>\n\s*<\/div>\n\s*<\/section>/),
+    // Kept as HTML: the intro line may hold the text editor's formatting.
+    summary: /<p class="lede">((?:(?!<\/p>)[\s\S])*)<\/p>\n\s*<\/div>\n\s*<\/section>/.exec(html)?.[1] ?? "",
     seo: { title: one(/<title>([^<]*)<\/title>/), description: one(/<meta name="description" content="([^"]*)"/), noindex: /<meta name="robots" content="[^"]*noindex/.test(html) }
   };
 }
@@ -61,7 +64,7 @@ export function renderAreaPage(template: string, a: Area, guides: AreaGuide[], d
   const d = doc ?? (globalThis as { document?: Document }).document;
   if (!d) throw new Error("renderAreaPage needs a Document.");
   const url = areaUrl(a.slug);
-  const desc = a.seo.description || a.summary;
+  const desc = a.seo.description || plainText(a.summary, d);
   let out = template;
   const swap = (re: RegExp, fn: (...m: string[]) => string, what: string) => {
     const hits = out.match(new RegExp(re.source, re.flags.includes("g") ? re.flags : re.flags + "g"));
@@ -80,7 +83,7 @@ export function renderAreaPage(template: string, a: Area, guides: AreaGuide[], d
 
   swap(/(<a href="process-areas\.html">Process areas<\/a><span aria-hidden="true">\/<\/span><span>)[^<]*(<\/span><\/nav>)/, (_m, x, y) => `${x}${esc(a.title)}${y}`, "crumbs");
   swap(/<h1>[^<]*<\/h1>/, () => `<h1>${esc(a.title)}</h1>`, "h1");
-  swap(/(<p class="lede">)[^<]*(<\/p>\n\s*<\/div>\n\s*<\/section>\n\s*<section class="band">)/, (_m, x, y) => `${x}${esc(a.summary)}${y}`, "lede");
+  swap(/(<p class="lede">)(?:(?!<\/p>)[\s\S])*(<\/p>\n\s*<\/div>\n\s*<\/section>\n\s*<section class="band">)/, (_m, x, y) => `${x}${sanitizeText(a.summary, d)}${y}`, "lede");
   swap(/(<article class="article">\n([ \t]*))[\s\S]*?(\n[ \t]*<\/article>)/, (_m, x, indent, y) => `${x}${articleBody(a.blocks, d, indent!, "area", mediaSrc)}${y}`, "article");
 
   // The guides band sits between the article band and the CTA band; it's rebuilt (or left out) every time.

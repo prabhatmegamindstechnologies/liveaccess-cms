@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parseHTML } from "linkedom";
 import { addItem, buildFields, moveItem, removeItem, serialize, splitScripts, writeField, type Field } from "../src/fields.ts";
@@ -110,5 +110,52 @@ describe("serialize", () => {
     expect(out).not.toMatch(/data-cms-|cms-preview|cms-script/);
     for (const s of scripts) expect(out).toContain(s);
     expect(out.match(/<script/g)!.length).toBe(raw.match(/<script/g)!.length);
+  });
+});
+
+describe("text-editor fields", () => {
+  const reload = (doc: Document, scripts: string[]) => {
+    const { document } = parseHTML(splitScripts(serialize(doc, scripts)).html);
+    return buildFields(document as unknown as Document);
+  };
+
+  it("leave the fields of every real page where they were", () => {
+    for (const file of readdirSync(siteRoot).filter((f: string) => f.endsWith(".html"))) {
+      for (const f of load(file).fields) {
+        // A text field is always an element with text of its own: the end-to-end-formatting rule picks up nothing here.
+        if (f.type === "text") expect(Array.from(f.el.childNodes).some((n) => n.nodeType === 3 && (n.textContent ?? "").trim()), `${file} ${f.el.outerHTML.slice(0, 80)}`).toBe(true);
+      }
+    }
+  });
+
+  it("keep a heading formatted from end to end as one field with its label", () => {
+    const { document, scripts, fields } = load("faq.html");
+    const h1 = find(fields, (f) => f.label === "Main heading");
+    const styled = `<span style="color:#C2410C"><span style="font-size:24px">Questions</span> we <em>get asked.</em></span>`;
+    writeField(h1, styled);
+    const again = reload(document as unknown as Document, scripts);
+    expect(again.length).toBe(fields.length);
+    const back = find(again, (f) => f.label === "Main heading");
+    expect(back.value).toBe(styled);
+    expect(again.map((f) => f.label)).toEqual(fields.map((f) => f.label));
+  });
+
+  it("keep a paragraph with underlined words as one field", () => {
+    const { document, scripts, fields } = load("privacy-policy.html");
+    const p = find(fields, (f) => f.label === "Paragraph");
+    writeField(p, `Plain <u>under</u> and <s>struck</s> words`);
+    const again = reload(document as unknown as Document, scripts);
+    expect(again.length).toBe(fields.length);
+    expect(again[p.id]!.value).toBe(`Plain <u>under</u> and <s>struck</s> words`);
+  });
+
+  it("keep a fully underlined list item as one field", () => {
+    const { document, scripts, fields } = load("privacy-policy.html");
+    const li = find(fields, (f) => f.label === "List item");
+    writeField(li, `<u>all of it</u>`);
+    const again = reload(document as unknown as Document, scripts);
+    expect(again.length).toBe(fields.length);
+    expect(again[li.id]!.label).toBe("List item");
+    expect(again[li.id]!.value).toBe("<u>all of it</u>");
   });
 });

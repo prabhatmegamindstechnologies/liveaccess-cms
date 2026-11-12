@@ -1,7 +1,7 @@
 // Editable fields of a real page (ported from the prototype, which was tested in a browser).
 // Works on any DOM: the preview iframe's document in the admin, linkedom in tests and on the server.
 // Editing changes only the text, links and images of existing elements; the page layout is never touched.
-import { normalizeSpace, sanitizeInline } from "./sanitize.ts";
+import { normalizeSpace, richStyle, sanitizeInline, sanitizeText } from "./sanitize.ts";
 
 export type Field = {
   id: number;
@@ -17,7 +17,8 @@ export type Field = {
   toc: Element | null;
 };
 
-const INLINE = new Set(["B", "STRONG", "EM", "I", "SPAN", "SMALL", "A", "BR", "TIME", "CODE"]);
+// U and S come only from the text editor; the site's own pages have none.
+const INLINE = new Set(["B", "STRONG", "EM", "I", "SPAN", "SMALL", "A", "BR", "TIME", "CODE", "U", "S"]);
 const SKIP = ".site-header, .site-footer, .crumbs, script, style, svg, [aria-hidden=\"true\"], .visually-hidden, .toc, .skip-link, .store-badges, select, option, textarea, input, noscript, .drop";
 const ITEM_TAGS = new Set(["LI", "TR", "DETAILS", "ARTICLE", "DIV", "A", "BUTTON"]);
 const BLOCKISH = "svg, img, div, p, ul, ol, h1, h2, h3, h4";
@@ -43,6 +44,15 @@ export function joinScripts(html: string, scripts: string[]): string {
 
 const isText = (n: Node): n is Text => n.nodeType === 3;
 const hasOwnText = (el: Element) => Array.from(el.childNodes).some((n) => isText(n) && (n.textContent ?? "").trim() !== "");
+const allInline = (kids: Element[]) => kids.every((k) => INLINE.has(k.tagName) && !k.querySelector(BLOCKISH));
+/** The text editor's own marks: underline, strikethrough, or a style already in its stored form. The site's pages have none. */
+const editorMark = (el: Element) => el.tagName === "U" || el.tagName === "S" || (el.hasAttribute("style") && richStyle(el.getAttribute("style")!, false) === el.getAttribute("style"));
+/**
+ * Text formatted from end to end (the whole heading coloured) has no text of its own, only the editor's formatting around it.
+ * It stays one field on its element, so the field keeps its place and label after a reload.
+ */
+const formattedOnly = (el: Element, kids: Element[]) =>
+  kids.length > 0 && !INLINE.has(el.tagName) && (el.textContent ?? "").trim() !== "" && allInline(kids) && Array.from(el.querySelectorAll("*")).some(editorMark);
 
 export function buildFields(doc: Document): Field[] {
   const main = doc.querySelector("main");
@@ -72,8 +82,12 @@ export function buildFields(doc: Document): Field[] {
       return;
     }
     const kids = Array.from(el.children);
+    if (formattedOnly(el, kids)) {
+      add(textField(el));
+      return;
+    }
     if (hasOwnText(el)) {
-      if (kids.every((k) => INLINE.has(k.tagName) && !k.querySelector(BLOCKISH))) {
+      if (allInline(kids)) {
         add(textField(el));
         return;
       }
@@ -99,8 +113,16 @@ function textField(el: Element): Omit<Field, "id" | "root" | "item" | "section" 
   }
   const sec = el.closest("section.term");
   const toc = el.tagName === "H2" && sec?.id ? el.ownerDocument.querySelector(`.toc a[href="#${sec.id}"]`) : null;
-  return { type: "text", el, prefix, value: normalizeSpace(sanitizeInline(copy.innerHTML, el.ownerDocument)), toc };
+  const clean = rich(el) ? sanitizeText : sanitizeInline;
+  return { type: "text", el, prefix, value: normalizeSpace(clean(copy.innerHTML, el.ownerDocument)), toc };
 }
+
+// Short labels keep a plain box: formatting there would fight the site's own button, tag and number styles.
+const PLAIN_LABELS = new Set(["Button text", "Link text", "Number", "Label", "Small label above heading", "Form label"]);
+const rich = (el: Element) => !PLAIN_LABELS.has(labelFor({ type: "text", el } as Field));
+
+/** True when a field is edited with the text editor (fonts, sizes, colours), false for a plain box. */
+export const richField = (f: Field) => f.type === "text" && rich(f.el);
 
 function itemOf(el: Element, root: Element): Element | null {
   let a: Element | null = el;
@@ -155,7 +177,7 @@ export function writeField(f: Field, value: string) {
     const lead = raw.match(/^\s*/)![0], trail = raw.match(/\s*$/)![0];
     f.node.textContent = lead + value.replace(/[<>]/g, "") + trail;
   } else {
-    const clean = sanitizeInline(value, doc);
+    const clean = richField(f) ? sanitizeText(value, doc) : sanitizeInline(value, doc);
     f.el.innerHTML = (f.prefix ? f.prefix + " " : "") + clean;
     if (f.toc) {
       const box = doc.createElement("div");

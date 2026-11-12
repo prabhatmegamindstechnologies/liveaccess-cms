@@ -7,7 +7,7 @@ import { pages, revisions } from "../db/schema.ts";
 import type { Db } from "../db/client.ts";
 import { makeUser, testDb, wipe } from "./helpers.ts";
 import { parseHTML } from "linkedom";
-import { addItem, buildFields, serialize, splitScripts, writeField } from "@liveaccess/shared";
+import { addItem, buildFields, richField, serialize, splitScripts, writeField } from "@liveaccess/shared";
 
 let db: Db;
 let close: () => Promise<void>;
@@ -113,7 +113,14 @@ describe("pages API", () => {
     ["a page script switched off inside a comment", (h: string) => h.replace(/(<script src="menu\.js[^"]*"><\/script>)/, "<!--$1-->")],
     ["a fake script marker", (h: string) => h.replace("<h1>", "<!--cms-script:0--><h1>")],
     ["a data: image", (h: string) => h.replace('src="logo.png"', 'src="data:image/svg+xml,%3Csvg onload=alert(1)%3E"')],
-    ["a new inline style", (h: string) => h.replace("<h1>", '<h1 style="background:url(https://evil.example/leak)">')]
+    ["a new inline style", (h: string) => h.replace("<h1>", '<h1 style="background:url(https://evil.example/leak)">')],
+    ["a text style on a layout element", (h: string) => h.replace("<h1>", '<h1 style="color:#C2410C">')],
+    ["a text style on a div", (h: string) => h.replace("<h1>", '<div style="font-size:18px">x</div><h1>')],
+    ["a text style not in its stored form", (h: string) => h.replace("<h1>", '<h1><span style="color:#c2410c">x</span>')],
+    ["a text style with an extra property", (h: string) => h.replace("<h1>", '<h1><span style="color:#C2410C;position:fixed">x</span>')],
+    ["a font off the list", (h: string) => h.replace("<h1>", `<h1><span style="font-family:'Comic Sans MS'">x</span>`)],
+    ["a style with url()", (h: string) => h.replace("<h1>", '<h1><u style="background-color:url(https://evil.example/x)">x</u>')],
+    ["alignment in a text field", (h: string) => h.replace("<h1>", '<h1><span style="text-align:center">x</span>')]
   ])("refuses page HTML with %s", async (_name, change) => {
     const { send } = await signIn();
     const html = change((await aboutPage()).html);
@@ -135,6 +142,35 @@ describe("pages API", () => {
       const res = await send("PUT", `/pages/${key}`, { baseVersion: p!.version, html: serialize(document, scripts) });
       expect(res.status, `${file}: ${await res.clone().text()}`).toBe(200);
     }
+  });
+
+  it("accepts the text editor's formatting in text fields, cleaned to the allow-list", async () => {
+    const { send } = await signIn();
+    const styled = `<span style="color:#C2410C;font-size:18px;font-family:Georgia,serif">Hot</span> <u>water</u> <s>old</s> <strong style="background-color:#FFF1EA">b</strong>`;
+    for (const key of ["faq", "privacy"]) {
+      const [p] = await db.select().from(pages).where(eq(pages.key, key));
+      const { html: stripped, scripts } = splitScripts(p!.html);
+      const { document } = parseHTML(stripped);
+      const fields = buildFields(document);
+      const targets = fields.filter((f) => richField(f)).slice(0, 5);
+      expect(targets.length).toBe(5);
+      for (const f of targets) writeField(f, `${styled}<span style="position:fixed" onclick="x">y</span><p style="text-align:center">z</p>`);
+      const html = serialize(document, scripts);
+      expect(html).not.toMatch(/position:fixed|onclick="x"|text-align:center/);
+      const res = await send("PUT", `/pages/${key}`, { baseVersion: p!.version, html });
+      expect(res.status, `${key}: ${await res.clone().text()}`).toBe(200);
+    }
+  });
+
+  it("keeps short labels plain", async () => {
+    const [p] = await db.select().from(pages).where(eq(pages.key, "faq"));
+    const { document } = parseHTML(splitScripts(p!.html).html);
+    const fields = buildFields(document);
+    const button = fields.find((f) => f.label === "Button text")!;
+    expect(richField(button)).toBe(false);
+    writeField(button, `<span style="color:#C2410C">Go</span>`);
+    expect(button.el.innerHTML).toBe("<span>Go</span>");
+    expect(richField(fields.find((f) => f.label === "Main heading")!)).toBe(true);
   });
 
   it("limits how often one person can save", async () => {

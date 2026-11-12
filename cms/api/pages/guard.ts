@@ -3,15 +3,18 @@
 // repeating items. So the new page may only use element types, attributes and inline styles that the published
 // page already has, and its scripts must be exactly the published scripts in the same places.
 import { parseHTML } from "linkedom";
-import { splitScripts } from "@liveaccess/shared";
+import { richStyle, splitScripts } from "@liveaccess/shared";
 
 export const MAX_PAGE_BYTES = 1_000_000;
 
 // Head elements an editor may change (through the SEO tab or the page HTML).
 const EDITABLE_HEAD = 'title, meta[name="description"], meta[name="robots"], link[rel="canonical"]';
 // Inline tags the field sanitizer can produce, and the attributes it can produce.
-const INLINE_TAGS = new Set(["em", "strong", "b", "i", "span", "small", "a", "br", "time", "code"]);
+const INLINE_TAGS = new Set(["em", "strong", "b", "i", "span", "small", "a", "br", "time", "code", "u", "s"]);
 const INLINE_ATTRS = new Set(["href", "class", "target", "rel", "datetime"]);
+// The text editor's styles (sanitizeText): only on these tags, and only a value already in the exact allow-list form.
+const TEXT_STYLED = new Set(["span", "strong", "b", "em", "i", "u", "s", "small"]);
+const textStyle = (tag: string, value: string) => TEXT_STYLED.has(tag) && value !== "" && richStyle(value, false) === value;
 // Never allowed, whatever the published page has.
 const FORBIDDEN_ATTR = /^(on|srcdoc$|formaction$|xmlns:|xlink:)/i;
 const URL_ATTRS = new Set(["href", "src", "srcset", "action", "data", "poster", "cite", "background"]);
@@ -79,8 +82,11 @@ export function checkPageHtml(html: string, reference: string): string | null {
     for (const a of Array.from(el.attributes)) {
       const name = a.name.toLowerCase();
       if (FORBIDDEN_ATTR.test(name)) return name.startsWith("on") ? "Event attributes (like onclick) are not allowed." : `The attribute ${name} is not allowed.`;
+      if (name === "style") {
+        if (!ref.styles.has(a.value) && !textStyle(tag, a.value)) return "Inline styles can't be changed in the admin panel.";
+        continue;
+      }
       if (!ref.attrs.has(name) && !INLINE_ATTRS.has(name)) return `The attribute ${name} can't be added to this page.`;
-      if (name === "style" && !ref.styles.has(a.value)) return "Inline styles can't be changed in the admin panel.";
       if (URL_ATTRS.has(name)) {
         const problem = urlProblem(name, a.value);
         if (problem) return problem;

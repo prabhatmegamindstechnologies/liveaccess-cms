@@ -2,7 +2,7 @@
 // (only the guide's own places change, so the layout stays as it is), and check guides sent by the admin.
 import { blockHtml, type Block, type MediaSrc } from "./blocks.ts";
 import { hasHiddenChars } from "./links.ts";
-import { cleanParagraph, normalizeSpace, sanitizeInline } from "./sanitize.ts";
+import { cleanParagraph, normalizeSpace, plainText, sanitizeText } from "./sanitize.ts";
 
 export type GuideSeo = { title: string; description: string; noindex: boolean };
 export type Guide = { slug: string; title: string; summary: string; areaSlug: string; publishedDate: string; blocks: Block[]; seo: GuideSeo };
@@ -35,7 +35,7 @@ export function articleBody(blocks: Block[], doc: Document, indent: string, spac
   const parts = blocks.map((b) => {
     if (b.type !== "list") return blockHtml(b, doc, mediaSrc);
     const t = b.style === "number" ? "ol" : "ul";
-    const items = b.items.filter((x) => x.trim()).map((x) => `\n${indent}  <li>${sanitizeInline(x, doc)}</li>`).join("");
+    const items = b.items.filter((x) => x.trim()).map((x) => `\n${indent}  <li>${sanitizeText(x, doc)}</li>`).join("");
     return `<${t}>${items}\n${indent}</${t}>`;
   });
   // As in the pages. Guides: a heading sits right above its first block, other blocks are separated by a blank line.
@@ -98,7 +98,7 @@ export function slugify(title: string): string {
 /* ---------- validation ---------- */
 
 export type GuideCheck = { ok: true; guide: Guide } | { ok: false; errors: Record<string, string> };
-export const GUIDE_LIMITS = { title: 120, summary: 300, blocks: 200, listItems: 50, inline: 3000, paragraph: 20_000, total: 100_000, slug: 80 } as const;
+export const GUIDE_LIMITS = { title: 120, summary: 300, summaryHtml: 3000, blocks: 200, listItems: 50, inline: 3000, paragraph: 20_000, total: 100_000, slug: 80 } as const;
 
 /**
  * Checks a guide sent by the admin. `areas` = allowed process area slugs; `doc` sanitises inline HTML.
@@ -127,7 +127,7 @@ export function validateGuide(input: unknown, areas: Set<string>, doc: Document,
     total += v.length;
     if (total > GUIDE_LIMITS.total) return "";
     if (hasHiddenChars(v)) hidden = true;
-    return normalizeSpace(sanitizeInline(v.slice(0, GUIDE_LIMITS.inline * 2), doc));
+    return normalizeSpace(sanitizeText(v.slice(0, GUIDE_LIMITS.inline * 2), doc));
   };
   const paragraph = (v: unknown) => {
     if (typeof v !== "string") return "";
@@ -138,7 +138,19 @@ export function validateGuide(input: unknown, areas: Set<string>, doc: Document,
   };
 
   const title = text(o.title, "title", "Title", GUIDE_LIMITS.title);
-  const summary = text(o.summary, "summary", "Summary", GUIDE_LIMITS.summary);
+  // A guide's summary is plain text. An area's is its intro line, from the text editor: the limit counts the words people see.
+  let summary: string;
+  if (isGuide) summary = text(o.summary, "summary", "Summary", GUIDE_LIMITS.summary);
+  else {
+    const raw = typeof o.summary === "string" ? o.summary : "";
+    summary = raw.length > GUIDE_LIMITS.summaryHtml * 2 ? "" : normalizeSpace(sanitizeText(raw, doc));
+    const words = plainText(summary, doc);
+    if (raw.length > GUIDE_LIMITS.summaryHtml * 2 || summary.length > GUIDE_LIMITS.summaryHtml) errors.summary = "The intro line has too much formatting. Remove some of it.";
+    else if (!words && need) errors.summary = "Intro line is required.";
+    else if (words.length > GUIDE_LIMITS.summary) errors.summary = `Intro line can be at most ${GUIDE_LIMITS.summary} characters.`;
+    else if (hasHiddenChars(raw)) errors.summary = "Remove the hidden characters.";
+    if (!words) summary = "";
+  }
   const slug = typeof o.slug === "string" ? o.slug.trim() : "";
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug) || slug.length > GUIDE_LIMITS.slug) errors.slug = "Use lower-case letters, numbers and single hyphens (e.g. pump-cavitation).";
   const areaSlug = isGuide && typeof o.areaSlug === "string" && areas.has(o.areaSlug) ? o.areaSlug : "";

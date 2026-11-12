@@ -4,6 +4,7 @@ import type { Block } from "@liveaccess/shared";
 import { mediaSrc, rememberMedia, toAdmin, type MediaItem } from "../lib/media.ts";
 import { FieldError, iconBtn, inputCls, type Errors } from "./form.tsx";
 import { MediaPicker } from "./MediaPicker.tsx";
+import { RichField } from "./RichField.tsx";
 
 const RichTextEditor = lazy(() => import("./RichTextEditor.tsx"));
 
@@ -19,7 +20,6 @@ const NEW: Record<string, () => Block> = {
 };
 const label = (b: Block) => b.type === "heading" ? `Heading (H${b.level})` : b.type === "list" ? (b.style === "number" ? "Numbered list" : "Bullet list")
   : b.type === "callout" ? (b.variant === "safety" ? "Safety note" : "Disclaimer") : b.type === "paragraph" ? "Paragraph" : b.type === "image" ? "Image" : b.type;
-const tagsHelp = "Allowed: <strong>bold</strong>, <em>highlight</em>, <a href=\"…\">link</a>.";
 
 type ImageBlock = Extract<Block, { type: "image" }>;
 type ParagraphBlock = Extract<Block, { type: "paragraph" }>;
@@ -89,9 +89,11 @@ function BlockFields({ b, id, set }: { b: Block; id: string; set: (b: Block) => 
         </select>
         {b.items.map((item, j) => (
           <div key={j} className="flex items-start gap-2">
-            <span className="mt-2 w-5 text-right text-xs text-slate-400">{b.style === "number" ? `${j + 1}.` : "•"}</span>
-            <textarea id={j === 0 ? id : undefined} aria-label={`Item ${j + 1}`} value={item} rows={Math.min(5, Math.max(1, Math.ceil(item.length / 80)))} maxLength={3000}
-              onChange={(e) => set({ ...b, items: b.items.map((x, k) => (k === j ? e.target.value : x)) })} className={`${inputCls} resize-y`} />
+            <span className="mt-2 w-5 shrink-0 text-right text-xs text-slate-400">{b.style === "number" ? `${j + 1}.` : "•"}</span>
+            <div className="min-w-0 flex-1">
+              <RichField id={j === 0 ? id : `${id}-item-${j}`} label={`Item ${j + 1}`} value={item}
+                onChange={(html) => set({ ...b, items: b.items.map((x, k) => (k === j ? html : x)) })} />
+            </div>
             <button type="button" className={iconBtn} aria-label={`Remove item ${j + 1}`} title="Remove item" disabled={b.items.length === 1}
               onClick={() => set({ ...b, items: b.items.filter((_, k) => k !== j) })}>✕</button>
           </div>
@@ -99,7 +101,6 @@ function BlockFields({ b, id, set }: { b: Block; id: string; set: (b: Block) => 
         <div className="flex items-center gap-3">
           <button type="button" disabled={b.items.length >= 50} onClick={() => set({ ...b, items: [...b.items, ""] })}
             className="rounded-md border border-slate-200 bg-white px-3 py-1 text-xs font-semibold hover:border-slate-300 disabled:opacity-40">+ Add item</button>
-          <span className="text-[11px] text-slate-500">{tagsHelp}</span>
         </div>
       </div>
     );
@@ -108,7 +109,7 @@ function BlockFields({ b, id, set }: { b: Block; id: string; set: (b: Block) => 
     return (
       <div className="grid gap-2">
         {b.variant === "safety" && <input aria-label="Note title (bold)" value={b.title} maxLength={80} onChange={(e) => set({ ...b, title: e.target.value })} className={`${inputCls} font-semibold`} />}
-        <textarea id={id} aria-label="Note text" value={b.text} rows={3} maxLength={2000} onChange={(e) => set({ ...b, text: e.target.value })} className={`${inputCls} resize-y`} />
+        <RichField id={id} label={b.variant === "safety" ? "Safety note text" : "Disclaimer text"} value={b.text} onChange={(html) => set({ ...b, text: html })} />
       </div>
     );
   }
