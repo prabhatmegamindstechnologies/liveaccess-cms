@@ -140,10 +140,15 @@ export const contactMessages = pgTable("contact_messages", {
   topic: text("topic").notNull().default(""),
   message: text("message").notNull(),
   page: text("page").notNull().default(""),
+  // new | read | replied | archived
   status: text("status").notNull().default("new"),
+  // When and by whom the status last changed: shown in the inbox, and the 12-month clean-up counts from it.
+  statusChangedAt: timestamp("status_changed_at", { withTimezone: true }).notNull().defaultNow(),
+  statusChangedBy: integer("status_changed_by").references(() => users.id, { onDelete: "set null" }),
+  // A keyed hash of the sender's IP (never the address), to count messages per visitor.
   ipHash: text("ip_hash"),
   createdAt: createdAt()
-}, (t) => [index("contact_status_idx").on(t.status, t.createdAt)]);
+}, (t) => [index("contact_status_idx").on(t.status, t.createdAt), index("contact_ip_time_idx").on(t.ipHash, t.createdAt)]);
 
 export const auditLog = pgTable("audit_log", {
   id: serial("id").primaryKey(),

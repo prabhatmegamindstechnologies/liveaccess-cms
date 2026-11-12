@@ -16,11 +16,12 @@ const GROUPS: Record<string, string[]> = {
   website: ["menus_edited", "site_settings_edited", "seo_redirects_edited", "seo_robots_edited", "seo_llms_edited", "seo_defaults_edited"],
   users: ["user_created", "user_edited", "user_password_reset", "user_unlocked", "password_changed", "password_change_failed", "own_password_failed"],
   publishing: ["preview_built"],
+  messages: ["message_deleted", "messages_purged"],
   "sign-ins": ["login", "logout", "login_failed", "login_locked"]
 };
 // `detail` can hold anything a route logged; only these reach the screen (never emailHash).
-const SHOWN = ["fields", "role", "status", "email", "title", "slug", "from", "to", "pages", "guides", "areas", "files", "passwordSource", "name", "reason"];
-const SECTIONS: Record<string, string> = { menus: "/menus", seo: "/seo", settings: "/settings", publish: "/publish" };
+const SHOWN = ["fields", "role", "status", "email", "title", "slug", "from", "to", "pages", "guides", "areas", "files", "passwordSource", "name", "reason", "count"];
+const SECTIONS: Record<string, string> = { menus: "/menus", seo: "/seo", settings: "/settings", publish: "/publish", message: "/inbox" };
 
 type Row = { action: string; entityType: string | null; entityId: string | null; detail: unknown };
 

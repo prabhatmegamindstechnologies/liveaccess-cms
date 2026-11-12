@@ -1,6 +1,7 @@
 // Serves .site-preview/ on localhost during development, behaving like the site's .htaccess. The built files are what
-// real Publish will write, so what makes them safe to open locally is in these headers: Google Analytics, Tag Manager
-// and the contact form's service are blocked, and nothing gets indexed.
+// real Publish will write, so what makes them safe to open locally is in these headers: Google Analytics and Tag Manager
+// are blocked, and nothing gets indexed. The one thing that can be sent is the contact form, which goes to the local
+// CMS API (`contact`), as it will on the shared domain; every other POST is refused.
 import { readFile } from "node:fs/promises";
 import { extname, join, resolve, sep } from "node:path";
 import { Hono } from "hono";
@@ -20,9 +21,13 @@ const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1"]);
 const SAFE_PATH = /^(images\/)?[A-Za-z0-9][A-Za-z0-9._-]*$/;
 const NOT_BUILT = `<!doctype html><title>No preview yet</title><p>No preview yet. Click <b>Build preview</b> in the Publish centre, or run <code>pnpm build:site</code>.</p>`;
 
-export function previewSite(dir: string) {
+/** `env` is the preview's own server context, passed on so the API sees the visitor's real connection (for its limits). */
+export type PreviewContact = { adminPath: string; send: (req: Request, env: unknown) => Response | Promise<Response> };
+
+export function previewSite(dir: string, contact?: PreviewContact) {
   const app = new Hono();
   const root = resolve(dir);
+  const contactPath = contact ? `/${contact.adminPath}/api/contact` : null;
 
   /** The contents of a file in the output folder, or null. */
   const load = async (rel: string) => {
@@ -45,6 +50,7 @@ export function previewSite(dir: string) {
     // Only this machine: a web page can't reach the drafts by pointing its own domain name at 127.0.0.1.
     const host = (c.req.header("host") ?? new URL(c.req.url).host).replace(/:\d+$/, "");
     if (!LOCAL_HOSTS.has(host)) return c.text("Forbidden.", 403);
+    if (c.req.method === "POST" && contact && new URL(c.req.url).pathname === contactPath) return contact.send(c.req.raw, c.env);
     if (c.req.method !== "GET" && c.req.method !== "HEAD") return c.text("This is a read-only preview: nothing is sent from here.", 405);
 
     const notFound = async () => {

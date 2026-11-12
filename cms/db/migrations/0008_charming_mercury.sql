@@ -1,0 +1,1 @@
+CREATE INDEX "contact_ip_time_idx" ON "contact_messages" USING btree ("ip_hash","created_at");

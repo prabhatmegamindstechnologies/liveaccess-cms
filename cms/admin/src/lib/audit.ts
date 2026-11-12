@@ -42,6 +42,8 @@ const SENTENCES: Record<string, (e: Entry) => string> = {
   seo_llms_edited: () => "Changed llms.txt",
   seo_defaults_edited: () => "Changed the SEO defaults",
   preview_built: () => "Built the local preview",
+  message_deleted: () => "Deleted a contact message",
+  messages_purged: () => "Deleted handled contact messages older than 12 months (automatic)",
   user_created: (e) => named(e, "Added the user", "Added a user"),
   user_edited: userEdited,
   user_password_reset: (e) => named(e, "Reset the password of", "Reset a user's password"),

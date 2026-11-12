@@ -89,6 +89,30 @@ export function applySiteSettings(html: string, s: SiteSettings, live: { email: 
   return out;
 }
 
+const CONTACT_FORM = /(<form class="form-card" id="contact-form" method="POST" action=")([^"]*)(" novalidate>)/g;
+const HONEYPOT = /^([ \t]*)(<input class="hp" type="text" name="_gotcha"[^>]*\/>)$/gm;
+const ELAPSED_FIELD = `<input type="hidden" name="_elapsed" id="cf-elapsed" value="" />`;
+// Time on the page when the form is sent (performance.now counts from page load, whatever the computer's clock says).
+// It listens on the document while the event is on its way down, so it runs before the page's own submit handler reads the form.
+const ELAPSED_SCRIPT = `  <script>document.addEventListener('submit', function (e) { if (e.target.id === 'contact-form') document.getElementById('cf-elapsed').value = String(Math.round(performance.now())); }, true);</script>\n`;
+
+/**
+ * Points contact.html's form at the CMS (`/<ADMIN_PATH>/api/contact`) and adds the hidden "time on the page" field the CMS
+ * uses to drop forms sent too fast. Only the build does this, so the repo's page and the live FTP site keep their own form
+ * until Publish goes live. Running it twice gives the same page.
+ */
+export function applyContactForm(html: string, adminPath: string): string {
+  if (!/^[a-z0-9-]{3,40}$/.test(adminPath)) throw new Error("The admin path isn't valid.");
+  const forms = html.match(CONTACT_FORM)?.length ?? 0, traps = html.match(HONEYPOT)?.length ?? 0;
+  if (forms !== 1 || traps !== 1 || (html.match(/<\/body>/g)?.length ?? 0) !== 1) throw new Error("The contact form isn't in the expected form.");
+  let out = html.replace(CONTACT_FORM, (_m, a: string, _v: string, b: string) => `${a}/${adminPath}/api/contact${b}`);
+  if (!out.includes('id="cf-elapsed"')) {
+    out = out.replace(HONEYPOT, (_m, indent: string, tag: string) => `${indent}${tag}\n${indent}${ELAPSED_FIELD}`);
+    out = out.replace("</body>", `${ELAPSED_SCRIPT}</body>`);
+  }
+  return out;
+}
+
 /** Writes the GA4 ID into consent.js, which keeps its own copy. */
 export function applyConsentJs(js: string, ga4: string): string {
   const re = /(var GA_ID = ')[^']*(';)/;

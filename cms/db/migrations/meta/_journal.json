@@ -50,6 +50,20 @@
       "when": 1793952251438,
       "tag": "0006_adorable_cyclops",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794470700022,
+      "tag": "0007_big_purifiers",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794472646463,
+      "tag": "0008_charming_mercury",
+      "breakpoints": true
     }
   ]
 }

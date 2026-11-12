@@ -5,7 +5,7 @@ import { cp, copyFile, mkdir, readFile, readdir, rename, rm, writeFile } from "n
 import { extname, join, resolve, sep } from "node:path";
 import { parseHTML } from "linkedom";
 import {
-  applyConsentJs, applyListing, applyMenus, applyPageSeo, applySeoDefaults, applySiteSettings, buildSitemap, guideCardsFromPage, MEDIA_DIR, mediaKeysIn, plainText, redirectsHtaccess,
+  applyConsentJs, applyContactForm, applyListing, applyMenus, applyPageSeo, applySeoDefaults, applySiteSettings, buildSitemap, guideCardsFromPage, MEDIA_DIR, mediaKeysIn, plainText, redirectsHtaccess,
   renderAreaPage, renderGuidePage, validateArea, validateGuide,
   type AreaGuide, type Block, type Guide, type ListingItem, type Menus, type SeoDefaults, type SiteSettings
 } from "@liveaccess/shared";
@@ -117,6 +117,14 @@ async function build(db: Db, root: string, work: string, storage: MediaStorage):
   const finish = (html: string, file: string) => {
     let out = d.menus ? applyMenus(html, d.menus, file) : html;
     if (d.site) out = applySiteSettings(out, d.site, { email: liveEmail });
+    if (file === "contact.html") {
+      // The form sends to the CMS inbox. If the form has changed shape, the page is still built, with its form as it was.
+      try {
+        out = applyContactForm(out, env.adminPath);
+      } catch (e) {
+        warnings.push(`contact.html still sends to its old form address: ${message(e)}`);
+      }
+    }
     return d.defaults ? applySeoDefaults(out, d.defaults) : out;
   };
 

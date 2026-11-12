@@ -8,7 +8,7 @@ import { Shell } from "./components/Shell.tsx";
 import { Login } from "./screens/Login.tsx";
 import { PagesList } from "./screens/PagesList.tsx";
 import { PageEditor } from "./screens/PageEditor.tsx";
-import { ComingSoon } from "./screens/ComingSoon.tsx";
+import { ContactInbox } from "./screens/ContactInbox.tsx";
 import { Dashboard } from "./screens/Dashboard.tsx";
 import { MenusEditor } from "./screens/MenusEditor.tsx";
 import { SeoEditor } from "./screens/SeoEditor.tsx";
@@ -21,11 +21,6 @@ import { UsersList } from "./screens/UsersList.tsx";
 import { AuditLog } from "./screens/AuditLog.tsx";
 import { ChangePassword } from "./screens/ChangePassword.tsx";
 import { MediaLibrary } from "./screens/MediaLibrary.tsx";
-
-// Sidebar sections that are not built yet.
-const SOON: { path: string; title: string; about: string }[] = [
-  { path: "/inbox", title: "Contact inbox", about: "Messages sent from the website contact form." }
-];
 
 function RequireAuth() {
   const { user, loading } = useAuth();
@@ -64,7 +59,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/users" element={<SuperAdminOnly><UsersList /></SuperAdminOnly>} />
             <Route path="/audit" element={<SuperAdminOnly><AuditLog /></SuperAdminOnly>} />
             <Route path="/change-password" element={<ChangePassword />} />
-            {SOON.map((s) => <Route key={s.path} path={s.path} element={<ComingSoon title={s.title} about={s.about} />} />)}
+            <Route path="/inbox" element={<ContactInbox />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Route>
         </Routes>

@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { eq } from "drizzle-orm";
-import { readMenus, type Menus, type SiteSettings } from "@liveaccess/shared";
+import { applyContactForm, readMenus, type Menus, type SiteSettings } from "@liveaccess/shared";
 import { env } from "../env.ts";
 import { createApp } from "../api/app.ts";
 import { previewSite } from "../api/preview-server.ts";
@@ -20,6 +20,8 @@ let previewRoot: string;
 const out = (f: string) => join(previewRoot, ".site-preview", f);
 const built = (f: string) => readFile(out(f), "utf8");
 const source = (f: string) => readFile(join(env.siteRoot, f), "utf8");
+/** The page as the build should write it: the site's own file, with the contact form pointed at the CMS (only on contact.html). */
+const expected = async (f: string) => (f === "contact.html" ? applyContactForm(await source(f), env.adminPath) : source(f));
 const build = () => buildSite(db, { siteRoot: env.siteRoot, previewRoot });
 // Some pages write apostrophes as &#x27; inside the article; the sanitiser writes "'". Browsers show both the same.
 const same = (s: string) => s.replace(/&#x27;/g, "'");
@@ -60,7 +62,7 @@ afterEach(async () => rm(previewRoot, { recursive: true, force: true }));
 describe("buildSite", () => {
   it("rebuilds every page of the current site byte-for-byte when there are no drafts", async () => {
     const result = await build();
-    for (const f of await htmlFiles()) expect(same(await built(f)), f).toBe(same(await source(f)));
+    for (const f of await htmlFiles()) expect(same(await built(f)), f).toBe(same(await expected(f)));
     expect(result.counts).toMatchObject({ pages: 12, guides: 6, areas: 8 });
     expect(result.skipped).toEqual([]);
     expect(result.warnings).toEqual([]);
@@ -81,7 +83,7 @@ describe("buildSite", () => {
       { key: "seo.defaults", value: stored({ description: "x", shareImage: "logo.png", cardType: "summary" }) }
     ]);
     await build();
-    for (const f of await htmlFiles()) expect(same(await built(f)), f).toBe(same(await source(f)));
+    for (const f of await htmlFiles()) expect(same(await built(f)), f).toBe(same(await expected(f)));
     expect(await built("consent.js")).toBe(await source("consent.js"));
   });
 
@@ -297,6 +299,24 @@ describe("preview server", () => {
   it("answers only reads, and only for localhost", async () => {
     expect((await get("/", { method: "POST" })).status).toBe(405);
     expect((await previewSite(join(previewRoot, ".site-preview")).request("http://evil.example/")).status).toBe(403);
+  });
+
+  it("builds the contact page with its form pointing at the CMS", async () => {
+    const html = await built("contact.html");
+    expect(html).toContain(`action="/${env.adminPath}/api/contact"`);
+    expect(html).toContain(`id="cf-elapsed"`);
+    expect(html).not.toContain("formspree");
+  });
+
+  it("passes only the contact form's POST to the API", async () => {
+    const seen: string[] = [];
+    const site = previewSite(join(previewRoot, ".site-preview"), { adminPath: "la-studio", send: (req) => { seen.push(`${req.method} ${new URL(req.url).pathname}`); return new Response("ok"); } });
+    const post = (p: string, host = "http://localhost:4000") => site.request(`${host}${p}`, { method: "POST", body: "x" });
+    expect(await (await post("/la-studio/api/contact")).text()).toBe("ok");
+    expect(seen).toEqual(["POST /la-studio/api/contact"]);
+    for (const p of ["/la-studio/api/auth/login", "/la-studio/api/messages", "/la-studio/api/contact/x", "/"]) expect((await post(p)).status, p).toBe(405);
+    expect((await post("/la-studio/api/contact", "http://evil.example")).status).toBe(403);
+    expect(seen).toHaveLength(1);
   });
 
   it("says what to do before the first build", async () => {

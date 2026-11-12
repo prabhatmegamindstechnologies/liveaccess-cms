@@ -9,10 +9,10 @@ import { inputCls } from "../components/form.tsx";
 type Entry = { id: number; action: string; at: string; ip: string | null; detail: Record<string, unknown>; item: AuditItem | null; who: { id: number; name: string; email: string | null } | null };
 type Data = { entries: Entry[]; total: number; page: number; pageSize: number; users: { id: number; name: string; email: string }[] };
 
-const GROUPS = [["", "Everything except sign-ins"], ["content", "Content"], ["website", "Website settings"], ["users", "Users"], ["publishing", "Publishing"], ["sign-ins", "Sign-ins"]] as const;
+const GROUPS = [["", "Everything except sign-ins"], ["content", "Content"], ["website", "Website settings"], ["users", "Users"], ["publishing", "Publishing"], ["messages", "Messages"], ["sign-ins", "Sign-ins"]] as const;
 const LABELS: Record<string, string> = {
   fields: "Changed", role: "Role", status: "Status", email: "Email", title: "Title", slug: "Address", from: "From", to: "To",
-  pages: "Pages", guides: "Guides", areas: "Process areas", files: "Files written", passwordSource: "Temporary password was", name: "Name", reason: "Reason"
+  pages: "Pages", guides: "Guides", areas: "Process areas", files: "Files written", passwordSource: "Temporary password was", name: "Name", reason: "Reason", count: "Messages"
 };
 const showValue = (v: unknown) => {
   if (Array.isArray(v)) return v.join(", ");

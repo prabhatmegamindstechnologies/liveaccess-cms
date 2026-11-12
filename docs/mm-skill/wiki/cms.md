@@ -181,6 +181,38 @@ https://claude.ai/artifact/UZJy25p3EXk3SEdQDXvF6U · Prototype: https://claude.a
   page order kept, new items last, card text only rewritten when the summary changed (it's hand-shortened on some cards).
 - **Before real Publish:** harden `cms/api/pages/guard.ts` (see the Security Gate in
   `docs/mm-skill/tasks/2026-11-04-cms-local-publish.md`). Draft page HTML would otherwise reach the live site.
+- The preview passes **only** `POST /<ADMIN_PATH>/api/contact` to the API in the same process (`previewSite(dir, { adminPath, send })`),
+  so the built contact form can be tried locally. Every other POST is still 405.
+
+## Contact inbox (2026-11-12, Prabhat; task `docs/mm-skill/tasks/2026-11-12-cms-contact-inbox.md`)
+- **Form → CMS:** `POST /<ADMIN_PATH>/api/contact` (`cms/api/contact/routes.ts`) is the CMS's **only route without sign-in**. It takes
+  the site's `FormData` or JSON. Prabhat chose this address (1b), so the admin path shows in contact.html's source.
+- The repo's `contact.html` still has the Formspree placeholder. Only the site build (`applyContactForm` in `publish.ts`) points the form at the
+  CMS and adds the hidden `_elapsed` field, plus a one-line script that fills it with `performance.now()` (time on the page) when the form is sent.
+  The script listens on `document` in the capture phase, so it runs before the page's own submit handler builds its `FormData`.
+  The live FTP site keeps its broken form until Publish goes live.
+- **Spam:** a filled `_gotcha`, or a missing or under-3-second `_elapsed`, gets the same `{ ok: true }` as a real message, but nothing is stored
+  (only `contact form: dropped (<reason>)` is logged). Time on the page, not a timestamp, so a visitor's wrong clock doesn't drop real messages.
+  The route also needs an `Origin` or `Sec-Fetch-Site: same-origin` header, which refuses old browsers posting from other sites.
+- Limits are counted **in the database** (not memory, so they hold on Vercel): 5 per hour per visitor, 100 per hour in total (429). The count
+  and the insert run in one transaction under `pg_advisory_xact_lock`, because a burst of parallel requests otherwise all passed the count
+  (found by the security review). Index `contact_ip_time_idx` (migration 0008).
+- A visitor = `ip_hash` = HMAC-SHA256(`JWT_SECRET`, `visitorKey(ip)`): the IPv4 address, or the **IPv6 /64** (one connection owns a whole /64),
+  or one shared `unknown` key when no address is known. Changing `JWT_SECRET` resets the counts, nothing else. The local preview passes its
+  server context on, so the API sees the real address there too.
+- **Known limit:** the 100-per-hour total can still be filled by someone using many networks, which blocks real visitors for that hour.
+  Before go-live, consider an edge or WAF rate limit, or a challenge (for example Turnstile) once the limit is reached.
+- Checks: name 1–200, email ≤ 254, company ≤ 200, message 1–5,000, no hidden or control characters (line breaks are fine). An unknown topic
+  becomes "Something else". `notifyNewMessage()` is where email goes once the mail service is chosen (Prabhat: "decide at later stage").
+  The name may hold `" < ,` and the address `' % ? &`: never put them in mail headers as raw text, and never log the message.
+- **Inbox:** `/<ADMIN_PATH>/api/messages` (signed-in). Statuses `new → read → replied → archived`. Opening a new one marks it read.
+  `status_changed_at`/`_by` (migration 0007) record who and when. "All" leaves out archived. Search uses ILIKE with `% _ \` escaped.
+- Delete is **Super Admin only**, logged as `message_deleted` with the id only (no name, email or text in the audit log).
+- **12-month clean-up:** replied and archived messages are deleted 12 months after `status_changed_at`, when the inbox is opened (at most once
+  an hour per server), logged as `messages_purged` with the count. There's no scheduler yet.
+- The screen (`ContactInbox.tsx`): the reply `mailto:` encodes the address, because `?` and `&` are legal in addresses and could add a BCC.
+- **Privacy policy:** its "Contact form" item still mentions a third-party form service. The new wording is in the task record. It must be
+  pasted in the CMS Privacy draft and published together with the form switch.
 
 ## Gotchas
 - **Admin URL needs the trailing slash in dev:** `http://localhost:5173/la-studio/` (without it Vite shows its base-URL page).
@@ -209,6 +241,8 @@ pnpm build:site               # local preview from the drafts, open http://local
 pnpm test && pnpm typecheck
 ```
 Schema changes: edit `cms/db/schema.ts`, then `pnpm db:generate` and `pnpm db:migrate`.
+After pulling a change with a new migration, run `pnpm db:migrate` before using the admin. Otherwise the new screens answer
+"Something went wrong" (the API's 500 for a missing column; this happened with the Contact inbox, 2026-11-12).
 
 ## Migrations on Vercel (2026-11-06)
 `vercel.json` builds the admin, then runs `pnpm db:migrate` on Production deployments only (`VERCEL_ENV`). A failed migration fails the deployment, and a failed build never migrates. It overrides the

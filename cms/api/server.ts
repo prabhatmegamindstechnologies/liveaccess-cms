@@ -24,7 +24,8 @@ serve({ fetch: app.fetch, port: env.port }, (info) => {
 });
 
 if (local) {
-  const site = previewSite(join(repoRoot, PREVIEW_DIR));
+  // The built contact form posts to its own origin, as it will on the shared domain; only that request reaches the API.
+  const site = previewSite(join(repoRoot, PREVIEW_DIR), { adminPath: env.adminPath, send: (req, env) => app.fetch(req, env) });
   // This machine only. If the port is taken the API keeps running without the preview.
   serve({ fetch: site.fetch, port: env.previewPort, hostname: "127.0.0.1" }, () => console.log(`Site preview on ${previewUrl}`))
     .on("error", (e) => console.error(`Site preview not started: ${e.message}`));

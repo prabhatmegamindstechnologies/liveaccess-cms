@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { applyConsentJs, applyListing, applyPageSeo, applySeoDefaults, applySiteSettings, readHtaccessRedirects, redirectsHtaccess, type ListingItem } from "../src/publish.ts";
+import { applyConsentJs, applyContactForm, applyListing, applyPageSeo, applySeoDefaults, applySiteSettings, readHtaccessRedirects, redirectsHtaccess, type ListingItem } from "../src/publish.ts";
 import type { SiteSettings } from "../src/site-settings.ts";
 
 const root = join(import.meta.dirname, "..", "..", "..");
@@ -239,5 +239,34 @@ describe("applyListing", () => {
 
   it("throws instead of guessing when the page has no cards", () => {
     expect(() => applyListing(page("about.html"), "guide", [added])).toThrow(/expected form/);
+  });
+});
+
+describe("applyContactForm", () => {
+  const raw = readFileSync(join(import.meta.dirname, "..", "..", "..", "contact.html"), "utf8");
+
+  it("points the real contact form at the CMS and adds the time-on-page field and its script", () => {
+    const out = applyContactForm(raw, "la-studio");
+    expect(out).toContain(`<form class="form-card" id="contact-form" method="POST" action="/la-studio/api/contact" novalidate>`);
+    expect(out).not.toContain("formspree");
+    expect(out).toContain(`<input class="hp" type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" />\n          <input type="hidden" name="_elapsed" id="cf-elapsed" value="" />`);
+    expect(out).toContain(`  <script>document.addEventListener('submit', function (e) { if (e.target.id === 'contact-form') document.getElementById('cf-elapsed').value = String(Math.round(performance.now())); }, true);</script>\n</body>`);
+    // Nothing else changes.
+    const back = out.replace("/la-studio/api/contact", "https://formspree.io/f/YOUR_FORM_ID")
+      .replace(`\n          <input type="hidden" name="_elapsed" id="cf-elapsed" value="" />`, "")
+      .replace(`  <script>document.addEventListener('submit', function (e) { if (e.target.id === 'contact-form') document.getElementById('cf-elapsed').value = String(Math.round(performance.now())); }, true);</script>\n`, "");
+    expect(back).toBe(raw);
+  });
+
+  it("gives the same page when it runs twice", () => {
+    const once = applyContactForm(raw, "la-studio");
+    expect(applyContactForm(once, "la-studio")).toBe(once);
+  });
+
+  it("refuses a page whose form isn't in the expected form, and a bad admin path", () => {
+    expect(() => applyContactForm(raw.replace('id="contact-form"', 'id="other"'), "la-studio")).toThrow(/expected form/);
+    expect(() => applyContactForm(raw.replace('name="_gotcha"', 'name="x"'), "la-studio")).toThrow(/expected form/);
+    expect(() => applyContactForm("<html><body></body></html>", "la-studio")).toThrow(/expected form/);
+    for (const bad of ["", "a\"b", "../x", "LA"]) expect(() => applyContactForm(raw, bad), bad).toThrow(/admin path/);
   });
 });

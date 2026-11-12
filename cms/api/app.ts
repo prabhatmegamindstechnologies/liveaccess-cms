@@ -12,6 +12,8 @@ import { publishRoutes, type PreviewConfig } from "./publish/routes.ts";
 import { userRoutes } from "./users/routes.ts";
 import { auditRoutes } from "./audit/routes.ts";
 import { dashboardRoutes } from "./dashboard/routes.ts";
+import { contactRoutes } from "./contact/routes.ts";
+import { messageRoutes } from "./messages/routes.ts";
 import { mediaFileRoutes, mediaRoutes } from "./media/routes.ts";
 import { MAX_UPLOAD_BYTES } from "./media/process.ts";
 import { localDriver, type MediaStorage } from "./media/storage.ts";
@@ -35,7 +37,7 @@ export function loggable(err: Error) {
  * siteFilesRoot is where robots.txt and llms.txt are read from the first time the SEO screen opens.
  * preview mounts the dev-only local site build; leave it out in production.
  */
-export type AppConfig = AuthConfig & { siteRoot?: string; siteFilesRoot?: string; pageSaveLimit?: SaveLimit; preview?: PreviewConfig; mediaStorage?: MediaStorage };
+export type AppConfig = AuthConfig & { siteRoot?: string; siteFilesRoot?: string; pageSaveLimit?: SaveLimit; preview?: PreviewConfig; mediaStorage?: MediaStorage; now?: () => number };
 
 export function createApp(cfg: AppConfig) {
   const app = new Hono();
@@ -82,6 +84,9 @@ export function createApp(cfg: AppConfig) {
   app.route(`${base}/users`, userRoutes(cfg.db, cfg.trustProxy));
   app.route(`${base}/audit`, auditRoutes(cfg.db));
   app.route(`${base}/dashboard`, dashboardRoutes(cfg.db));
+  // The website's contact form: the one route that needs no sign-in.
+  app.route(`${base}/contact`, contactRoutes({ db: cfg.db, trustProxy: cfg.trustProxy, now: cfg.now }));
+  app.route(`${base}/messages`, messageRoutes(cfg.db, { now: cfg.now }));
   // Before the library routes: it answers without their sign-in check.
   app.route(`${base}/media/files`, mediaFileRoutes(storage));
   app.route(`${base}/media`, mediaRoutes(cfg.db, storage));

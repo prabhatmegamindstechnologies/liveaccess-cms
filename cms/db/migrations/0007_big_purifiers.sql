@@ -1,0 +1,3 @@
+ALTER TABLE "contact_messages" ADD COLUMN "status_changed_at" timestamp with time zone DEFAULT now() NOT NULL;--> statement-breakpoint
+ALTER TABLE "contact_messages" ADD COLUMN "status_changed_by" integer;--> statement-breakpoint
+ALTER TABLE "contact_messages" ADD CONSTRAINT "contact_messages_status_changed_by_users_id_fk" FOREIGN KEY ("status_changed_by") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;
