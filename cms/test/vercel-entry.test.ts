@@ -30,6 +30,12 @@ describe("vercel.json", () => {
     for (const f of ["*.html", "robots.txt", "llms.txt", "packages/shared/src/*.ts"]) expect(cfg.includeFiles).toContain(f);
   });
 
+  it("keeps ignoreCommand within Vercel's 256-character limit, with the real check in a script", () => {
+    expect(vercel.ignoreCommand.length).toBeLessThanOrEqual(256);
+    const script = vercel.ignoreCommand.match(/^sh (\S+)$/)?.[1];
+    expect(script && existsSync(join(repoRoot, script))).toBe(true);
+  });
+
   it("builds the entry as an ES module that imports the compiled .js files", () => {
     expect(JSON.parse(readFileSync(join(repoRoot, "api/package.json"), "utf8")).type).toBe("module");
     const ts = JSON.parse(readFileSync(join(repoRoot, "tsconfig.json"), "utf8"));
