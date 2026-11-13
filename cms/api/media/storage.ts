@@ -12,6 +12,15 @@ export type MediaStorage = {
 
 export const validKey = (key: string) => /^[a-f0-9]{32}\.webp$/.test(key);
 
+/** For hosts with no lasting disk (Vercel) until a Blob driver exists: nothing is stored, so nothing is found. */
+export function disabledDriver(): MediaStorage {
+  return {
+    put: async () => { throw new Error("Media storage is not configured on this server."); },
+    get: async () => null,
+    remove: async () => {}
+  };
+}
+
 export function localDriver(root: string): MediaStorage {
   const path = (key: string) => {
     if (!validKey(key)) throw new Error("Invalid media key.");

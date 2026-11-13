@@ -1,0 +1,11 @@
+{
+  "//": "Used by Vercel to compile api/cms.ts and what it imports: ./x.ts imports become ./x.js in the built Function.",
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2023", "DOM"],
+    "rewriteRelativeImportExtensions": true
+  },
+  "include": ["api"]
+}

@@ -2,6 +2,30 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "pnpm build:admin && if [ \"$VERCEL_ENV\" = \"production\" ]; then pnpm db:migrate; fi",
   "outputDirectory": "cms/dist",
-  "redirects": [{ "source": "/", "destination": "/la-studio/", "permanent": false }],
-  "rewrites": [{ "source": "/la-studio/:path*", "destination": "/la-studio/index.html" }]
+  "regions": [
+    "iad1"
+  ],
+  "functions": {
+    "api/cms.ts": {
+      "maxDuration": 15,
+      "includeFiles": "{*.html,robots.txt,llms.txt,packages/shared/src/*.ts}"
+    }
+  },
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/la-studio/",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/la-studio/api/:path*",
+      "destination": "/api/cms"
+    },
+    {
+      "source": "/la-studio/:path*",
+      "destination": "/la-studio/index.html"
+    }
+  ]
 }
