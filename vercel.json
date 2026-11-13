@@ -2,12 +2,13 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "pnpm build:admin && if [ \"$VERCEL_ENV\" = \"production\" ]; then pnpm db:migrate; fi",
   "outputDirectory": "cms/dist",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- . ':(exclude,glob)*.html' ':(exclude,glob)*.css' ':(exclude,glob)*.js' ':(exclude,glob)*.png' ':(exclude,glob)*.svg' ':(exclude,glob)*.txt' ':(exclude,glob)*.xml' ':(exclude,glob)*.woff2' ':(exclude).htaccess' ':(exclude,glob)images/**'",
   "regions": [
     "iad1"
   ],
   "functions": {
     "api/cms.ts": {
-      "maxDuration": 15,
+      "maxDuration": 60,
       "includeFiles": "{*.html,robots.txt,llms.txt,packages/shared/src/*.ts}"
     }
   },

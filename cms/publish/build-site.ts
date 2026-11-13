@@ -6,7 +6,7 @@ import { extname, join, resolve, sep } from "node:path";
 import { parseHTML } from "linkedom";
 import {
   applyConsentJs, applyContactForm, applyListing, applyMenus, applyPageSeo, applySeoDefaults, applySiteSettings, buildSitemap, guideCardsFromPage, MEDIA_DIR, mediaKeysIn, plainText, redirectsHtaccess,
-  renderAreaPage, renderGuidePage, validateArea, validateGuide,
+  renderAreaPage, renderGuidePage, validateArea, validateGuide, withoutCmsRedirects,
   type AreaGuide, type Block, type Guide, type ListingItem, type Menus, type SeoDefaults, type SiteSettings
 } from "@liveaccess/shared";
 import { localDriver, type MediaStorage } from "../api/media/storage.ts";
@@ -89,7 +89,12 @@ async function swapIn(work: string, out: string) {
   await rm(old, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
 }
 
-async function build(db: Db, root: string, work: string, storage: MediaStorage): Promise<BuildResult> {
+/** The drafts this build used as they are, so Publish can mark exactly those as live. */
+export type BuiltDrafts = { pages: { id: number; html: string }[]; articles: { id: number; value: Guide }[] };
+
+async function build(db: Db, root: string, work: string, storage: MediaStorage): Promise<{ result: BuildResult; drafts: BuiltDrafts }> {
+  const fromDrafts: BuiltDrafts = { pages: [], articles: [] };
+  const draftIds = new Set<number>();
   const d = await readDrafts(db);
   const skipped: Skipped[] = [];
   const warnings: string[] = [];
@@ -131,7 +136,9 @@ async function build(db: Db, root: string, work: string, storage: MediaStorage):
   /* Pages */
   for (const p of d.pageRows) {
     try {
-      await write(p.file, finish(applyPageSeo(p.html, { title: p.seoTitle, description: p.seoDescription, canonical: p.canonical, noindex: p.noindex }), p.file));
+      const html = applyPageSeo(p.html, { title: p.seoTitle, description: p.seoDescription, canonical: p.canonical, noindex: p.noindex });
+      await write(p.file, finish(html, p.file));
+      fromDrafts.pages.push({ id: p.id, html });
     } catch (e) {
       skipped.push({ kind: "page", id: p.key, title: p.title, reason: message(e), live: p.publishedHtml != null });
       if (p.publishedHtml == null) continue;
@@ -144,7 +151,10 @@ async function build(db: Db, root: string, work: string, storage: MediaStorage):
   const reasons = (errors: Record<string, string>) => Object.values(errors).join(" ");
   const pick = (r: Row, kind: Kind, check: (g: Guide) => { ok: true; value: Guide } | { ok: false; errors: Record<string, string> }) => {
     const res = check(snapshot(r));
-    if (res.ok) return res.value;
+    if (res.ok) {
+      draftIds.add(r.id);
+      return res.value;
+    }
     // The live copy gets the same check: it goes into the same scripts and links.
     const live = r.published ? check(r.published as Guide) : null;
     skipped.push({ kind, id: r.id, title: r.title, reason: reasons(res.errors), live: !!live?.ok });
@@ -180,6 +190,7 @@ async function build(db: Db, root: string, work: string, storage: MediaStorage):
     try {
       await write(file, finish(renderGuidePage(await template("guide", row), guide, areaNames.get(guide.areaSlug) ?? "", doc(), mediaSrc), file));
       guides.push({ row, guide });
+      if (draftIds.has(row.id)) fromDrafts.articles.push({ id: row.id, value: guide });
       counts.guides++;
     } catch (e) {
       skipped.push({ kind: "guide", id: row.id, title: row.title, reason: message(e), live: false });
@@ -195,6 +206,7 @@ async function build(db: Db, root: string, work: string, storage: MediaStorage):
       const rank = (slug: string) => (order.includes(slug) ? order.indexOf(slug) : order.length);
       const cards: AreaGuide[] = guides.filter((g) => g.guide.areaSlug === area.slug).map((g) => g.guide).sort((a, b) => rank(a.slug) - rank(b.slug));
       await write(file, finish(renderAreaPage(page, area, cards, doc(), mediaSrc), file));
+      if (draftIds.has(row.id)) fromDrafts.articles.push({ id: row.id, value: area });
       counts.areas++;
     } catch (e) {
       skipped.push({ kind: "area", id: row.id, title: row.title, reason: message(e), live: false });
@@ -228,7 +240,7 @@ async function build(db: Db, root: string, work: string, storage: MediaStorage):
   await write("sitemap.xml", buildSitemap(entries));
   await write("robots.txt", d.robots ?? await readFile(join(root, "robots.txt"), "utf8"));
   await write("llms.txt", d.llms ?? await readFile(join(root, "llms.txt"), "utf8"));
-  await writeFile(join(work, ".htaccess"), await readFile(join(root, ".htaccess"), "utf8") + redirectsHtaccess(d.redirectRows.map((r) => ({ from: r.fromPath, to: r.toPath, code: r.code as 301 | 302 }))));
+  await writeFile(join(work, ".htaccess"), withoutCmsRedirects(await readFile(join(root, ".htaccess"), "utf8")) + redirectsHtaccess(d.redirectRows.map((r) => ({ from: r.fromPath, to: r.toPath, code: r.code as 301 | 302 }))));
   await cp(join(root, "images"), join(work, "images"), { recursive: true });
 
   for (const name of names) {
@@ -269,7 +281,7 @@ async function build(db: Db, root: string, work: string, storage: MediaStorage):
   if (d.site?.gtm) warnings.push("The Google Tag Manager ID isn't applied to pages yet: the cookie consent script only loads the GA4 tag.");
 
   counts.files = written.size;
-  return { builtAt: new Date().toISOString(), counts, skipped, warnings };
+  return { result: { builtAt: new Date().toISOString(), counts, skipped, warnings }, drafts: fromDrafts };
 }
 
 /**
@@ -289,11 +301,23 @@ export async function buildSite(db: Db, opts: { siteRoot: string; previewRoot: s
   await rm(work, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
   await mkdir(work, { recursive: true });
   try {
-    const result = await build(db, root, work, opts.storage ?? localDriver(env.mediaRoot));
+    const { result } = await build(db, root, work, opts.storage ?? localDriver(env.mediaRoot));
     await swapIn(work, out);
     return result;
   } catch (e) {
     await rm(work, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
     throw e;
   }
+}
+
+/** Builds the site straight into `outDir` (a new folder outside the site) for Publish, and says which drafts it used. */
+export async function buildSiteInto(db: Db, opts: { siteRoot: string; outDir: string; storage: MediaStorage }) {
+  const root = resolve(opts.siteRoot);
+  const out = resolve(opts.outDir);
+  const inside = (a: string, b: string) => a === b || a.startsWith(b + sep);
+  if (inside(out.toLowerCase(), root.toLowerCase()) || inside(root.toLowerCase(), out.toLowerCase())) {
+    throw new Error("The build folder can't overlap the site folder.");
+  }
+  await mkdir(out, { recursive: true });
+  return build(db, root, out, opts.storage);
 }

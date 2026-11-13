@@ -185,7 +185,15 @@ export function redirectsHtaccess(list: Pick<Redirect, "from" | "to" | "code">[]
     if (/[\s"\\]/.test(r.from + r.to)) throw new Error(`The redirect from ${JSON.stringify(r.from)} can't be written.`);
     return `Redirect ${r.code} ${r.from} ${target(r.to)}\n`;
   });
-  return `\n# Redirects from the CMS.\n${lines.join("")}`;
+  return `${CMS_REDIRECTS}${lines.join("")}`;
+}
+
+const CMS_REDIRECTS = "\n# Redirects from the CMS.\n";
+
+/** .htaccess without a block written by redirectsHtaccess, so a published file can be built on again without doubling it. */
+export function withoutCmsRedirects(text: string): string {
+  const i = text.indexOf(CMS_REDIRECTS);
+  return i === -1 ? text : text.slice(0, i);
 }
 
 /** The rules written by redirectsHtaccess. */

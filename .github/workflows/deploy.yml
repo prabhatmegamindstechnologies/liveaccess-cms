@@ -8,6 +8,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # A copy of this repo without the FTP secrets (for example one the CMS publishes to for testing) skips the upload.
+    env:
+      HAS_FTP: ${{ secrets.SFTP_HOST != '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,6 +23,7 @@ jobs:
           cp .htaccess deploy/
 
       - name: Deploy over FTP
+        if: env.HAS_FTP == 'true'
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ secrets.SFTP_HOST }}

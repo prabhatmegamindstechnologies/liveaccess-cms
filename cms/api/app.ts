@@ -9,6 +9,8 @@ import { settingsRoutes } from "./settings/routes.ts";
 import { articleRoutes } from "./articles/routes.ts";
 import { previewAssets } from "./preview-assets.ts";
 import { publishRoutes, type PreviewConfig } from "./publish/routes.ts";
+import { publishLiveRoutes, type GithubSettings } from "./publish/live.ts";
+import { githubFromEnv } from "../publish/github.ts";
 import { userRoutes } from "./users/routes.ts";
 import { auditRoutes } from "./audit/routes.ts";
 import { dashboardRoutes } from "./dashboard/routes.ts";
@@ -36,8 +38,12 @@ export function loggable(err: Error) {
  * siteRoot mounts the dev-only preview-asset route; leave it out in production.
  * siteFilesRoot is where robots.txt and llms.txt are read from the first time the SEO screen opens.
  * preview mounts the dev-only local site build; leave it out in production.
+ * github: where Publish commits the site (default: GITHUB_TOKEN, GITHUB_REPO, GITHUB_BRANCH, read on every request).
  */
-export type AppConfig = AuthConfig & { siteRoot?: string; siteFilesRoot?: string; pageSaveLimit?: SaveLimit; preview?: PreviewConfig; mediaStorage?: MediaStorage; now?: () => number };
+export type AppConfig = AuthConfig & {
+  siteRoot?: string; siteFilesRoot?: string; pageSaveLimit?: SaveLimit; preview?: PreviewConfig; mediaStorage?: MediaStorage; now?: () => number;
+  github?: GithubSettings;
+};
 
 export function createApp(cfg: AppConfig) {
   const app = new Hono();
@@ -93,6 +99,8 @@ export function createApp(cfg: AppConfig) {
   app.route(`${base}/guides`, articleRoutes("guide", cfg.db, cfg.siteFilesRoot));
   app.route(`${base}/areas`, articleRoutes("area", cfg.db, cfg.siteFilesRoot, { max: 30, windowMs: 60_000 }));
   if (cfg.siteRoot) app.route(`${base}/preview-assets`, previewAssets(cfg.siteRoot));
+  // Before the preview routes: their sign-in check and save limit cover the whole /publish path.
+  app.route(`${base}/publish/live`, publishLiveRoutes(cfg.db, { github: cfg.github ?? (() => githubFromEnv()), storage, trustProxy: cfg.trustProxy }));
   if (cfg.preview) app.route(`${base}/publish`, publishRoutes(cfg.db, cfg.preview));
   app.get(`${base}/health`, (c) => c.json({ ok: true }));
 

@@ -251,4 +251,32 @@ additive where possible, because they run before the new code goes live. The fil
 
 ## Admin output on Vercel (2026-11-06)
 `vercel.json` publishes `cms/dist`, and Vite builds into `cms/dist/<ADMIN_PATH>` so files sit at the URLs the page asks for (`/la-studio/assets/...`). Don't point `outputDirectory` at the admin folder itself (blank page) or at `.` (publishes the whole repo).
-`vercel.json` can't read `ADMIN_PATH`, so `la-studio` is written in its redirect and rewrite: change them together. **The API has no Vercel Function yet**, so the sign-in page loads there but signing in fails.
+`vercel.json` can't read `ADMIN_PATH`, so `la-studio` is written in its redirect and rewrites: change them together.
+
+## API on Vercel (2026-11-13; task `docs/mm-skill/tasks/2026-11-12-cms-vercel-api-function.md`)
+- `api/cms.ts` (repo root) is the Function; `cms/api/vercel.ts` builds the app for it. `vercel.json` rewrites `/la-studio/api/:path*` to `/api/cms`, before the
+  admin-page rewrite, and Vercel adds the matched part as `?path=`; `restoreRequest()` turns it back into `/la-studio/api/...` and refuses `..`.
+- Vercel compiles `api/cms.ts` with the **root `tsconfig.json`** (`rewriteRelativeImportExtensions` turns `./x.ts` into `./x.js`); `api/package.json` makes it
+  an ES module. `@liveaccess/shared` exports `./src/index.ts`, so its `.ts` files ship through `includeFiles` and Node 24 runs them. Check with
+  `npx vercel@65.7.0 build` in a copy of the repo (the build command's `if [ ... ]` needs a Linux shell).
+- Region `iad1`, next to the Neon database (US East). Pool of 2 connections per instance.
+- Not on Vercel yet: image uploads (503, no Blob driver), the local preview. The save limiter is per instance.
+- Vercel environment: `DATABASE_URL` (Neon, direct or pooled), `JWT_SECRET` (32+ characters), optional `ADMIN_PATH`, and for Publish `GITHUB_TOKEN`,
+  `GITHUB_REPO`, `GITHUB_BRANCH`.
+- **`TEST_DATABASE_URL` must be a local database.** The tests empty every table; `test/helpers.ts` refuses any host but localhost since 2026-11-13, after a
+  run against Neon wiped it and left a test Super Admin there.
+
+## Publish to the website (2026-11-13; task `docs/mm-skill/tasks/2026-11-13-cms-preview-on-vercel.md`)
+- Publish centre → "Publish to website" (Super Admins, checked in the database). `POST /publish/live`: reads the site files of the branch's latest commit
+  from GitHub into `/tmp`, builds the drafts on top of them (`buildSiteInto`), and commits **only files that differ** (Git blob hash) as one commit
+  "Publish from CMS by <name>". The drafts it used are marked published after the commit lands. If the branch moved meanwhile, nothing is written (409).
+- Building on the branch, not on the Function's copy of the files, means a publish never undoes someone else's change to `common.css` or a page.
+- Only `SITE_PATH` files (top-level site files, `.htaccess`, `images/`) are read or written; never `cms/`, `api/`, `.github/` or `vercel.json`. The 13 MB
+  video isn't read (GitHub answers it, but the CMS never changes it). Nothing is deleted from the repo.
+- `.htaccess`: the build strips an existing "# Redirects from the CMS." block before adding the current one (`withoutCmsRedirects`).
+- Target today: `prabhatmegamindstechnologies/liveaccess-cms` `main`, which has no FTP secrets: `deploy.yml` skips the upload there (`HAS_FTP`), so
+  `liveaccess.ai` doesn't change. Pointing `GITHUB_REPO` at the company repo makes Publish reach the website.
+- `vercel.json` `ignoreCommand`: a commit that only changes site files (a publish) doesn't rebuild the CMS.
+- **Pushing code after Publish is in use:** the CMS commits to `main`, so `git push personal feature/cms:main --force` would erase publishes. Use
+  `git pull personal main` (merge), then push without `--force`.
+- Token: GitHub → Settings → Developer settings → Fine-grained tokens, only this repository, permission Contents: Read and write.

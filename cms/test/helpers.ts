@@ -8,8 +8,18 @@ import { hashPassword } from "../api/auth/password.ts";
 
 let migrated = false;
 
+/** The tests empty every table, so they only ever run on a database on this computer. */
+export function assertLocalDatabase(url: string) {
+  let host = "";
+  try { host = new URL(url).hostname; } catch { /* checked below */ }
+  if (!["localhost", "127.0.0.1", "::1", "[::1]"].includes(host)) {
+    throw new Error(`TEST_DATABASE_URL must point at a local database (localhost), not ${host || "an invalid address"}: the tests delete all its data.`);
+  }
+}
+
 export async function testDb() {
   const url = env.testDatabaseUrl();
+  assertLocalDatabase(url);
   if (!migrated) {
     await runMigrations(url);
     migrated = true;
